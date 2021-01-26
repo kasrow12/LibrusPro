@@ -4,9 +4,11 @@ Chrome extension for the Polish Librus e-diary, introducing a dark theme, allowi
 ## Features
 
 ### - Dark theme
-Using Light Librus be like:
+Librus be like:
 
 ![Light theme meme](docs/lightThemeMeme.jpg?raw=true)
+
+Fortunately, this is no longer a problem :)
 
 ### - Custom events in the schedule
 Want to add an event to your schedule? With this extension it's finally possible!
