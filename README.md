@@ -3,12 +3,13 @@ Chrome extension for the Polish Librus e-diary, introducing a dark theme, allowi
 
 ## Features
 
-### Dark theme
+### - Dark theme
 Using Light Librus be like:
+
 ![Light theme meme](docs/lightThemeMeme.jpg?raw=true)
 
-### Custom events in the schedule
+### - Custom events in the schedule
 Want to add an event to your schedule? With this extension it's finally possible!
 
-### Hiding subjects without grades
+### - Hiding subjects without grades
 Why should they even display if you don't get a single grade out of them all year?
