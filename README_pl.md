@@ -17,6 +17,10 @@ Librus be like:
 
 Na szczęście to już nie jest problem :)
 
+![Ciemny motyw 1](docs/LibrusPro_home.png?raw=true)
+![Ciemny motyw 2](docs/LibrusPro_absence.png?raw=true)
+![Ciemny motyw 3](docs/LibrusPro_messages.png?raw=true)
+
 ## • Własne wydarzenia w terminarzu
 Chcesz dodać własne wydarzenie do swojego terminarza? Z tym rozszerzeniem jest to wreszcie możliwe!
 

@@ -8,7 +8,6 @@
 </p>
 
 
-
 # Features
 
 ## • Dark theme
@@ -19,8 +18,8 @@ Librus be like:
 Fortunately, this is no longer a problem :)
 
 ![Dark theme 1](docs/LibrusPro_home.png?raw=true)
-![Dark theme 1](docs/LibrusPro_absence.png?raw=true)
-![Dark theme 1](docs/LibrusPro_messages.png?raw=true)
+![Dark theme 2](docs/LibrusPro_absence.png?raw=true)
+![Dark theme 3](docs/LibrusPro_messages.png?raw=true)
 
 ## • Custom events in the schedule
 Want to add an event to your schedule? With this extension it's finally possible!
