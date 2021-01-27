@@ -26,5 +26,5 @@ Po co w ogóle mają się wyświetlać, skoro przez cały rok nie dostaniesz od 
 ## • Poprawki wizualne
 Wyświetlenie proponowanego zachowania w tabeli głównej, usunięcie zbędnych przycisków z paska nawigacyjnego (Ankiety, Biblioteka) i dodanie w zamian przycisku Plan lekcji. Dodanie również opisów wydarzeń w terminarzu bez konieczności najeżdżania na nie, aby móc je przeczytać.
 
-# License
+# Licencja
 Ten projekt jest licencjonowany zgodnie z warunkami licencji MIT. Zobacz plik [LICENSE](LICENSE.md), aby zapoznać się z prawami i ograniczeniami tej licencji.

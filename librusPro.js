@@ -10,6 +10,9 @@ TO DO list:
 - włączyć/wyłączyć przycisk pracy domowej
 - szósteczki, random + średnia
 - autologowanie?
+- italic proponowane zachowanie
+- średnia z rocznych, proponowanych bolded
+- średnia (I sem, II sem, roczna) bolded
 
 
 */
