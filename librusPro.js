@@ -1,7 +1,7 @@
 // LibrusPro
 // Chrome Extension
 // Author: Maks Kowalski
-// Contact: kasrow12@gmail.com
+// Contact: kasrow12 (at) gmail.com
 
 /*
 

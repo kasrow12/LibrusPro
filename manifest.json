@@ -1,6 +1,6 @@
 {
 	"name": "LibrusPro",
-	"version": "0.0.1.0",
+	"version": "0.1.0",
 	"description": "Ulepsz Librusa już dziś!",
 	"manifest_version": 2,
 	"permissions": [ "activeTab", "storage" ],

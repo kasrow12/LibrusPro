@@ -1,7 +1,7 @@
 // LibrusPro
 // Chrome Extension
 // Author: Maks Kowalski
-// Contact: kasrow12@gmail.com
+// Contact: kasrow12 (at) gmail.com
 
 // key: '17 Październik 2019'
 // value: [['4','','Historia','Kartkówka','zabawa','#xxxxxx','#xxxxxx'],['','18:00','Historia','Kartkówka','zabawa','#xxxxxx','#xxxxxx']]
