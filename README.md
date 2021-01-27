@@ -1,3 +1,4 @@
+[Polski](README_pl.md)
 <p align="center">
   <a href="https://github.com/kasrow12/LibrusPro">
     <img src="img/icon.png" alt="Logo" width="30%" height="30%">
