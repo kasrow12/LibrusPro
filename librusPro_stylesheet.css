@@ -1,5 +1,5 @@
 /* LibrusPro
-Chrome Extension
+Browser Extension
 Author: Maks Kowalski
 Contact: kasrow12 (at) gmail.com
 */
@@ -111,14 +111,26 @@ table.decorated tbody tr.line1:not(.detail-grades) td {
 }
 #main-navigation-container {
 	background: var(--accent) !important;
-	/* background: #2e202f !important; */
-	/* background: #3c2533 !important; */
 }
 #user-section > span.luckyNumber {
 	background-color: #310926 !important;
 	color: #dddddd;
+	margin-right: 8px;
 }
-#main-menu > ul > li > a {
+#main-menu > ul > li > a,
+#body
+	> form:nth-child(5)
+	> div
+	> div
+	> div:nth-child(8)
+	> table
+	> tbody
+	> tr
+	> td
+	> table
+	> tbody
+	> tr
+	> td:nth-child(1) {
 	color: #dcdcdc !important;
 }
 .legend ul li span {
@@ -126,14 +138,14 @@ table.decorated tbody tr.line1:not(.detail-grades) td {
 }
 span.fold-start {
 	/* filter: hue-rotate(180deg) brightness(0.6) contrast(1.2); */
-	background-image: url("chrome-extension://fkgjdgkjgepofmlipajhcccmkdgonjlb/img/fold_dark.png") !important;
+	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/fold_dark.png") !important;
 }
 span.fold-end {
 	/* filter: hue-rotate(180deg) brightness(0.6) contrast(1.2); */
-	background-image: url("chrome-extension://fkgjdgkjgepofmlipajhcccmkdgonjlb/img/foldEnd_dark.png") !important;
+	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/foldEnd_dark.png") !important;
 }
 span.fold-end-scroll {
-	background-image: url("chrome-extension://fkgjdgkjgepofmlipajhcccmkdgonjlb/img/foldEndScroll_dark.png") !important;
+	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/foldEndScroll_dark.png") !important;
 }
 span.fold-start,
 span.fold-end {
@@ -157,6 +169,8 @@ table.decorated tfoot td {
 }
 table.decorated tr.bolded td {
 	background: #3c3c3c !important;
+	font-weight: bold;
+	height: 20px;
 }
 .detail-grades {
 	filter: brightness(0.8) !important;
@@ -183,9 +197,6 @@ img[src="/images/usun_kosz.png"] {
 #gradeAverangeGraph {
 	filter: brightness(0.8);
 }
-/* .bolded {
-	font-weight: bold;
-} */
 #user-section > img,
 #user-section > b > img {
 	filter: invert(1);
@@ -199,12 +210,7 @@ img[src="/images/usun_kosz.png"] {
 hr {
 	background-color: #131313 !important;
 }
-/* #body > form:nth-child(5) > div > div > table > tbody > tr > td > span {
-	background: #000000 !important;
-} */
-/* #przedmioty_zachowanie {
-	display: none !important;
-} */
+
 table.decorated tfoot tr td:last-child {
 	border-right: 1px #000000 solid !important;
 }
@@ -239,19 +245,14 @@ select > option {
 .line1:not([name="przedmioty_all"]):not(.detail-grades) > td {
 	background: red !important;
 } */
-#body > form:nth-child(5) > div > div > table > tbody > .line0:nth-child(2n + 1):not(.bolded),
-#body > form:nth-child(5) > div > div > table > tbody > .line1:nth-child(n + 1):not(.bolded) {
+#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > .line0:nth-child(2n + 1):not(.bolded),
+#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > .line1:nth-child(n + 1):not(.bolded) {
 	display: none;
 }
 /* #body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5) {
 	width: 10px;
 	padding: 2px 5px;
 	white-space: nowrap;
-} */
-
-/* anty-szósteczki */
-/* .modal-box {
-	display: none !important;
 } */
 
 #body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5) {
@@ -398,13 +399,13 @@ text {
 
 /* wiadomości */
 .tree-first-branch {
-	background-image: url("chrome-extension://fkgjdgkjgepofmlipajhcccmkdgonjlb/img/drzewko4_dark.png") !important;
+	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko4_dark.png") !important;
 }
 .tree-next-branch {
-	background-image: url("chrome-extension://fkgjdgkjgepofmlipajhcccmkdgonjlb/img/drzewko1_dark.png") !important;
+	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko1_dark.png") !important;
 }
 .tree-last-branch {
-	background-image: url("chrome-extension://fkgjdgkjgepofmlipajhcccmkdgonjlb/img/drzewko2_dark.png") !important;
+	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko2_dark.png") !important;
 }
 #formWiadomosci
 	> div
@@ -487,6 +488,7 @@ img[src="/assets/img/attachment.png"] {
 	color: #b9b9b9;
 }
 /* archiwum */
+#body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n) > td,
 #body > form > div > div > table > tbody > tr > td,
 #body > form > div > div > table > tbody > tr > th,
 #body > div > div > form > table > tbody > tr:nth-child(2n + 1) > td,
@@ -498,6 +500,7 @@ img[src="/assets/img/attachment.png"] {
 	background: #343434 !important;
 	color: #b4b4b4;
 }
+#body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n + 1) > td,
 #body > div > div > form > table > tbody > tr:nth-child(2n) > td,
 #body > div > div > form > table > tbody > tr:nth-child(2n) > th,
 #body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:nth-child(2n) > td,
@@ -585,4 +588,28 @@ td.today {
 #body > div > div > form > table > tbody > tr:hover > th,
 #body > div > div > form > table > tbody > tr:hover > td {
 	background: #323232 !important;
+}
+
+.librusPro_average > td {
+	font-weight: bold;
+	font-size: 14px;
+	height: 20px;
+}
+
+/*   WAGOWE KOLORKI
+.grade-box {
+	background-color: white !important;
+} */
+#formPrzegladanieRealizacji > table > tfoot > tr > td,
+#formFiltrZadania > table > tfoot > tr > td {
+	border-top: none;
+}
+#scrGeneratedCodes > div,
+#scrGeneratedCodes > div > div.librus-notification__message.librus-notification__message--left > ul,
+#body > div > div > form:nth-child(3) > div > div > div > p {
+	background: var(--lightbackground);
+	color: #dddddd;
+}
+span.warning-title {
+	color: white;
 }

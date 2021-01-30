@@ -1,5 +1,5 @@
 // LibrusPro
-// Chrome Extension
+// Browser Extension
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
 
@@ -8,6 +8,12 @@
 
 // To do:
 // - date added
+
+
+let klasa;
+browserAPI.storage.local.get(["klasa"], function (r) {
+  klasa = r["klasa"];
+});
 
 // ---------------------- ISEMPTY FUNCTION --------------------------
 function isEmpty(obj) { 
@@ -52,8 +58,10 @@ overlay.innerHTML = `
     .librusPro_button-edit {background: #2444ac}
     .librusPro_button-close {margin-top: 10px;background: #c44b4b}
     .librusPro_button:hover {background: #888888}
+    #twoField1 {margin-right: 0; padding-right: 10px; border-right: 1px solid #8e8e8e00 !important}
+    #twoField2 {margin-left: 0; padding-left: 10px;}
     .librusPro_error {color: #ff5555; text-align: center; font-size: 16px; margin: 5px 0}
-    .librusPro_twoField::after {content: " "; position:relative; right: -10px; padding: 7px 0; border-right: 1px solid #8e8e8e}
+    /*.librusPro_twoField::after {content: " "; position:relative; right: -10px; padding: 7px 0; border-right: 1px solid #8e8e8e}*/
     .librusPro_radioContainer {display: block; position: relative; width: 30px; height: 30px; margin: 5px auto 0 auto; cursor: pointer; font-size: 22px; user-select: none;}
     .librusPro_radioContainer input {position: absolute; opacity: 0; cursor: pointer;}
     .librusPro_radioSpan {position: absolute; top: 0; left: 0; height: 31px; width: 31px; background-color: #ffffff; border-radius: 50%; box-shadow: 1px 1px 3px #333333;}
@@ -68,13 +76,13 @@ overlay.innerHTML = `
         <div class="librusPro_date" id="librusPro_date"></div>
         <div class="librusPro_error" id="librusPro_error"></div>
         <div class="librusPro_twoFieldContainer">
-            <div class="librusPro_twoField" style="margin-right: 21px; width: 45%">
+            <div class="librusPro_twoField" id="twoField1" style="width: 45%">
                 <div class="librusPro_title" style="margin-top: 5px;">Nr lekcji:</div>
                 <input type="text" id="librusPro_lesson" class="librusPro_input">
             </div>
-            <div class="">
+            <div class="librusPro_twoField" id="twoField2" >
                 <div class="librusPro_title" style="margin-top: 5px;">Godzina:</div>
-                <input type="time" id="librusPro_time" class="librusPro_input librusPro_inputTime">
+                <input type="time" id="librusPro_time" class="librusPro_input librusPro_inputTime" style="color: #f5f5f5 !important">
             </div> 
         </div>
         <div class="librusPro_field">
@@ -290,9 +298,9 @@ function addCustomCell(cellKey) {
 
   overlay.style.display = "none";
 
-  chrome.storage.local.get([cellKey], function (temp) {
+  browserAPI.storage.local.get([cellKey], function (temp) {
     if (isEmpty(temp)) {
-      chrome.storage.local.set({
+      browserAPI.storage.local.set({
         [cellKey]: [
           [
             lesson.value,
@@ -318,7 +326,7 @@ function addCustomCell(cellKey) {
         colorRadioValue[1],
         imageUrl.value,
       ]);
-      chrome.storage.local.set({ [cellKey]: t });
+      browserAPI.storage.local.set({ [cellKey]: t });
     }
   });
   window.location.reload();
@@ -366,7 +374,7 @@ for (let i = 0; i < days.length; i++) {
 
 // -------------------- CREATE CELL FUNCTION CALLED BY ASYNC FUNCTION ----------------
 function createCell(cellDay, cellKey) {
-  chrome.storage.local.get([cellKey], function (result) {
+  browserAPI.storage.local.get([cellKey], function (result) {
     const dayCells = result[cellKey];
     if (dayCells == null) {
       return;
@@ -406,8 +414,29 @@ function createCell(cellDay, cellKey) {
         else temp += ", ";
       }
       if (info[3] != "") temp += info[3] + "<br>";
-      temp += `2l LO`;
-      if (info[4] != "") temp += `<br>Opis: ${info[4]}`;
+
+      if (klasa != undefined) {
+        temp += klasa;
+      } else {
+        let klasaRegex = /<th class="big">Klasa <\/th>\n                <td>\n                (.*)\n                <\/td>/;
+        let nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            browserAPI.storage.local.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
+            browserAPI.storage.local.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
+            window.location.reload();
+          }
+        };
+        xhttp.open("GET", "https://synergia.librus.pl/informacja", true);
+        xhttp.send();
+      }
+      if (info[4] != "") {
+        if (info[4].length > 200)
+          temp += `<br>Opis: ${info[4].slice(0, 200)}` + "<br>[...]";
+        else temp += `<br>Opis: ${info[4]}`;
+      }
       if (info[7] != "" && info[7] !== undefined)
         temp += `<br><img src="${info[7]}" style="width: 100%; filter: drop-shadow(3px 3px 2px #000000); border-radius: 5px; margin: 5px 0">`;
       cell.innerHTML = temp;
@@ -460,13 +489,13 @@ function addListenerToRemoveButton(removeButton, targetKey, index) {
 
 // ---------------- REMOVE CUSTOM CELL --------------------
 function removeCustomCell(targetKey, removeIndex) {
-  chrome.storage.local.get([targetKey], function (tempResult) {
+  browserAPI.storage.local.get([targetKey], function (tempResult) {
     if (tempResult[targetKey].length == 1) {
-      chrome.storage.local.remove([targetKey]);
+      browserAPI.storage.local.remove([targetKey]);
     } else {
       const t = tempResult[targetKey];
       t.splice(removeIndex, 1);
-      chrome.storage.local.set({ [targetKey]: t });
+      browserAPI.storage.local.set({ [targetKey]: t });
     }
     window.location.reload();
   });
@@ -488,7 +517,7 @@ function displayOverlayForEditingCell(targetKey, editIndex) {
   overlayAddOrEditButton.classList.add("librusPro_button-edit");
   overlayDate.innerHTML = targetKey;
 
-  chrome.storage.local.get([targetKey], function (r) {
+  browserAPI.storage.local.get([targetKey], function (r) {
     const editInfo = r[targetKey][editIndex];
     [lesson.value, time.value, subject.value, type.value, description.value] = r[targetKey][editIndex];
     typeSelect.value = "Inny";
@@ -540,7 +569,7 @@ function editCustomCell(targetKey, editIndex) {
   }
   overlay.style.display = "none";
 
-  chrome.storage.local.get([targetKey], function (tempResult) {
+  browserAPI.storage.local.get([targetKey], function (tempResult) {
     const t = tempResult[targetKey];
     t[editIndex] = [
       lesson.value,
@@ -552,7 +581,7 @@ function editCustomCell(targetKey, editIndex) {
       colorSelectValue[1],
       imageUrl.value,
     ];
-    chrome.storage.local.set({ [targetKey]: t });
+    browserAPI.storage.local.set({ [targetKey]: t });
   });
   window.location.reload();
 }
@@ -584,4 +613,4 @@ function changeInneBackgroundColor(cell) {
 
 
 // ----------------------- DEBUG --------------------------------
-// chrome.storage.local.clear()
+// pogchamp.storage.local.clear()

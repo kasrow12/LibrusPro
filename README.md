@@ -4,7 +4,7 @@
     <img src="img/icon.png" alt="Logo" width="30%" height="30%">
   </a>
   <h1 align="center">LibrusPro</h1>
-  <h4 align="center">Chrome extension for the Polish Librus e-diary, introducing a dark theme, allowing to add custom events in the schedule and some minor improvements to its features.</h4>
+  <h4 align="center">Browser extension for the Polish Librus e-diary, introducing a dark theme, displaying grade point averages despite being disabled by the School Administrator, allowing to add custom events in the schedule and some minor improvements to its features.</h4>
 </p>
 
 
@@ -24,11 +24,14 @@ Fortunately, this is no longer a problem :)
 ## • Custom events in the schedule
 Want to add an event to your schedule? With this extension it's finally possible!
 
+## • Calculating grade point average
+Some schools disable the ability to display grade point average. If they don't want Librus to count it, your computer will count it instead.
+
 ## • Hiding subjects without grades
 Why should they even display if you don't get a single grade out of them all year?
 
 ## • Visual improvements
-Display the proposed behavior in the main table, remove unnecessary buttons from the navigation bar (Surveys, Library) and add a&nbsp;Lesson Plan button instead. Also adding event descriptions in the schedule with no need to hover over them to read.
+Display the proposed behavior in the main table, remove unnecessary buttons from the navigation bar (Surveys, Library) and add a&nbsp;Lesson Plan button instead. Also adding event descriptions in the schedule with no need to hover over them to read. Information about your number from the journal next to the Lucky Number and information when it will be yours!
 
 # License
 This project is licensed under the terms of the MIT license. See the [LICENSE](LICENSE.md) file for license rights and limitations.
