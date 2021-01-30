@@ -21,7 +21,7 @@ TO DO list:
 
 */
 
-var debug = true;
+var debug = false;
 
 let browserAPI;
 if (typeof chrome != null) {
