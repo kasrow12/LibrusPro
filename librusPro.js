@@ -101,20 +101,24 @@ document.querySelectorAll(".grade-box").forEach(e => {e.parentElement.tagName ==
 
 // Zamiany obrazków na ich ciemne wersje
 if (document.querySelector("#gradeAverangeGraph > a > img") != null) {
-  document.querySelector("#gradeAverangeGraph > a > img").src = chrome.runtime.getURL('img/pobierz_wykres_ocen2_dark.png');
+  document.querySelector("#gradeAverangeGraph > a > img").src = browserAPI.runtime.getURL('img/pobierz_wykres_ocen2_dark.png');
 }
 if (document.querySelector("#absenceGraph > img") != null) {
-  document.querySelector("#absenceGraph > img").src = chrome.runtime.getURL('img/pobierz_wykres_absencji_dark.png');
+  document.querySelector("#absenceGraph > img").src = browserAPI.runtime.getURL('img/pobierz_wykres_absencji_dark.png');
 }
 
 // prawidłowy sposób na zamianę foldów (w css jest link z ID wtyczki, może się zmienić) - jeżeli jest używane to, to przyciski migną na zielono przy ładowaniu
-// if (document.querySelector(".fold-start") != null) {
-  // document.querySelectorAll(".fold-start").forEach(e => {e.style.backgroundImage = "url(" + chrome.runtime.getURL('img/fold_dark.png'); + ")";});
-  // document.querySelectorAll(".fold-end").forEach(e => {e.style.backgroundImage = "url(" + chrome.runtime.getURL('img/foldEnd_dark.png'); + ")";});
-  // document.querySelectorAll(".fold-end-scroll").forEach(e => {e.style.backgroundImage = "url(" + chrome.runtime.getURL('img/foldEndScroll_dark.png'); + ")";});
-//   // document.querySelectorAll(".fold-start").forEach(e => {e.style.background = chrome.runtime.getURL('img/fold_dark.png');});
-// }
+if (document.querySelector(".fold-start") != null) {
+  document.querySelectorAll(".fold-start").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/fold_dark.png'); + ")";});
+  document.querySelectorAll(".fold-end").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEnd_dark.png'); + ")";});
+  document.querySelectorAll(".fold-end-scroll").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEndScroll_dark.png'); + ")";});
+}
 
+if (document.querySelector(".tree-first-branch") != null) {
+  document.querySelectorAll(".tree-first-branch").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko4_dark.png'); + ")";});
+  document.querySelectorAll(".tree-next-branch").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko1_dark.png'); + ")";});
+  document.querySelectorAll(".tree-last-branch").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko2_dark.png'); + ")";});
+}
 
 
 

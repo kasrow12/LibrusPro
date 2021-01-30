@@ -136,17 +136,15 @@ table.decorated tbody tr.line1:not(.detail-grades) td {
 .legend ul li span {
 	background: #323232 !important;
 }
-span.fold-start {
-	/* filter: hue-rotate(180deg) brightness(0.6) contrast(1.2); */
+/* span.fold-start {
 	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/fold_dark.png") !important;
 }
 span.fold-end {
-	/* filter: hue-rotate(180deg) brightness(0.6) contrast(1.2); */
 	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/foldEnd_dark.png") !important;
 }
 span.fold-end-scroll {
 	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/foldEndScroll_dark.png") !important;
-}
+} */
 span.fold-start,
 span.fold-end {
 	color: #cccccc !important;
@@ -398,7 +396,7 @@ text {
 }
 
 /* wiadomości */
-.tree-first-branch {
+/* .tree-first-branch {
 	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko4_dark.png") !important;
 }
 .tree-next-branch {
@@ -406,7 +404,7 @@ text {
 }
 .tree-last-branch {
 	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko2_dark.png") !important;
-}
+} */
 #formWiadomosci
 	> div
 	> div
