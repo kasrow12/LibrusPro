@@ -125,6 +125,7 @@ if (document.querySelector(".tree-first-branch") != null) {
 // szósteczki
 // document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {e.innerHTML = Math.floor(Math.random() * (7 - 4) + 4)});
 // document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerHTML)) e.innerHTML = "6"});
+// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerHTML)) e.innerHTML = Math.floor(Math.random() * (5 - 2) + 2)});
 // document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach(e => {e.innerHTML = "6.00"});
 // document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach(e => {e.innerHTML = "6.00"});
 // document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerHTML = "wzorowe";
@@ -149,11 +150,11 @@ function librusPro_insertZachowanie() {
   let propZachSrodroczne = document.querySelector("#przedmioty_zachowanie > td:nth-child(2) > table > tbody");
   let propZachRoczne = document.querySelector("#przedmioty_zachowanie > td:nth-child(2) > table > tbody");
 
-  if (propZachSrodroczne != null && propZachRoczne == null) return;
+  if (propZachSrodroczne == null || propZachRoczne == null) return;
   propZachSrodroczne = propZachSrodroczne.querySelectorAll("[colspan='3']")[0];
   propZachRoczne = propZachRoczne.querySelectorAll("[colspan='3']")[2];
 
-  if (propZachSrodroczne != null && propZachRoczne == null) return;
+  if (propZachSrodroczne == null || propZachRoczne == null) return;
   // Pobranie wartości proponowanego zachowania
   propZachSrodroczne = propZachSrodroczne.innerHTML.split(': ')[1];
   propZachRoczne = propZachRoczne.innerHTML.split(': ')[1];
@@ -368,7 +369,7 @@ if (navBarElement != null) {
 let numerek = document.querySelector("#user-section > span.luckyNumber");
 if (numerek != null) {
   let nr;
-  browserAPI.storage.local.get(["nr"], function (r) {
+  browserAPI.storage.sync.get(["nr"], function (r) {
     nr = r["nr"];
     if (nr != undefined){
       let twojNumer = document.createElement("SPAN");
@@ -386,8 +387,8 @@ if (numerek != null) {
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-          browserAPI.storage.local.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
-          browserAPI.storage.local.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
+          browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
+          browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
           window.location.reload();
         }
       };
@@ -403,3 +404,23 @@ let hakerzy = document.querySelector("#user-section > img");
 if (hakerzy != null) {
   hakerzy.title += "<br><b style='color: #ee9999'>HAKERZY ATAKUJĄ!</b>"
 }
+
+
+// Copyright
+function librusPro_insertFooter() {
+  let footer = document.querySelector("#footer");
+  if (footer == null) return;
+  let copyright = document.createElement("DIV");
+  let github = document.createElement("DIV");
+  copyright.innerText = "LibrusPro © 2021 Maks Kowalski";
+  let githublink = document.createElement("A");
+  githublink.onclick = () => {window.open("https://github.com/kasrow12/LibrusPro", "_blank");}
+  githublink.innerText = "https://github.com/kasrow12/LibrusPro"
+  github.appendChild(githublink);
+  copyright.style.color = "#999999";
+  githublink.style.color = "#3a5aab";
+  githublink.style.cursor = "pointer";
+  footer.append(copyright, github);
+}
+
+librusPro_insertFooter();

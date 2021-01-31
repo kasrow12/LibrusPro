@@ -1,5 +1,5 @@
 function clear() {
-	chrome.storage.local.clear();
+	chrome.storage.sync.clear();
 }
 document.getElementById('clear').addEventListener('click', clear);
 
@@ -16,8 +16,8 @@ let nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n    
 var xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function() {
   if (this.readyState == 4 && this.status == 200) {
-    browserAPI.storage.local.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
-    browserAPI.storage.local.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
+    browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
+    browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
   }
 };
 xhttp.open("GET", "https://synergia.librus.pl/informacja", true);
@@ -25,7 +25,7 @@ xhttp.send();
 
 
 // ----------------------------- DEBUG -------------------------
-// chrome.storage.local.get(null, function(result){
+// chrome.storage.sync.get(null, function(result){
 // 	console.log(result);
 // 	for (var x in result)
 // 	{

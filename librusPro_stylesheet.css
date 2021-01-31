@@ -371,17 +371,21 @@ text {
 
 /* ogloszenia */
 
+#adresaci > table tr > td,
+#adresaci > table > tbody > tr:nth-child(2n + 1) > td,
 #body > div > div > table > tbody > tr:nth-child(2n + 1) > th,
 #body > div > div > table > tbody > tr:nth-child(2n + 1) > td {
 	background: #343434 !important;
 	color: #b9b9b9;
 }
 
+#adresaci > table > tbody > tr:nth-child(2n) > td,
 #body > div > div > table > tbody > tr:nth-child(2n) > th,
 #body > div > div > table > tbody > tr:nth-child(2n) > td {
 	color: #b9b9b9;
 	background: #393939 !important;
 }
+#adresaci > table > tbody > tr:hover > td,
 #body > div > div > table > tbody > tr:hover > th,
 #body > div > div > table > tbody > tr:hover > td {
 	background: #323232 !important;
@@ -564,7 +568,9 @@ div.warning-content > p {
 	> b,
 #formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table > tbody > tr > td,
 #formWiadomosci > div > div > table > tbody > tr > td.message-folders > table.message-labels > tbody > tr > td > b,
-#formDanePoprzednieLata > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p {
+#formDanePoprzednieLata > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p,
+#body > div > div > div > table > tbody > tr > td > table > tbody > tr > td,
+li > a {
 	color: #bbbbbb !important;
 }
 input[type="text"],
@@ -610,4 +616,11 @@ td.today {
 }
 span.warning-title {
 	color: white;
+}
+
+table.decorated tfoot tr th,
+/* table.decorated tbody tr.line0 th, */ table.decorated tbody tr th,
+table.decorated tfoot tr td,
+/* table.decorated tbody tr.line0 td, */ table.decorated tbody tr td {
+	border-top: 1px solid #000000 !important;
 }

@@ -4,14 +4,12 @@
 // Contact: kasrow12 (at) gmail.com
 
 // key: '17 Październik 2019'
-// value: [['4','','Historia','Kartkówka','zabawa','#xxxxxx','#xxxxxx'],['','18:00','Historia','Kartkówka','zabawa','#xxxxxx','#xxxxxx']]
-
-// To do:
-// - date added
+// value: [[nr lekcji, godz, przedmiot, typ, opis, hex color, hex color, url obrazka, data dodania, data ost. modyfikacji], [nr lekcji, godz, przedmiot, typ, opis, hex color, hex color, url obrazka, data dodania, data ost. modyfikacji]]
+// value: [['4','','Historia','Kartkówka','zabawa','#xxxxxx','#xxxxxx','google.com/pic.png','31.01.2021, 13:36:29','31.01.2021, 13:40:29'],['','18:00','Historia','Kartkówka','zabawa','#xxxxxx','#xxxxxx','google.com/pic.png','31.01.2021, 13:36:29','31.01.2021, 13:40:29']]
 
 
 let klasa;
-browserAPI.storage.local.get(["klasa"], function (r) {
+browserAPI.storage.sync.get(["klasa"], function (r) {
   klasa = r["klasa"];
 });
 
@@ -298,9 +296,10 @@ function addCustomCell(cellKey) {
 
   overlay.style.display = "none";
 
-  browserAPI.storage.local.get([cellKey], function (temp) {
+  browserAPI.storage.sync.get([cellKey], function (temp) {
+    // Czy już są jakieś wydarzenia dla tego dnia
     if (isEmpty(temp)) {
-      browserAPI.storage.local.set({
+      browserAPI.storage.sync.set({
         [cellKey]: [
           [
             lesson.value,
@@ -311,6 +310,8 @@ function addCustomCell(cellKey) {
             colorRadioValue[0],
             colorRadioValue[1],
             imageUrl.value,
+            new Date().toLocaleString(),
+            "",
           ],
         ],
       });
@@ -325,8 +326,10 @@ function addCustomCell(cellKey) {
         colorRadioValue[0],
         colorRadioValue[1],
         imageUrl.value,
+        new Date().toLocaleString(),
+        "",
       ]);
-      browserAPI.storage.local.set({ [cellKey]: t });
+      browserAPI.storage.sync.set({ [cellKey]: t });
     }
   });
   window.location.reload();
@@ -374,7 +377,7 @@ for (let i = 0; i < days.length; i++) {
 
 // -------------------- CREATE CELL FUNCTION CALLED BY ASYNC FUNCTION ----------------
 function createCell(cellDay, cellKey) {
-  browserAPI.storage.local.get([cellKey], function (result) {
+  browserAPI.storage.sync.get([cellKey], function (result) {
     const dayCells = result[cellKey];
     if (dayCells == null) {
       return;
@@ -424,8 +427,8 @@ function createCell(cellDay, cellKey) {
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            browserAPI.storage.local.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
-            browserAPI.storage.local.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
+            browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
+            browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
             window.location.reload();
           }
         };
@@ -440,6 +443,8 @@ function createCell(cellDay, cellKey) {
       if (info[7] != "" && info[7] !== undefined)
         temp += `<br><img src="${info[7]}" style="width: 100%; filter: drop-shadow(3px 3px 2px #000000); border-radius: 5px; margin: 5px 0">`;
       cell.innerHTML = temp;
+      cell.title = "Data dodania: " + info[8];
+      if (info[9] != "") cell.title += "\nData ostatniej modyfikacji: " + info[9];
 
       const removeButton = document.createElement("a");
       removeButton.innerHTML = "⨉";
@@ -489,13 +494,13 @@ function addListenerToRemoveButton(removeButton, targetKey, index) {
 
 // ---------------- REMOVE CUSTOM CELL --------------------
 function removeCustomCell(targetKey, removeIndex) {
-  browserAPI.storage.local.get([targetKey], function (tempResult) {
+  browserAPI.storage.sync.get([targetKey], function (tempResult) {
     if (tempResult[targetKey].length == 1) {
-      browserAPI.storage.local.remove([targetKey]);
+      browserAPI.storage.sync.remove([targetKey]);
     } else {
       const t = tempResult[targetKey];
       t.splice(removeIndex, 1);
-      browserAPI.storage.local.set({ [targetKey]: t });
+      browserAPI.storage.sync.set({ [targetKey]: t });
     }
     window.location.reload();
   });
@@ -517,7 +522,7 @@ function displayOverlayForEditingCell(targetKey, editIndex) {
   overlayAddOrEditButton.classList.add("librusPro_button-edit");
   overlayDate.innerHTML = targetKey;
 
-  browserAPI.storage.local.get([targetKey], function (r) {
+  browserAPI.storage.sync.get([targetKey], function (r) {
     const editInfo = r[targetKey][editIndex];
     [lesson.value, time.value, subject.value, type.value, description.value] = r[targetKey][editIndex];
     typeSelect.value = "Inny";
@@ -569,7 +574,7 @@ function editCustomCell(targetKey, editIndex) {
   }
   overlay.style.display = "none";
 
-  browserAPI.storage.local.get([targetKey], function (tempResult) {
+  browserAPI.storage.sync.get([targetKey], function (tempResult) {
     const t = tempResult[targetKey];
     t[editIndex] = [
       lesson.value,
@@ -580,8 +585,10 @@ function editCustomCell(targetKey, editIndex) {
       colorSelectValue[0],
       colorSelectValue[1],
       imageUrl.value,
+      tempResult[targetKey][editIndex][8],
+      new Date().toLocaleString(),
     ];
-    browserAPI.storage.local.set({ [targetKey]: t });
+    browserAPI.storage.sync.set({ [targetKey]: t });
   });
   window.location.reload();
 }
@@ -613,4 +620,4 @@ function changeInneBackgroundColor(cell) {
 
 
 // ----------------------- DEBUG --------------------------------
-// pogchamp.storage.local.clear()
+// pogchamp.storage.sync.clear()
