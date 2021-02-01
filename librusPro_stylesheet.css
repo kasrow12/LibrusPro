@@ -313,6 +313,9 @@ select > option {
 text {
 	fill: #ffffff !important;
 }
+div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-child(12) text {
+	fill: #333333 !important;
+}
 
 /* #GradeArchiveGraphDiv > div:nth-child(1) > svg > g:nth-child(12) > g > text,
 #AbsencesArchiveGraphDiv > div:nth-child(1) > svg > g:nth-child(12) > g > text,

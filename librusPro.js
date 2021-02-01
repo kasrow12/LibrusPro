@@ -21,7 +21,7 @@ TO DO list:
 
 */
 
-var debug = false;
+const debug = false;
 
 let browserAPI;
 if (typeof chrome != null) {
@@ -38,9 +38,9 @@ if (window.location.href == "https://synergia.librus.pl/uczen/index") {
 
 // Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest.
 // JS liczy od 0, CSS od 1
-let offsetJS = 2;
-let offsetCSS = 3;
-let indexy = {
+const offsetJS = 2;
+const offsetCSS = 3;
+const indexy = {
   ocenyI: -1,
   sredniaI: -1,
   proponowaneI: -1,
@@ -56,7 +56,7 @@ let indexy = {
 
 // Pobranie indexów kolumn
 document.querySelectorAll("#body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td").forEach(e => {
-  let index = [...e.parentElement.children].indexOf(e);
+  const index = [...e.parentElement.children].indexOf(e);
 
   if (e.innerHTML == "Śr.I") indexy["sredniaI"] = index;
   if (e.innerHTML == "(I)") indexy["proponowaneI"] = index;
@@ -83,7 +83,7 @@ if (document.querySelector("#body > form:nth-child(5) > div > h2") != null && do
   odOstLogowania = true;
 } else {
   // Usunięcie wierszy bez ocen
-  let ocenyTr = document.querySelectorAll("tr[name=przedmioty_all] + tr");
+  const ocenyTr = document.querySelectorAll("tr[name=przedmioty_all] + tr");
   for (let i = 0; i < ocenyTr.length; i++)
   {
     if (ocenyTr[i].children[2].textContent == "Brak ocen")
@@ -107,7 +107,8 @@ if (document.querySelector("#absenceGraph > img") != null) {
   document.querySelector("#absenceGraph > img").src = browserAPI.runtime.getURL('img/pobierz_wykres_absencji_dark.png');
 }
 
-// prawidłowy sposób na zamianę foldów (w css jest link z ID wtyczki, może się zmienić) - jeżeli jest używane to, to przyciski migną na zielono przy ładowaniu
+
+// Prawidłowy sposób na zamianę foldów (w css jest link z ID wtyczki, może się zmienić) - jeżeli jest używane to, to przyciski migną na zielono przy ładowaniu
 if (document.querySelector(".fold-start") != null) {
   document.querySelectorAll(".fold-start").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/fold_dark.png'); + ")";});
   document.querySelectorAll(".fold-end").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEnd_dark.png'); + ")";});
@@ -135,13 +136,6 @@ if (document.querySelector(".tree-first-branch") != null) {
 
 // ---------------------------------------- ZACHOWANIE ----------------------------------------
 
-// Zmiana 'minusika' na 'plusik' przy zachowaniu (OLD)
-// if (document.querySelector("#przedmioty_zachowanie_node") != null) {
-//   document.querySelector("#przedmioty_zachowanie_node").src = "/images/tree_colapsed.png";
-// }
-// if (document.getElementById("przedmioty_zachowanie") != null ) {
-//   setTimeout(() => {document.getElementById("przedmioty_zachowanie").style.display = "none";}, 1);
-// }
 
 // Proponowane zachowanie do tabeli głównej
 function librusPro_insertZachowanie() {
@@ -160,10 +154,10 @@ function librusPro_insertZachowanie() {
   propZachRoczne = propZachRoczne.innerHTML.split(': ')[1];
 
   // Elementy zachowania (śród)rocznego (i proponowanego) [niezmienne od proponowanych ocen I, II i R]
-  let zachSrodroczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)");
-  let zachRoczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(6)");
-  let propZachSrodroczneElement = zachSrodroczneElement.cloneNode(true);
-  let propZachRoczneElement = zachRoczneElement.cloneNode(true);
+  const zachSrodroczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)");
+  const zachRoczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(6)");
+  const propZachSrodroczneElement = zachSrodroczneElement.cloneNode(true);
+  const propZachRoczneElement = zachRoczneElement.cloneNode(true);
 
   // Zmiana szerokości komórek
   // zachRoczneElement.colSpan = "2";
@@ -197,8 +191,8 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
     document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1").style.display = "none";
   }
   else {
-    let injectedCode = 'showHide.ShowHide("zachowanie")';
-    let script = document.createElement('script');
+    const injectedCode = 'showHide.ShowHide("zachowanie")';
+    const script = document.createElement('script');
     script.appendChild(document.createTextNode('('+ injectedCode +');'));
     (document.body || document.head || document.documentElement).appendChild(script);
   }
@@ -263,26 +257,26 @@ function liczSredniaWazona(elements) {
   return (Math.round( suma / wagi  * 100 + Number.EPSILON ) / 100).toFixed(2);
 }
 
-let nieMaSredniej = "-";
+const nieMaSredniej = "-";
 
 function librusPro_insertSrednie() {
-  let wierszOceny = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(1)");
+  const wierszOceny = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(1)");
   if (wierszOceny == null) return;
 
   // Tworzenie wiersza ze średnimi
-  let srednieTr = wierszOceny.cloneNode(true);
+  const srednieTr = wierszOceny.cloneNode(true);
 
-  let ocenyI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:not(.bolded) > td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`);
-  let proponowaneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["proponowaneI"] + offsetCSS}) > span > a`);
-  let srodroczneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["srodroczneI"] + offsetCSS}) > span > a`);
+  const ocenyI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:not(.bolded) > td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`);
+  const proponowaneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["proponowaneI"] + offsetCSS}) > span > a`);
+  const srodroczneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["srodroczneI"] + offsetCSS}) > span > a`);
 
-  let ocenyII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["ocenyII"] + offsetCSS}) span.grade-box > a`);
-  let proponowaneII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["proponowaneII"] + offsetCSS}) > span > a`);
-  let srodroczneII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["srodroczneII"] + offsetCSS}) span.grade-box > a`);
+  const ocenyII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["ocenyII"] + offsetCSS}) span.grade-box > a`);
+  const proponowaneII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["proponowaneII"] + offsetCSS}) > span > a`);
+  const srodroczneII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["srodroczneII"] + offsetCSS}) span.grade-box > a`);
 
-  let ocenyR = [...ocenyI, ...ocenyII];
-  let proponowaneR = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["proponowaneR"] + offsetCSS}) > span > a`);
-  let roczne = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["roczne"] + offsetCSS}) > span > a`);
+  const ocenyR = [...ocenyI, ...ocenyII];
+  const proponowaneR = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["proponowaneR"] + offsetCSS}) > span > a`);
+  const roczne = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["roczne"] + offsetCSS}) > span > a`);
 
   // Wstawienie średnich w wiersz tabeli
   srednieTr.children[0].innerHTML = "";
@@ -324,7 +318,6 @@ function librusPro_insertSrednie() {
   document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indexy["sredniaR"] + offsetCSS})`).forEach(e => {
     e.innerHTML = liczSredniaWazona([...e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`), ...e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyII"] + offsetCSS}) span.grade-box > a`)]) + (debug ? (" <i>(" + e.innerHTML + ")</i>") : "")
   });
-
 }
 
 if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
@@ -356,17 +349,17 @@ if (document.querySelectorAll("table.decorated thead td.spacing, table.decorated
 
 
 // Plan lekcji do navbara
-let navBarElement = document.querySelector("#main-menu > ul > li:nth-child(3)");
+const navBarElement = document.querySelector("#main-menu > ul > li:nth-child(3)");
 if (navBarElement != null) {
-  let planLekcji = navBarElement.cloneNode(true);
+  const planLekcji = navBarElement.cloneNode(true);
   planLekcji.children[0].href = "javascript:otworz_w_nowym_oknie('/przegladaj_plan_lekcji','plan_u',0,0)";
-  planLekcji.children[0].innerHTML = "Plan lekcji";
+  planLekcji.children[0].innerText = "Plan lekcji";
   navBarElement.parentElement.appendChild(planLekcji);
 }
 
 
 // Wyświetlanie numeru z dziennika obok szczęśliwego + informacja gdy nim jest Twój
-let numerek = document.querySelector("#user-section > span.luckyNumber");
+const numerek = document.querySelector("#user-section > span.luckyNumber");
 if (numerek != null) {
   let nr;
   browserAPI.storage.sync.get(["nr"], function (r) {
@@ -381,10 +374,10 @@ if (numerek != null) {
 
       numerek.parentElement.insertBefore(twojNumer, numerek.nextSibling);
     } else {
-      let klasaRegex = /<th class="big">Klasa <\/th>\n                <td>\n                (.*)\n                <\/td>/;
-      let nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
+      const klasaRegex = /<th class="big">Klasa <\/th>\n                <td>\n                (.*)\n                <\/td>/;
+      const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
 
-      var xhttp = new XMLHttpRequest();
+      const xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
@@ -396,11 +389,9 @@ if (numerek != null) {
       xhttp.send();
     }
   });
-
 }
 
-// Easter egg
-let hakerzy = document.querySelector("#user-section > img");
+const hakerzy = document.querySelector("#user-section > img");
 if (hakerzy != null) {
   hakerzy.title += "<br><b style='color: #ee9999'>HAKERZY ATAKUJĄ!</b>"
 }
@@ -408,19 +399,30 @@ if (hakerzy != null) {
 
 // Copyright
 function librusPro_insertFooter() {
-  let footer = document.querySelector("#footer");
+  const footer = document.querySelector("#footer");
   if (footer == null) return;
-  let copyright = document.createElement("DIV");
-  let github = document.createElement("DIV");
-  copyright.innerText = "LibrusPro © 2021 Maks Kowalski";
-  let githublink = document.createElement("A");
-  githublink.onclick = () => {window.open("https://github.com/kasrow12/LibrusPro", "_blank");}
-  githublink.innerText = "https://github.com/kasrow12/LibrusPro"
-  github.appendChild(githublink);
-  copyright.style.color = "#999999";
-  githublink.style.color = "#3a5aab";
-  githublink.style.cursor = "pointer";
-  footer.append(copyright, github);
+  footer.innerHTML = `
+  <div id="footer"><hr>
+    <span id="bottom-logo"></span>
+    <div style="
+        display: inline-flex;
+        height: 27px;
+        width: 27px;
+        background: url(&quot;chrome-extension://fkgjdgkjgepofmlipajhcccmkdgonjlb/img/icon.png&quot;);
+        background-size: cover;
+        filter: brightness(0.7) contrast(1.1);">
+    </div>
+    <div style="margin-left: 5px; vertical-align: top; display: inline-flex;">
+      <div style="color: rgb(153, 153, 153); ">
+        <div>LibrusPro © 2021 Maks Kowalski</div>
+        <div><a href="https://github.com/kasrow12/LibrusPro" target="_blank" style="color: rgb(58, 90, 171); cursor: pointer;">https://github.com/kasrow12/LibrusPro</a></div>
+      </div>
+      <div style="background: url(" chrome-extension:="" fkgjdgkjgepofmlipajhcccmkdgonjlb="" img=""></div>
+    </div>
+  </div>`
 }
+
+
+
 
 librusPro_insertFooter();

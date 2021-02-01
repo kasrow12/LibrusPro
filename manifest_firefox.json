@@ -1,0 +1,38 @@
+{
+	"name": "LibrusPro",
+	"version": "0.2.2",
+	"description": "Ulepsz Librusa już dziś!",
+	"manifest_version": 2,
+	"permissions": [ "activeTab", "storage", "https://synergia.librus.pl/*" ],
+
+	"icons": {
+		"512": "img/icon.png"
+	},
+	"browser_action": {
+		"default_icon": "img/icon.png",
+		"default_popup": "popup.html"
+	},
+	"content_scripts": [
+		{
+			"matches": [ "https://synergia.librus.pl/*" ],
+			"js": [ "librusPro.js" ],
+			"all_frames": true
+		},
+		{
+			"matches": [ "https://synergia.librus.pl/*" ],
+			"css": [ "librusPro_stylesheet.css" ],
+			"run_at": "document_start"
+		},
+		{
+			"matches": [ "https://synergia.librus.pl/terminarz" ],
+			"js": [ "terminarz.js" ]
+		}
+	],
+	"web_accessible_resources": [ "img/*" ],
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{2ddaa55f-7db8-460a-bf9b-01396684935b}",
+			"strict_min_version": "42.0"
+		}
+	}
+}
