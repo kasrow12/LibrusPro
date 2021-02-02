@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html utfg>
+<html>
 <head>
 	<meta charset="utf-8">
 <style>
@@ -23,6 +23,15 @@ body
 	padding: 0px 5px;
 	margin-bottom: 10px;
 	color: #42791e;
+}
+.sub-link
+{
+	display: block;
+	font-size: 15px;
+	padding: 0px 5px;
+	margin-bottom: 10px;
+	color: #1e5079;
+	text-decoration: underline;
 }
 .button
 {
@@ -59,13 +68,19 @@ input[type="number"]
 {
 	margin-bottom: 5px;
 }
+img {
+	display: block;
+	width: 100px;
+	margin: 0 auto;
+}
 </style>
 </head>
 <body>
-	<img src="img/icon.png" width="50%">
-	<div class="title">LibrusPro</div>
+	<img src="img/icon.png">
+	<div class="title">LibrusPro v<span id="ver"></span></div>
 	<div class="sub-title">Autor:<br>Maks&nbsp;Kowalski</div>
-	<div class="normal-button button" id="clear">Clear</div>
+	<div><a class="sub-link" target="_blank" href="https://github.com/kasrow12/LibrusPro">Github</a></div>
+	<div class="normal-button button" id="clear">Wyczyść terminarz</div>
 </body>
 <script src="popup.js"></script>
 </html>

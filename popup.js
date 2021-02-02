@@ -1,14 +1,15 @@
-function clear() {
-	chrome.storage.sync.clear();
-}
-document.getElementById('clear').addEventListener('click', clear);
-
 let browserAPI;
 if (typeof chrome != null) {
   browserAPI = chrome;
 } else {
   browserAPI = browser;
 }
+
+function clear() {
+	browserAPI.storage.sync.clear();
+}
+document.getElementById('clear').addEventListener('click', clear);
+
 
 const klasaRegex = /<th class="big">Klasa <\/th>\n                <td>\n                (.*)\n                <\/td>/;
 const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
@@ -23,14 +24,15 @@ xhttp.onreadystatechange = function() {
 xhttp.open("GET", "https://synergia.librus.pl/informacja", true);
 xhttp.send();
 
+document.getElementById("ver").innerText = browserAPI.runtime.getManifest().version;
 
 // ----------------------------- DEBUG -------------------------
-// chrome.storage.sync.get(null, function(result){
+// browserAPI.storage.sync.get(null, function(result){
 // 	console.log(result);
 // 	for (var x in result)
 // 	{
 // 		var y = document.createElement("div");
-// 		y.innerHTML = x + ' => ' + result[x];
+// 		y.innerText = x + ' => ' + result[x];
 // 		console.log(result[x]);
 // 		y.style.marginBottom = "10px";
 // 		document.body.appendChild(y);

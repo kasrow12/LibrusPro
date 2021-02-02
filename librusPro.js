@@ -15,8 +15,6 @@ TO DO list:
 -- ukrywanie pustych przedmiotów
 -- wartość plusów i minusów
 
-- if href==
-- autologowanie?
 - ↓ ↑ proponowana vs. średnia
 
 */
@@ -32,7 +30,7 @@ if (typeof chrome != null) {
 
 
 // Co to po komu?
-if (window.location.href == "https://synergia.librus.pl/uczen/index") {
+if (window.location.href == "https://synergia.librus.pl/uczen/index" || window.location.href == "https://synergia.librus.pl/rodzic/index") {
   window.location.href = "https://synergia.librus.pl/przegladaj_oceny/uczen";
 }
 
@@ -58,17 +56,17 @@ const indexy = {
 document.querySelectorAll("#body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td").forEach(e => {
   const index = [...e.parentElement.children].indexOf(e);
 
-  if (e.innerHTML == "Śr.I") indexy["sredniaI"] = index;
-  if (e.innerHTML == "(I)") indexy["proponowaneI"] = index;
-  if (e.innerHTML == "I") indexy["srodroczneI"] = index;
+  if (e.innerText == "Śr.I") indexy["sredniaI"] = index;
+  if (e.innerText == "(I)") indexy["proponowaneI"] = index;
+  if (e.innerText == "I") indexy["srodroczneI"] = index;
 
-  if (e.innerHTML == "Śr.II") indexy["sredniaII"] = index;
-  if (e.innerHTML == "(II)") indexy["proponowaneII"] = index;
-  if (e.innerHTML == "II") indexy["srodroczneII"] = index;
+  if (e.innerText == "Śr.II") indexy["sredniaII"] = index;
+  if (e.innerText == "(II)") indexy["proponowaneII"] = index;
+  if (e.innerText == "II") indexy["srodroczneII"] = index;
 
-  if (e.innerHTML == "Śr.R") indexy["sredniaR"] = index;
-  if (e.innerHTML == "(R)") indexy["proponowaneR"] = index;
-  if (e.innerHTML == "R") indexy["roczne"] = index;
+  if (e.innerText == "Śr.R") indexy["sredniaR"] = index;
+  if (e.innerText == "(R)") indexy["proponowaneR"] = index;
+  if (e.innerText == "R") indexy["roczne"] = index;
 
 });
 // Oceny bieżące są zawsze jeden przed średnimi
@@ -124,13 +122,13 @@ if (document.querySelector(".tree-first-branch") != null) {
 
 
 // szósteczki
-// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {e.innerHTML = Math.floor(Math.random() * (7 - 4) + 4)});
-// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerHTML)) e.innerHTML = "6"});
-// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerHTML)) e.innerHTML = Math.floor(Math.random() * (5 - 2) + 2)});
-// document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach(e => {e.innerHTML = "6.00"});
-// document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach(e => {e.innerHTML = "6.00"});
-// document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerHTML = "wzorowe";
-// document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)").innerHTML = "wzorowe";
+// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {e.innerText = Math.floor(Math.random() * (7 - 4) + 4)});
+// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = "6"});
+// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = Math.floor(Math.random() * (5 - 2) + 2)});
+// document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach(e => {e.innerText = "6.00"});
+// document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach(e => {e.innerText = "6.00"});
+// document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerText = "wzorowe";
+// document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)").innerText = "wzorowe";
 
 
 
@@ -150,8 +148,8 @@ function librusPro_insertZachowanie() {
 
   if (propZachSrodroczne == null || propZachRoczne == null) return;
   // Pobranie wartości proponowanego zachowania
-  propZachSrodroczne = propZachSrodroczne.innerHTML.split(': ')[1];
-  propZachRoczne = propZachRoczne.innerHTML.split(': ')[1];
+  propZachSrodroczne = propZachSrodroczne.innerText.split(': ')[1];
+  propZachRoczne = propZachRoczne.innerText.split(': ')[1];
 
   // Elementy zachowania (śród)rocznego (i proponowanego) [niezmienne od proponowanych ocen I, II i R]
   const zachSrodroczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)");
@@ -163,8 +161,8 @@ function librusPro_insertZachowanie() {
   // zachRoczneElement.colSpan = "2";
   
   // "-", bądź ocena z zachowania
-  propZachSrodroczneElement.innerHTML = propZachSrodroczne == "" ? "-" : propZachSrodroczne;
-  propZachRoczneElement.innerHTML = propZachRoczne == "" ? "-" : propZachRoczne;
+  propZachSrodroczneElement.innerText = propZachSrodroczne == "" ? "-" : propZachSrodroczne;
+  propZachRoczneElement.innerText = propZachRoczne == "" ? "-" : propZachRoczne;
   
   // Stylizacja proponowanych zachowań
   propZachSrodroczneElement.style.fontStyle = "italic";
@@ -210,10 +208,10 @@ function liczSrednia(elements) {
 
   let suma = 0;
   elements.forEach(e => {
-    if (e.innerHTML.length == 1) suma += +e.innerHTML;
-    else if (e.innerHTML[1] == "+") suma += +e.innerHTML[0] + 0.5;
-    else if (e.innerHTML[1] == "-") suma += +e.innerHTML[0] - 0.25;
-    else suma += +e.innerHTML[0];
+    if (e.innerText.length == 1) suma += +e.innerText;
+    else if (e.innerText[1] == "+") suma += +e.innerText[0] + 0.5;
+    else if (e.innerText[1] == "-") suma += +e.innerText[0] - 0.25;
+    else suma += +e.innerText[0];
   });
 
   return (Math.round( suma / elements.length  * 100 + Number.EPSILON ) / 100).toFixed(2);
@@ -227,7 +225,7 @@ function liczSredniaWazona(elements) {
   let suma = 0;
   let wagi = 0;
   elements.forEach(e => {
-    if (/[0-6][+-]?/.test(e.innerHTML)) {
+    if (/[0-6][+-]?/.test(e.innerText)) {
       let regexp = /<br>Licz do średniej: (.){3}<br>/gi;
       let liczDoSredniej = e.title.match(regexp)[0];
       liczDoSredniej = liczDoSredniej.replace("<br>Licz do średniej: ", "").replace("<br>", "");
@@ -247,9 +245,9 @@ function liczSredniaWazona(elements) {
       // if (waga >= 5) e.parentElement.style.setProperty("background", "#1f1f1f", "important");
       // if (waga >= 5) e.style.setProperty("color", "#ffffff", "important");
       
-      if (e.innerHTML.length == 1) suma += (+e.innerHTML) * waga;
-      else if (e.innerHTML[1] == "+") suma += (+e.innerHTML[0] + 0.5) * waga;
-      else if (e.innerHTML[1] == "-") suma += (+e.innerHTML[0] - 0.25) * waga;
+      if (e.innerText.length == 1) suma += (+e.innerText) * waga;
+      else if (e.innerText[1] == "+") suma += (+e.innerText[0] + 0.5) * waga;
+      else if (e.innerText[1] == "-") suma += (+e.innerText[0] - 0.25) * waga;
     }
   });
 
@@ -279,28 +277,28 @@ function librusPro_insertSrednie() {
   const roczne = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["roczne"] + offsetCSS}) > span > a`);
 
   // Wstawienie średnich w wiersz tabeli
-  srednieTr.children[0].innerHTML = "";
-  srednieTr.children[1].innerHTML = "Średnia";
-  srednieTr.children[indexy["ocenyI"] + offsetJS].innerHTML = "";
-  srednieTr.children[indexy["sredniaI"] + offsetJS].innerHTML = liczSredniaWazona(ocenyI);
+  srednieTr.children[0].innerText = "";
+  srednieTr.children[1].innerText = "Średnia";
+  srednieTr.children[indexy["ocenyI"] + offsetJS].innerText = "";
+  srednieTr.children[indexy["sredniaI"] + offsetJS].innerText = liczSredniaWazona(ocenyI);
 
   if (indexy["proponowaneI"] > 0)
-  srednieTr.children[indexy["proponowaneI"] + offsetJS].innerHTML = liczSrednia(proponowaneI);
+  srednieTr.children[indexy["proponowaneI"] + offsetJS].innerText = liczSrednia(proponowaneI);
 
-  srednieTr.children[indexy["srodroczneI"] + offsetJS].innerHTML = liczSrednia(srodroczneI);
-  srednieTr.children[indexy["ocenyII"] + offsetJS].innerHTML = "";
-  srednieTr.children[indexy["sredniaII"] + offsetJS].innerHTML = liczSredniaWazona(ocenyII);
+  srednieTr.children[indexy["srodroczneI"] + offsetJS].innerText = liczSrednia(srodroczneI);
+  srednieTr.children[indexy["ocenyII"] + offsetJS].innerText = "";
+  srednieTr.children[indexy["sredniaII"] + offsetJS].innerText = liczSredniaWazona(ocenyII);
 
   if (indexy["proponowaneII"] > 0)
-  srednieTr.children[indexy["proponowaneII"] + offsetJS].innerHTML = liczSrednia(proponowaneII);
+  srednieTr.children[indexy["proponowaneII"] + offsetJS].innerText = liczSrednia(proponowaneII);
 
-  srednieTr.children[indexy["srodroczneII"] + offsetJS].innerHTML = liczSrednia(srodroczneII);
-  srednieTr.children[indexy["sredniaR"] + offsetJS].innerHTML = liczSredniaWazona(ocenyR);
+  srednieTr.children[indexy["srodroczneII"] + offsetJS].innerText = liczSrednia(srodroczneII);
+  srednieTr.children[indexy["sredniaR"] + offsetJS].innerText = liczSredniaWazona(ocenyR);
 
   if (indexy["proponowaneR"] > 0)
-  srednieTr.children[indexy["proponowaneR"] + offsetJS].innerHTML = liczSrednia(proponowaneR);
+  srednieTr.children[indexy["proponowaneR"] + offsetJS].innerText = liczSrednia(proponowaneR);
 
-  srednieTr.children[indexy["roczne"] + offsetJS].innerHTML = liczSrednia(roczne);
+  srednieTr.children[indexy["roczne"] + offsetJS].innerText = liczSrednia(roczne);
   srednieTr.classList.add("librusPro_average");
 
   document.querySelector("#body > form:nth-child(5) > div > div > table > tbody").appendChild(srednieTr);
@@ -308,15 +306,15 @@ function librusPro_insertSrednie() {
   // Wyświetlanie średnich dla poszczególnych przedmiotów
   // I sem
   document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indexy["sredniaI"] + offsetCSS})`).forEach(e => {
-    e.innerHTML = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`)) + (debug ? (" <i>(" + e.innerHTML + ")</i>") : "")
+    e.innerText = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`)) + (debug ? (" (" + e.innerText + ")") : "")
   });
   // II sem
   document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indexy["sredniaII"] + offsetCSS})`).forEach(e => {
-    e.innerHTML = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyII"] + offsetCSS}) span.grade-box > a`)) + (debug ? (" <i>(" + e.innerHTML + ")</i>") : "")
+    e.innerText = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyII"] + offsetCSS}) span.grade-box > a`)) + (debug ? (" (" + e.innerText + ")") : "")
   });
   // Roczna
   document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indexy["sredniaR"] + offsetCSS})`).forEach(e => {
-    e.innerHTML = liczSredniaWazona([...e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`), ...e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyII"] + offsetCSS}) span.grade-box > a`)]) + (debug ? (" <i>(" + e.innerHTML + ")</i>") : "")
+    e.innerText = liczSredniaWazona([...e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`), ...e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyII"] + offsetCSS}) span.grade-box > a`)]) + (debug ? (" (" + e.innerText + ")") : "")
   });
 }
 
@@ -366,10 +364,18 @@ if (numerek != null) {
     nr = r["nr"];
     if (nr != undefined){
       let twojNumer = document.createElement("SPAN");
-      twojNumer.innerHTML = "Twój numerek w dzienniku: <b style='color: #eeeeee'>" + nr + "</b>";
+      twojNumer.innerText = "Twój numerek w dzienniku: ";
+      const numer = document.createElement("B");
+      numer.innerText = nr;
+      numer.style.color = "#eeeeee";
+      twojNumer.appendChild(numer);
       
-      if (document.querySelector("#user-section > span.luckyNumber > b").innerHTML == nr) {
-          twojNumer.innerHTML += "<span style='color: lime; margin-left: 5px;'><b>GRATULACJE!</b></span>";
+      if (document.querySelector("#user-section > span.luckyNumber > b").innerText == nr) {
+        const gratulacje = document.createElement("SPAN");
+        gratulacje.style.color = "lime";
+        gratulacje.style.marginLeft = "5px";
+        gratulacje.innerText = "GRATULACJE!";
+        twojNumer.appendChild(gratulacje);
       }
 
       numerek.parentElement.insertBefore(twojNumer, numerek.nextSibling);

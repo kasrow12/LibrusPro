@@ -228,7 +228,7 @@ select {
 	color: #dedede !important;
 	border-color: #000000 !important;
 }
-select > option {
+select:not([name="rgbKoloru"]) > option {
 	background-color: #4a4a4a !important;
 	color: #dedede !important;
 }
@@ -573,7 +573,8 @@ div.warning-content > p {
 #formWiadomosci > div > div > table > tbody > tr > td.message-folders > table.message-labels > tbody > tr > td > b,
 #formDanePoprzednieLata > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p,
 #body > div > div > div > table > tbody > tr > td > table > tbody > tr > td,
-li > a {
+li > a,
+#formWiadomosci > div > div > div > div > p {
 	color: #bbbbbb !important;
 }
 input[type="text"],
@@ -607,9 +608,11 @@ td.today {
 .grade-box {
 	background-color: white !important;
 } */
+#formWiadomosci > div > div > table.decorated.filters.center.small > tfoot > tr > td,
+#formFiltrZadania > table > tfoot > tr > td,
 #formPrzegladanieRealizacji > table > tfoot > tr > td,
 #formFiltrZadania > table > tfoot > tr > td {
-	border-top: none;
+	border-top: none !important;
 }
 #scrGeneratedCodes > div,
 #scrGeneratedCodes > div > div.librus-notification__message.librus-notification__message--left > ul,

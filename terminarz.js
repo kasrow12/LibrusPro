@@ -230,11 +230,11 @@ overlayCloseButton.addEventListener("click", function () {
 // ---------------- CREATE MONTH VARIABLE --------------------
 let month = document.getElementsByName("miesiac")[0];
 const monthId = month.selectedIndex;
-month = month.options[month.selectedIndex].innerHTML;
+month = month.options[month.selectedIndex].innerText;
 
 // ---------------- CREATE YEAR VARIABLE --------------------
 let year = document.getElementsByName("rok")[0];
-year = year.options[year.selectedIndex].innerHTML;
+year = year.options[year.selectedIndex].innerText;
 
 // ---------------- "[+]" BUTTON LISTENER --------------------
 function addListenerToAddButton(button, targetKey) {
@@ -244,17 +244,17 @@ function addListenerToAddButton(button, targetKey) {
 }
 
 // ---------------- "[+]" CLICKED --------------------
-const overlayAddOrEditButton = document.getElementById("librusPro_add");
+const overlayConfirmButton = document.getElementById("librusPro_add");
 const overlayDate = document.getElementById("librusPro_date");
 let listenerLambdaFunction;
 
 function displayOverlayForAdding(cellKey) {
   document.body.classList.toggle("librusPro_pageBody");
   overlay.style.display = "block";
-  overlayDate.innerHTML = cellKey;
-  overlayAddOrEditButton.innerHTML = "Dodaj";
-  overlayAddOrEditButton.classList.remove("librusPro_button-edit");
-  overlayAddOrEditButton.classList.add("librusPro_button-add");
+  overlayDate.innerText = cellKey;
+  overlayConfirmButton.innerText = "Dodaj";
+  overlayConfirmButton.classList.remove("librusPro_button-edit");
+  overlayConfirmButton.classList.add("librusPro_button-add");
   lesson.value = "";
   subject.value = "";
   typeSelect.value = "";
@@ -265,12 +265,12 @@ function displayOverlayForAdding(cellKey) {
   imageUrl.value = "";
   firstRadioElement.checked = "true";
   if (listenerLambdaFunction != null) {
-    overlayAddOrEditButton.removeEventListener("click", listenerLambdaFunction);
+    overlayConfirmButton.removeEventListener("click", listenerLambdaFunction);
   }
   listenerLambdaFunction = function () {
     addCustomCell(`${cellKey}`);
   };
-  overlayAddOrEditButton.addEventListener("click", listenerLambdaFunction);
+  overlayConfirmButton.addEventListener("click", listenerLambdaFunction);
 }
 
 // ---------------- "ADD" CLICKED INSIDE "[+]" --------------------
@@ -290,7 +290,7 @@ function addCustomCell(cellKey) {
     .querySelector("input[name=librusPro_color]:checked")
     .value.split("|");
   if (colorRadioValue == "") {
-    document.getElementById("librusPro_error").innerHTML = "Wybierz kolor";
+    document.getElementById("librusPro_error").innerText = "Wybierz kolor";
     return;
   }
 
@@ -344,13 +344,13 @@ let setOpacity =
     : false;
 for (let i = 0; i < days.length; i++) {
   const day = days[i];
-  const key = `${day.innerHTML} ${month}${year}`;
+  const key = `${day.innerText} ${month}${year}`;
   day.style.width = "initial";
   day.style.float = "right";
   day.style.marginBottom = "10px";
 
   const addButton = document.createElement("a");
-  addButton.innerHTML = "[+]"; 
+  addButton.innerText = "[+]"; 
   addButton.style.display = "inline-block";
   addButton.style.float = "left";
   addButton.style.marginTop = "5px";
@@ -409,14 +409,14 @@ function createCell(cellDay, cellKey) {
       cell.classList.add("no-border-left", "no-border-right");
 
       let temp = "";
-      if (info[0] != "") temp += `Nr lekcji: ${info[0]}<br>`;
-      if (info[1] != "") temp += `Godz: ${info[1]}<br>`;
+      if (info[0] != "") temp += `Nr lekcji: ${info[0]}\n`;
+      if (info[1] != "") temp += `Godz: ${info[1]}\n`;
       if (info[2] != "") {
         temp += info[2];
-        if (info[3] == "") temp += "<br>";
+        if (info[3] == "") temp += "\n";
         else temp += ", ";
       }
-      if (info[3] != "") temp += info[3] + "<br>";
+      if (info[3] != "") temp += info[3] + "\n";
 
       if (klasa != undefined) {
         temp += klasa;
@@ -437,17 +437,27 @@ function createCell(cellDay, cellKey) {
       }
       if (info[4] != "") {
         if (info[4].length > 200)
-          temp += `<br>Opis: ${info[4].slice(0, 200)}` + "<br>[...]";
-        else temp += `<br>Opis: ${info[4]}`;
+          temp += `\nOpis: ${info[4].slice(0, 250)}` + "\n[...]";
+        else temp += `\nOpis: ${info[4]}`;
       }
-      if (info[7] != "" && info[7] !== undefined)
-        temp += `<br><img src="${info[7]}" style="width: 100%; filter: drop-shadow(3px 3px 2px #000000); border-radius: 5px; margin: 5px 0">`;
-      cell.innerHTML = temp;
+      if (info[7] != "" && info[7] !== undefined) {
+        // temp += `\n<img src="${info[7]}" style="width: 100%; filter: drop-shadow(3px 3px 2px #000000); border-radius: 5px; margin: 5px 0">`;
+        const image = document.createElement("IMG");
+        // image.src = info[7];
+        image.style.width = "100%";
+        image.style.filter = "drop-shadow(3px 3px 2px #000000)";
+        image.style.borderRadius = "5px";
+        image.style.margin = "5px 0";
+        cell.appendChild(image);
+        console.log(cell);
+        console.log(image);
+      }
+      cell.innerText = temp;
       cell.title = "Data dodania: " + info[8];
       if (info[9] != "") cell.title += "\nData ostatniej modyfikacji: " + info[9];
 
       const removeButton = document.createElement("a");
-      removeButton.innerHTML = "⨉";
+      removeButton.innerText = "⨉";
       removeButton.style.position = "absolute";
       removeButton.style.top = "3px";
       removeButton.style.right = "5px";
@@ -458,7 +468,7 @@ function createCell(cellDay, cellKey) {
       addListenerToRemoveButton(removeButton, cellKey, i);
 
       const editButton = document.createElement("a");
-      editButton.innerHTML = "✎";
+      editButton.innerText = "✎";
       editButton.style.position = "absolute";
       editButton.style.top = "1px";
       editButton.style.right = "20px";
@@ -481,6 +491,7 @@ function createCell(cellDay, cellKey) {
         this.style.background = `${info[5]}`;
         this.style.color = `${info[6]}`;
       };
+      cell.removeEventListener()
     }
   });
 }
@@ -517,10 +528,10 @@ function addListenerToEditButton(addTo, targetKey, index) {
 function displayOverlayForEditingCell(targetKey, editIndex) {
   document.body.classList.toggle("librusPro_pageBody");
   overlay.style.display = "block";
-  overlayAddOrEditButton.innerHTML = "Edytuj";
-  overlayAddOrEditButton.classList.remove("librusPro_button-add");
-  overlayAddOrEditButton.classList.add("librusPro_button-edit");
-  overlayDate.innerHTML = targetKey;
+  overlayConfirmButton.innerText = "Edytuj";
+  overlayConfirmButton.classList.remove("librusPro_button-add");
+  overlayConfirmButton.classList.add("librusPro_button-edit");
+  overlayDate.innerText = targetKey;
 
   browserAPI.storage.sync.get([targetKey], function (r) {
     const editInfo = r[targetKey][editIndex];
@@ -551,7 +562,7 @@ function displayOverlayForEditingCell(targetKey, editIndex) {
       firstRadioElement.checked = "true";
     }
     if (listenerLambdaFunction != null) {
-      overlayAddOrEditButton.removeEventListener(
+      overlayConfirmButton.removeEventListener(
         "click",
         listenerLambdaFunction
       );
@@ -559,7 +570,7 @@ function displayOverlayForEditingCell(targetKey, editIndex) {
     listenerLambdaFunction = function () {
       editCustomCell(`${targetKey}`, `${editIndex}`);
     };
-    overlayAddOrEditButton.addEventListener("click", listenerLambdaFunction);
+    overlayConfirmButton.addEventListener("click", listenerLambdaFunction);
   });
 }
 
@@ -569,7 +580,7 @@ function editCustomCell(targetKey, editIndex) {
     .querySelector("input[name=librusPro_color]:checked")
     .value.split("|");
   if (colorSelectValue == "") {
-    document.getElementById("librusPro_error").innerHTML = "Wybierz kolor";
+    document.getElementById("librusPro_error").innerText = "Wybierz kolor";
     return;
   }
   overlay.style.display = "none";
@@ -600,7 +611,7 @@ for (let i = 0; i < tdArray.length; i++) {
     addDescriptionToCell(tdArray[i]);
 
     if (tdArray[i].style.backgroundColor == "rgb(189, 183, 107)")
-      changeInneBackgroundColor(tdArray[i]);
+      tdArray[i].style.backgroundColor = "#e0dd6b";
   }
 }
 function addDescriptionToCell(cell) {
@@ -609,15 +620,15 @@ function addDescriptionToCell(cell) {
   const res = cellTitle.match(regex);
   if (res != null) {
     const out = res[0].replace("<br />Data", "");
-    if (out.length > 200)
-      cell.innerHTML += "<br>" + out.slice(0, 200) + "<br>[...]";
-    else cell.innerHTML += "<br>" + out;
+    // Opis z title na wierch, ucięcie zbyt długich.
+    if (out.length > 200) {
+      cell.innerText += "\n" + out.slice(0, 250).replaceAll("<br />", "\n") + "\n[...]";
+    }
+    else {
+      cell.innerText += "\n" + out;
+    }
   }
 }
-function changeInneBackgroundColor(cell) {
-  cell.style.backgroundColor = "#e0dd6b";
-}
-
 
 // ----------------------- DEBUG --------------------------------
 // pogchamp.storage.sync.clear()
