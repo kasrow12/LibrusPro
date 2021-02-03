@@ -122,9 +122,8 @@ if (document.querySelector(".tree-first-branch") != null) {
 
 
 // szósteczki
-// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {e.innerText = Math.floor(Math.random() * (7 - 4) + 4)});
 // document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = "6"});
-// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = Math.floor(Math.random() * (5 - 2) + 2)});
+// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = Math.floor(Math.random() * (7 - 4) + 4)});
 // document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach(e => {e.innerText = "6.00"});
 // document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach(e => {e.innerText = "6.00"});
 // document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerText = "wzorowe";
@@ -401,6 +400,10 @@ const hakerzy = document.querySelector("#user-section > img");
 if (hakerzy != null) {
   hakerzy.title += "<br><b style='color: #ee9999'>HAKERZY ATAKUJĄ!</b>"
 }
+const uczen = document.querySelector("#user-section > b > img");
+if (uczen != null) {
+  uczen.title += "<br><b style='color: #a96fe3'>Dzięki za korzystanie z mojego rozszerzenia!</b>"
+}
 
 
 // Copyright
@@ -414,7 +417,7 @@ function librusPro_insertFooter() {
         display: inline-flex;
         height: 27px;
         width: 27px;
-        background: url(&quot;chrome-extension://fkgjdgkjgepofmlipajhcccmkdgonjlb/img/icon.png&quot;);
+        background: url(&quot;` + browserAPI.runtime.getURL('img/icon.png') + `&quot;);
         background-size: cover;
         filter: brightness(0.7) contrast(1.1);">
     </div>
@@ -427,8 +430,5 @@ function librusPro_insertFooter() {
     </div>
   </div>`
 }
-
-
-
 
 librusPro_insertFooter();

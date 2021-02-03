@@ -398,7 +398,8 @@ function createCell(cellDay, cellKey) {
 
     for (let i = 0; i < dayCells.length; i++) {
       const row = table.insertRow();
-      const cell = row.insertCell();
+      const cell = document.createElement("th");
+      row.appendChild(cell);
       const info = dayCells[i];
       cell.style.background = info[5];
       cell.style.color = info[6];
@@ -440,21 +441,18 @@ function createCell(cellDay, cellKey) {
           temp += `\nOpis: ${info[4].slice(0, 250)}` + "\n[...]";
         else temp += `\nOpis: ${info[4]}`;
       }
+      cell.innerText = temp;
       if (info[7] != "" && info[7] !== undefined) {
         // temp += `\n<img src="${info[7]}" style="width: 100%; filter: drop-shadow(3px 3px 2px #000000); border-radius: 5px; margin: 5px 0">`;
         const image = document.createElement("IMG");
-        // image.src = info[7];
-        image.style.width = "100%";
+        image.src = info[7];
+        image.style.width = "80%";
+        image.style.display = "block";
+        image.style.margin = "5px auto";
         image.style.filter = "drop-shadow(3px 3px 2px #000000)";
         image.style.borderRadius = "5px";
-        image.style.margin = "5px 0";
         cell.appendChild(image);
-        console.log(cell);
-        console.log(image);
       }
-      cell.innerText = temp;
-      cell.title = "Data dodania: " + info[8];
-      if (info[9] != "") cell.title += "\nData ostatniej modyfikacji: " + info[9];
 
       const removeButton = document.createElement("a");
       removeButton.innerText = "⨉";
@@ -491,7 +489,10 @@ function createCell(cellDay, cellKey) {
         this.style.background = `${info[5]}`;
         this.style.color = `${info[6]}`;
       };
-      cell.removeEventListener()
+
+      // cell.title = "Data dodania: " + info[8];
+      cell.title = "Data dodania: " + info[8];
+      if (info[9] != "") cell.title += "\nData ostatniej modyfikacji: " + info[9];
     }
   });
 }
