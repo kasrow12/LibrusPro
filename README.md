@@ -31,11 +31,11 @@ Some schools disable the ability to display grade point average. If they don't w
 Why should they even display if you don't get a single grade out of them all year?
 
 ## • Visual improvements
-### displaying the proposed behavior in the main table,
-### removing unnecessary buttons from the navigation bar (Surveys, Library),
-### adding a Lesson Plan button instead,
-### adding event descriptions in the schedule with no need to hover over them to read,
-### information about your number from the journal next to the Lucky Number and information when it will be yours!
+- displaying the proposed behavior in the main table,
+- removing unnecessary buttons from the navigation bar (Surveys, Library),
+- adding a Lesson Plan button instead,
+- adding event descriptions in the schedule with no need to hover over them to read,
+- information about your number from the journal next to the Lucky Number and information when it will be yours!
 
 # License
 This project is licensed under the terms of the MIT license. See the [LICENSE](LICENSE.md) file for license rights and limitations.
