@@ -15,13 +15,16 @@ Librus be like:
 
 ![Light theme meme](docs/lightThemeMeme.jpg?raw=true)
 
-Fortunately, this is no longer a problem :) Here are some screenshots:
+Fortunately, this is no longer a problem :)
+<details>
+  <summary>Here are some screenshots:</summary>
 
-![Dark theme 1](docs/LibrusPro_oceny.png?raw=true)
-![Dark theme 2](docs/LibrusPro_frekwencja.png?raw=true)
-![Dark theme 3](docs/LibrusPro_terminarz.png?raw=true)
-![Dark theme 4](docs/LibrusPro_wiadomosci.png?raw=true)
-![Dark theme 5](docs/LibrusPro_naglowek.png?raw=true)
+![Dark theme 1](docs/librusPro_oceny.png?raw=true)
+![Dark theme 2](docs/librusPro_frekwencja.png?raw=true)
+![Dark theme 3](docs/librusPro_terminarz.png?raw=true)
+![Dark theme 4](docs/librusPro_wiadomosci.png?raw=true)
+![Dark theme 5](docs/librusPro_naglowek.png?raw=true)
+</details>
 
 ## • Custom events in the schedule
 Want to add an event to your schedule? With this extension it's finally possible!

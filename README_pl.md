@@ -15,13 +15,16 @@ Librus be like:
 
 ![Light theme meme](docs/lightThemeMeme.jpg?raw=true)
 
-Nie jesteś sam(a), na szczęście to już nie jest problem :) Poniżej znajdziesz kilka zrzutów ekranu:
+Nie jesteś sam(a), na szczęście to już nie jest problem :)
+<details>
+  <summary>Tutaj znajdziesz kilka zrzutów ekranu:</summary>
 
-![Ciemy motyw 1](docs/LibrusPro_oceny.png?raw=true)
-![Ciemy motyw 2](docs/LibrusPro_frekwencja.png?raw=true)
-![Ciemy motyw 3](docs/LibrusPro_terminarz.png?raw=true)
-![Ciemy motyw 4](docs/LibrusPro_wiadomosci.png?raw=true)
-![Ciemy motyw 5](docs/LibrusPro_naglowek.png?raw=true)
+![Ciemny motyw 1](docs/librusPro_oceny.png?raw=true)
+![Ciemny motyw 2](docs/librusPro_frekwencja.png?raw=true)
+![Ciemny motyw 3](docs/librusPro_terminarz.png?raw=true)
+![Ciemny motyw 4](docs/librusPro_wiadomosci.png?raw=true)
+![Ciemny motyw 5](docs/librusPro_naglowek.png?raw=true)
+</details>
 
 ## • Własne wydarzenia w terminarzu
 Chcesz dodać własne wydarzenie do swojego terminarza? Z tym rozszerzeniem jest to wreszcie możliwe!
