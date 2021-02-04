@@ -398,6 +398,7 @@ function createCell(cellDay, cellKey) {
 
     for (let i = 0; i < dayCells.length; i++) {
       const row = table.insertRow();
+      // Th dlatego, żeby był title chromowy, bo Librus ma z***any system custom title.
       const cell = document.createElement("th");
       row.appendChild(cell);
       const info = dayCells[i];
@@ -446,7 +447,7 @@ function createCell(cellDay, cellKey) {
         // temp += `\n<img src="${info[7]}" style="width: 100%; filter: drop-shadow(3px 3px 2px #000000); border-radius: 5px; margin: 5px 0">`;
         const image = document.createElement("IMG");
         image.src = info[7];
-        image.style.width = "80%";
+        image.style.width = "70%";
         image.style.display = "block";
         image.style.margin = "5px auto";
         image.style.filter = "drop-shadow(3px 3px 2px #000000)";
@@ -611,6 +612,7 @@ for (let i = 0; i < tdArray.length; i++) {
   if (tdArray[i].title != null) {
     addDescriptionToCell(tdArray[i]);
 
+    // Zmiana koloru "Inne", bo jest brzydki lol
     if (tdArray[i].style.backgroundColor == "rgb(189, 183, 107)")
       tdArray[i].style.backgroundColor = "#e0dd6b";
   }
@@ -621,7 +623,7 @@ function addDescriptionToCell(cell) {
   const res = cellTitle.match(regex);
   if (res != null) {
     const out = res[0].replace("<br />Data", "");
-    // Opis z title na wierch, ucięcie zbyt długich.
+    // Opis z title na wierzch, ucięcie zbyt długich.
     if (out.length > 200) {
       cell.innerText += "\n" + out.slice(0, 250).replaceAll("<br />", "\n") + "\n[...]";
     }

@@ -573,7 +573,6 @@ div.warning-content > p {
 #formWiadomosci > div > div > table > tbody > tr > td.message-folders > table.message-labels > tbody > tr > td > b,
 #formDanePoprzednieLata > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p,
 #body > div > div > div > table > tbody > tr > td > table > tbody > tr > td,
-li > a,
 #formWiadomosci > div > div > div > div > p {
 	color: #bbbbbb !important;
 }
@@ -629,4 +628,8 @@ table.decorated tfoot tr th,
 table.decorated tfoot tr td,
 /* table.decorated tbody tr.line0 td, */ table.decorated tbody tr td {
 	border-top: 1px solid #000000 !important;
+}
+
+#body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td:nth-child(6) {
+	border-left: none;
 }

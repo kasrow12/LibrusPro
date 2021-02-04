@@ -6,8 +6,10 @@ if (typeof chrome != null) {
 }
 
 function clear() {
-	browserAPI.storage.sync.clear();
+  if (confirm('Na pewno?'))
+	  browserAPI.storage.sync.clear();
 }
+
 document.getElementById('clear').addEventListener('click', clear);
 
 
