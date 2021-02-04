@@ -1,9 +1,9 @@
 {
 	"name": "LibrusPro",
-	"version": "0.2.5",
+	"version": "0.2.6",
 	"description": "Ulepsz Librusa już dziś!",
 	"manifest_version": 2,
-	"permissions": [ "activeTab", "storage", "https://synergia.librus.pl/*" ],
+	"permissions": [ "storage", "https://synergia.librus.pl/*" ],
 
 	"icons": {
 		"512": "img/icon.png"

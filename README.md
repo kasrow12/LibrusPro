@@ -7,6 +7,8 @@
   <h4 align="center">Browser extension for the Polish Librus e-diary, introducing a dark theme, displaying grade point averages despite being disabled by the School Administrator, allowing to add custom events in the schedule and some minor improvements to its features.</h4>
 </p>
 
+# Currently available for Firefox: <a href="https://addons.mozilla.org/en-US/firefox/addon/libruspro/">Click here</a>
+
 
 # Features
 
