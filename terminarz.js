@@ -68,6 +68,10 @@ overlay.innerHTML = `
     .librusPro_radioSpan::after {content: ""; position: absolute; display: none;}
     .librusPro_colorContainer {padding: 7px 0 12px 0 ; border-top: 1px solid #adadad; border-bottom: 1px solid #adadad; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 1px 1px; grid-template-areas: ". . . . . ." ". . . . . ." ". . . . . ."; width: 90%; margin: 12px auto 0 auto;}
     .librusPro_radioContainer .librusPro_darkDot::after {background: #222222}
+    .librusPro_removeButton {display: none;}
+    .librusPro_editButton {display: none;}
+    th:hover > .librusPro_removeButton {display: block;}
+    th:hover > .librusPro_editButton {display: block;}
     </style>
     <div class="librusPro_container">
         <div class="librusPro_text">Dodaj zdarzenie</div>
@@ -460,21 +464,23 @@ function createCell(cellDay, cellKey) {
       removeButton.style.position = "absolute";
       removeButton.style.top = "3px";
       removeButton.style.right = "5px";
-      removeButton.style.color = "#bbbbbb";
+      removeButton.style.color = "#ffffff";
       removeButton.style.fontWeight = "bold";
       removeButton.style.cursor = "pointer";
       removeButton.style.textShadow = "1px 1px 2px #333333";
+      removeButton.classList += "librusPro_removeButton";
       addListenerToRemoveButton(removeButton, cellKey, i);
-
+      
       const editButton = document.createElement("a");
       editButton.innerText = "✎";
       editButton.style.position = "absolute";
       editButton.style.top = "1px";
       editButton.style.right = "20px";
-      editButton.style.color = "#bbbbbb";
+      editButton.style.color = "#ffffff";
       editButton.style.fontWeight = "bold";
       editButton.style.cursor = "pointer";
       editButton.style.textShadow = "1px 1px 2px #333333";
+      editButton.classList += "librusPro_editButton";
       addListenerToEditButton(editButton, cellKey, i);
 
       cell.style.position = "relative";

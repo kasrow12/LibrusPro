@@ -19,8 +19,10 @@ const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n  
 const xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function() {
   if (this.readyState == 4 && this.status == 200) {
-    browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
-    browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
+    if (this.responseText.match(klasaRegex) != null)
+      browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
+    if (this.responseText.match(nrRegex) != null)
+      browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
   }
 };
 xhttp.open("GET", "https://synergia.librus.pl/informacja", true);

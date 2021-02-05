@@ -573,7 +573,8 @@ div.warning-content > p {
 #formWiadomosci > div > div > table > tbody > tr > td.message-folders > table.message-labels > tbody > tr > td > b,
 #formDanePoprzednieLata > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p,
 #body > div > div > div > table > tbody > tr > td > table > tbody > tr > td,
-#formWiadomosci > div > div > div > div > p {
+#formWiadomosci > div > div > div > div > p,
+td > table > tbody > tr.line1.bolded > td {
 	color: #bbbbbb !important;
 }
 input[type="text"],
