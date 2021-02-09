@@ -150,8 +150,8 @@ function librusPro_insertZachowanie() {
   propZachRoczne = propZachRoczne.innerText.split(': ')[1];
 
   // Elementy zachowania (śród)rocznego (i proponowanego) [niezmienne od proponowanych ocen I, II i R]
-  const zachSrodroczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)");
-  const zachRoczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(6)");
+  const zachSrodroczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded > td:nth-child(4)");
+  const zachRoczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded > td:nth-child(6)");
   const propZachSrodroczneElement = zachSrodroczneElement.cloneNode(true);
   const propZachRoczneElement = zachRoczneElement.cloneNode(true);
   
@@ -170,7 +170,7 @@ function librusPro_insertZachowanie() {
   zachRoczneElement.parentElement.insertBefore(propZachRoczneElement, zachRoczneElement);
   
   // Zwężenie komórek, aby zrobić miejsce na nowe i wypełnić wiersz
-  document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(3)").colSpan = "1";
+  document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded > td:nth-child(3)").colSpan = "1";
   propZachSrodroczneElement.colSpan = indexy["proponowaneI"] != -1 ? "2" : "1";
   zachSrodroczneElement.nextElementSibling.colSpan = "1";
   propZachRoczneElement.colSpan = indexy["proponowaneII"] != -1 ? "3" : "2";
@@ -181,7 +181,7 @@ function librusPro_insertZachowanie() {
 if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
   if (odOstLogowania) {
     // Ukryj zachowanie
-    document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1").style.display = "none";
+    document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded").style.display = "none";
   }
   else {
     const injectedCode = 'showHide.ShowHide("zachowanie")';
@@ -441,7 +441,6 @@ function librusPro_insertFooter() {
         <div>LibrusPro © 2021 Maks Kowalski</div>
         <div><a href="https://github.com/kasrow12/LibrusPro" target="_blank" style="color: rgb(58, 90, 171); cursor: pointer;">https://github.com/kasrow12/LibrusPro</a></div>
       </div>
-      <div style="background: url(" chrome-extension:="" fkgjdgkjgepofmlipajhcccmkdgonjlb="" img=""></div>
     </div>
   </div>`
 }

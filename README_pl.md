@@ -9,7 +9,7 @@
 
 # Obecnie dostępne dla:
 ## • Google Chrome: <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Kliknij tutaj</a>
-## • Firefoxa: <a href="https://addons.mozilla.org/en-US/firefox/addon/libruspro/">Kliknij tutaj</a>
+## • Firefoxa: <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Kliknij tutaj</a>
 ## • Microsoft Edge (XD): <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Kliknij tutaj</a>
 
 
