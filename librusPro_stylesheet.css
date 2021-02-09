@@ -10,6 +10,9 @@ html {
 	--accent: #291e28;
 	background: #323232;
 }
+body {
+	background: #323232 !important;
+}
 * {
 	border-color: black !important;
 	border-width: 1px !important;
@@ -53,6 +56,7 @@ img {
 #body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(4n) > td {
 	background: #393939 !important;
 }
+#body > form:nth-child(5) > div > div > table > tbody > tr:hover > th,
 #body > form:nth-child(5) > div > div > table > tbody > tr:hover > td {
 	background: #323232 !important;
 }
@@ -243,10 +247,24 @@ select:not([name="rgbKoloru"]) > option {
 .line1:not([name="przedmioty_all"]):not(.detail-grades) > td {
 	background: red !important;
 } */
-#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > .line0:nth-child(2n + 1):not(.bolded),
-#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > .line1:nth-child(n + 1):not(.bolded) {
+
+#body
+	> form:nth-child(5)
+	> div
+	> div
+	> table:not(#tabSource):not(.middle):not(.medium)
+	> tbody
+	> .line0:nth-child(2n + 1):not(.bolded),
+#body
+	> form:nth-child(5)
+	> div
+	> div
+	> table:not(#tabSource):not(.middle):not(.medium)
+	> tbody
+	> .line1:nth-child(n + 1):not(.bolded) {
 	display: none;
 }
+
 /* #body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5) {
 	width: 10px;
 	padding: 2px 5px;

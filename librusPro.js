@@ -14,6 +14,7 @@ TO DO list:
 -- wielkość w zależności od wagi
 -- ukrywanie pustych przedmiotów
 -- wartość plusów i minusów
+-- plan lekcji _blank czy nowe okno
 
 - ↓ ↑ proponowana vs. średnia
 
@@ -73,21 +74,21 @@ document.querySelectorAll("#body > form:nth-child(5) > div > div > table > thead
 indexy["ocenyI"] = indexy["sredniaI"] - 1;
 indexy["ocenyII"] = indexy["sredniaII"] - 1;
 
-if (debug) console.log(indexy);
-
 // Od ostatniego logowania/w tym tygodniu
 let odOstLogowania = false;
-if (document.querySelector("#body > form:nth-child(5) > div > h2") != null && document.querySelector("#body > form:nth-child(5) > div > h2").innerHTML.includes("-")) {
-  odOstLogowania = true;
-} else {
-  // Usunięcie wierszy bez ocen
-  const ocenyTr = document.querySelectorAll("tr[name=przedmioty_all] + tr");
-  for (let i = 0; i < ocenyTr.length; i++)
-  {
-    if (ocenyTr[i].children[2].textContent == "Brak ocen")
+if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
+  if (document.querySelector("#body > form:nth-child(5) > div > h2") != null && document.querySelector("#body > form:nth-child(5) > div > h2").innerHTML.includes("-")) {
+    odOstLogowania = true;
+  } else {
+    // Usunięcie wierszy bez ocen
+    const ocenyTr = document.querySelectorAll("tr[name=przedmioty_all] + tr");
+    for (let i = 0; i < ocenyTr.length; i++)
     {
-      ocenyTr[i].nextElementSibling.remove();
-      ocenyTr[i].remove();
+      if (ocenyTr[i].children[2].textContent == "Brak ocen")
+      {
+        ocenyTr[i].nextElementSibling.remove();
+        ocenyTr[i].remove();
+      }
     }
   }
 }
@@ -105,8 +106,6 @@ if (document.querySelector("#absenceGraph > img") != null) {
   document.querySelector("#absenceGraph > img").src = browserAPI.runtime.getURL('img/pobierz_wykres_absencji_dark.png');
 }
 
-
-// Prawidłowy sposób na zamianę foldów (w css jest link z ID wtyczki, może się zmienić) - jeżeli jest używane to, to przyciski migną na zielono przy ładowaniu
 if (document.querySelector(".fold-start") != null) {
   document.querySelectorAll(".fold-start").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/fold_dark.png'); + ")";});
   document.querySelectorAll(".fold-end").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEnd_dark.png'); + ")";});
@@ -155,9 +154,6 @@ function librusPro_insertZachowanie() {
   const zachRoczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(6)");
   const propZachSrodroczneElement = zachSrodroczneElement.cloneNode(true);
   const propZachRoczneElement = zachRoczneElement.cloneNode(true);
-
-  // Zmiana szerokości komórek
-  // zachRoczneElement.colSpan = "2";
   
   // "-", bądź ocena z zachowania
   propZachSrodroczneElement.innerText = propZachSrodroczne == "" ? "-" : propZachSrodroczne;
@@ -326,84 +322,103 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
 
 
 // Losowe bordery w tabelach, bo Librus dał losowo w css je na important... pepoWTF...
-if (document.querySelectorAll("#body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td.no-border-top.spacing") != null) {
-  document.querySelectorAll("#body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td.no-border-top.spacing").forEach(e => {e.style.setProperty("border-left", "1px #000000 solid", "important");});
+function librusPro_adjustBorders() {
+  if (document.querySelectorAll("#body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td.no-border-top.spacing") != null) {
+    document.querySelectorAll("#body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td.no-border-top.spacing").forEach(e => {e.style.setProperty("border-left", "1px #000000 solid", "important");});
+  }
+  if (document.querySelectorAll("table.decorated table thead th, table.decorated table thead td") != null) {
+    document.querySelectorAll("table.decorated table thead th, table.decorated table thead td").forEach(e => {e.style.setProperty("border-left", "1px #000000 solid", "important");});
+  }
+  if (window.location.href == "https://synergia.librus.pl/przegladaj_plan_lekcji") {
+    document.querySelectorAll(".border-top").forEach(e => {e.style.setProperty("border-top", "1px #000000 solid", "important"); e.style.setProperty("border-left", "1px #000000 solid", "important");});
+    document.querySelectorAll(".border-right").forEach(e => {e.style.setProperty("border-right", "1px #000000 solid", "important");});
+    document.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr > td").forEach(e => {e.style.setProperty("border-bottom", "0", "important");});
+  }
+  if (document.querySelectorAll("table.decorated.filters td, table.decorated.filters th") != null) {
+    document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach(e => {e.style.setProperty("border-color", "#000000", "important");});
+  }
+  if (document.querySelectorAll("table.decorated thead td.spacing, table.decorated thead th.spacing") != null) {
+    document.querySelectorAll("table.decorated thead td.spacing, table.decorated thead th.spacing").forEach(e => {e.style.setProperty("border-left", "1px solid #000000", "important");});
+  }
 }
-if (document.querySelectorAll("table.decorated table thead th, table.decorated table thead td") != null) {
-  document.querySelectorAll("table.decorated table thead th, table.decorated table thead td").forEach(e => {e.style.setProperty("border-left", "1px #000000 solid", "important");});
-}
-if (window.location.href == "https://synergia.librus.pl/przegladaj_plan_lekcji") {
-  document.querySelectorAll(".border-top").forEach(e => {e.style.setProperty("border-top", "1px #000000 solid", "important"); e.style.setProperty("border-left", "1px #000000 solid", "important");});
-  document.querySelectorAll(".border-right").forEach(e => {e.style.setProperty("border-right", "1px #000000 solid", "important");});
-  document.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr > td").forEach(e => {e.style.setProperty("border-bottom", "0", "important");});
-}
-if (document.querySelectorAll("table.decorated.filters td, table.decorated.filters th") != null) {
-  document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach(e => {e.style.setProperty("border-color", "#000000", "important");});
-}
-if (document.querySelectorAll("table.decorated thead td.spacing, table.decorated thead th.spacing") != null) {
-  document.querySelectorAll("table.decorated thead td.spacing, table.decorated thead th.spacing").forEach(e => {e.style.setProperty("border-left", "1px solid #000000", "important");});
-}
+
+librusPro_adjustBorders();
 
 
 // Plan lekcji do navbara
-const navBarElement = document.querySelector("#main-menu > ul > li:nth-child(3)");
-if (navBarElement != null) {
-  const planLekcji = navBarElement.cloneNode(true);
-  planLekcji.children[0].href = "javascript:otworz_w_nowym_oknie('/przegladaj_plan_lekcji','plan_u',0,0)";
-  planLekcji.children[0].innerText = "Plan lekcji";
+function librusPro_adjustNavbar() {
+  const navBarElement = document.querySelector("#main-menu > ul > li:nth-child(3)");
+  if (navBarElement == null) return;
+  const planLekcji = navBarElement.cloneNode();
+  // planLekcji.children[0].href = "javascript:otworz_w_nowym_oknie('/przegladaj_plan_lekcji','plan_u',0,0)";
+  // planLekcji.children[0].href = "https://synergia.librus.pl/przegladaj_plan_lekcji";
+  // planLekcji.children[0].setAttribute("target", "_blank");
+  const planLekcjiElement = document.createElement("A");
+  planLekcjiElement.innerText = "Plan lekcji";
+  planLekcjiElement.style.cursor = "pointer";
+  planLekcjiElement.addEventListener("mouseup", function () {
+    window.open("https://synergia.librus.pl/przegladaj_plan_lekcji");
+  });
+  planLekcji.appendChild(planLekcjiElement);
   navBarElement.parentElement.appendChild(planLekcji);
 }
 
+librusPro_adjustNavbar();
 
 // Wyświetlanie numeru z dziennika obok szczęśliwego + informacja gdy nim jest Twój
-const numerek = document.querySelector("#user-section > span.luckyNumber");
-if (numerek != null) {
-  let nr;
-  browserAPI.storage.sync.get(["nr"], function (r) {
-    nr = r["nr"];
-    if (nr != undefined){
-      let twojNumer = document.createElement("SPAN");
-      twojNumer.innerText = "Twój numerek w dzienniku: ";
-      const numer = document.createElement("B");
-      numer.innerText = nr;
-      numer.style.color = "#eeeeee";
-      twojNumer.appendChild(numer);
-      
-      if (document.querySelector("#user-section > span.luckyNumber > b").innerText == nr) {
-        const gratulacje = document.createElement("SPAN");
-        gratulacje.style.color = "lime";
-        gratulacje.style.marginLeft = "5px";
-        gratulacje.innerText = "GRATULACJE!";
-        twojNumer.appendChild(gratulacje);
-      }
-
-      numerek.parentElement.insertBefore(twojNumer, numerek.nextSibling);
-    } else {
-      const klasaRegex = /<th class="big">Klasa <\/th>\n                <td>\n                (.*)\n                <\/td>/;
-      const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
-
-      const xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
-          browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
-          window.location.reload();
+function librusPro_adjustHeader() {
+  const numerek = document.querySelector("#user-section > span.luckyNumber");
+  if (numerek != null) {
+    let nr;
+    browserAPI.storage.sync.get(["nr"], function (r) {
+      nr = r["nr"];
+      if (nr != undefined){
+        let twojNumer = document.createElement("SPAN");
+        twojNumer.innerText = "Twój numerek w dzienniku: ";
+        const numer = document.createElement("B");
+        numer.innerText = nr;
+        numer.style.color = "#eeeeee";
+        twojNumer.appendChild(numer);
+        
+        if (document.querySelector("#user-section > span.luckyNumber > b").innerText == nr) {
+          const gratulacje = document.createElement("SPAN");
+          gratulacje.style.color = "lime";
+          gratulacje.style.marginLeft = "5px";
+          gratulacje.innerText = "GRATULACJE!";
+          twojNumer.appendChild(gratulacje);
         }
-      };
-      xhttp.open("GET", "https://synergia.librus.pl/informacja", true);
-      xhttp.send();
-    }
-  });
+
+        numerek.parentElement.insertBefore(twojNumer, numerek.nextSibling);
+      } else {
+        const klasaRegex = /<th class="big">Klasa <\/th>\n                <td>\n                (.*)\n                <\/td>/;
+        const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
+
+        const xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
+            browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
+            window.location.reload();
+          }
+        };
+        xhttp.open("GET", "https://synergia.librus.pl/informacja", true);
+        xhttp.send();
+      }
+    });
+  }
+  const hakerzy = document.querySelector("#user-section > img");
+  if (hakerzy != null) {
+    hakerzy.title += "<br><b style='color: #ee9999'>HAKERZY ATAKUJĄ!</b>"
+  }
+  const uczen = document.querySelector("#user-section > b > img");
+  if (uczen != null) {
+    uczen.title += "<br><b style='color: #a96fe3'>Dzięki za korzystanie z rozszerzenia LibrusPro!</b>"
+  }
 }
 
-const hakerzy = document.querySelector("#user-section > img");
-if (hakerzy != null) {
-  hakerzy.title += "<br><b style='color: #ee9999'>HAKERZY ATAKUJĄ!</b>"
-}
-const uczen = document.querySelector("#user-section > b > img");
-if (uczen != null) {
-  uczen.title += "<br><b style='color: #a96fe3'>Dzięki za korzystanie z mojego rozszerzenia!</b>"
-}
+librusPro_adjustHeader();
+
+
 
 
 // Copyright

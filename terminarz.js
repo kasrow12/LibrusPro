@@ -342,10 +342,12 @@ function addCustomCell(cellKey) {
 // ------------------------ DISPLAYING CUSTOM CELLS (AND "[+]") --------------------
 const days = document.getElementsByClassName("kalendarz-numer-dnia"); 
 const date = new Date();
-let setOpacity =
-  monthId <= date.getMonth() && year.substring(1) <= date.getFullYear()
-    ? true
-    : false;
+
+// Przyciemnianie przeszłych wydarzeń
+let setOpacity = false;
+if (year.substring(1) < date.getFullYear()) setOpacity = true;
+else if (monthId <= date.getMonth() && year.substring(1) == date.getFullYear()) setOpacity = true;
+
 for (let i = 0; i < days.length; i++) {
   const day = days[i];
   const key = `${day.innerText} ${month}${year}`;
@@ -362,8 +364,8 @@ for (let i = 0; i < days.length; i++) {
   addButton.style.fontWeight = "bold";
   addButton.style.cursor = "pointer";
   addListenerToAddButton(addButton, key);
-
   day.parentElement.insertBefore(addButton, day);
+
   if (day.parentElement.parentElement.classList.contains("today")) {
     setOpacity = false;
   }
@@ -386,13 +388,9 @@ function createCell(cellDay, cellKey) {
     if (dayCells == null) {
       return;
     }
-    for (
-      let margin = 0;
-      margin < cellDay.parentElement.childNodes.length;
-      margin++
-    ) {
-      if (cellDay.parentElement.childNodes[margin].tagName == "TABLE") {
-        cellDay.parentElement.childNodes[margin].style.marginBottom = "0px";
+    for (let i = 0; i < cellDay.parentElement.childNodes.length; i++) {
+      if (cellDay.parentElement.childNodes[i].tagName == "TABLE") {
+        cellDay.parentElement.childNodes[i].style.marginBottom = "0px";
         break;
       }
     }
@@ -402,7 +400,7 @@ function createCell(cellDay, cellKey) {
 
     for (let i = 0; i < dayCells.length; i++) {
       const row = table.insertRow();
-      // Th dlatego, żeby był title chromowy, bo Librus ma z***any system custom title.
+      // 'th' dlatego, aby był title przeglądarkowy, bo Librus ma z***any system custom title :)
       const cell = document.createElement("th");
       row.appendChild(cell);
       const info = dayCells[i];
@@ -414,16 +412,48 @@ function createCell(cellDay, cellKey) {
       cell.style.wordBreak = "break-word";
       cell.classList.add("no-border-left", "no-border-right");
 
-      let temp = "";
-      if (info[0] != "") temp += `Nr lekcji: ${info[0]}\n`;
-      if (info[1] != "") temp += `Godz: ${info[1]}\n`;
-      if (info[2] != "") {
-        temp += info[2];
-        if (info[3] == "") temp += "\n";
-        else temp += ", ";
-      }
-      if (info[3] != "") temp += info[3] + "\n";
+      // cell.title = "Data dodania: " + info[8];
+      cell.title = "";
 
+      let temp = "";
+      // Nr lekcji
+      if (info[0] != "") {
+        if (info[0].length > 30) {
+          temp += `Nr lekcji: ${info[0].slice(0, 30)}[...]\n`;
+          cell.title += "Nr lekcji: " + info[0];
+        } else {
+          temp += `Nr lekcji: ${info[0]}\n`;
+        }
+      }
+
+      // Godzina
+      if (info[1] != "") {
+        temp += `Godz: ${info[1]}\n`;
+      }
+
+      // Przedmiot
+      if (info[2] != "") {
+        if (info[2].length > 30) {
+          temp += `${info[2].slice(0, 30)}[...]`;
+        } else {
+          temp += `${info[2]}`;
+        }
+
+        temp += (info[3] == "") ?  "\n" : ", ";
+      }
+
+      // Typ
+      if (info[3] != "") {
+        // temp += info[3] + "\n";
+        if (info[3].length > 30) {
+          temp += `${info[3].slice(0, 30)}[...]\n`;
+        } else {
+          temp += `${info[3]}\n`;
+        }
+      }
+      cell.title += `\n${info[2]}` + ((info[3] == "") ?  "\n" : `, ${info[3]}`);
+
+      // Klasa
       if (klasa != undefined) {
         temp += klasa;
       } else {
@@ -441,23 +471,33 @@ function createCell(cellDay, cellKey) {
         xhttp.open("GET", "https://synergia.librus.pl/informacja", true);
         xhttp.send();
       }
+
+      // Opis
       if (info[4] != "") {
-        if (info[4].length > 200)
-          temp += `\nOpis: ${info[4].slice(0, 250)}` + "\n[...]";
-        else temp += `\nOpis: ${info[4]}`;
+        if (info[4].length > 200) {
+          temp += `\nOpis: ${info[4].replaceAll("<br />", "\n").slice(0, 250)}` + "\n[...]";
+        } else {
+          temp += `\nOpis: ${info[4].replaceAll("<br />", "\n")}`;
+        }
       }
       cell.innerText = temp;
+
       if (info[7] != "" && info[7] !== undefined) {
         // temp += `\n<img src="${info[7]}" style="width: 100%; filter: drop-shadow(3px 3px 2px #000000); border-radius: 5px; margin: 5px 0">`;
         const image = document.createElement("IMG");
         image.src = info[7];
-        image.style.width = "70%";
+        image.style.width = "80%";
         image.style.display = "block";
         image.style.margin = "5px auto";
-        image.style.filter = "drop-shadow(3px 3px 2px #000000)";
+        image.style.filter = "drop-shadow(2px 2px 1px #333333)";
         image.style.borderRadius = "5px";
         cell.appendChild(image);
       }
+
+      
+      if (info[4] != "") cell.title += "\nOpis: " + info[4];
+      cell.title += "\nData dodania: " + info[8];
+      if (info[9] != "") cell.title += "\nData ostatniej modyfikacji: " + info[9];
 
       const removeButton = document.createElement("a");
       removeButton.innerText = "⨉";
@@ -497,9 +537,7 @@ function createCell(cellDay, cellKey) {
         this.style.color = `${info[6]}`;
       };
 
-      // cell.title = "Data dodania: " + info[8];
-      cell.title = "Data dodania: " + info[8];
-      if (info[9] != "") cell.title += "\nData ostatniej modyfikacji: " + info[9];
+      
     }
   });
 }
@@ -634,7 +672,7 @@ function addDescriptionToCell(cell) {
       cell.innerText += "\n" + out.slice(0, 250).replaceAll("<br />", "\n") + "\n[...]";
     }
     else {
-      cell.innerText += "\n" + out;
+      cell.innerText += "\n" + out.replaceAll("<br />", "\n");
     }
   }
 }

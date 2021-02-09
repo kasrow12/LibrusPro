@@ -1,7 +1,7 @@
 {
-	"name": "LibrusPro",
-	"version": "0.2.6",
-	"description": "Ulepsz Librusa już dziś!",
+	"name": "LibrusPro - rozszerzenie do Librusa",
+	"version": "0.2.7",
+	"description": "Ulepsz Librusa już dziś! Marzyłeś(-aś) może kiedyś o ciemnym motywie?",
 	"manifest_version": 2,
 	"permissions": [ "storage", "https://synergia.librus.pl/*" ],
 

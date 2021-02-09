@@ -7,7 +7,10 @@
   <h4 align="center">Rozszerzenie dla przeglądarek do Librusa wprowadzające ciemny motyw, wyświetlające średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz kilka drobnych usprawnień jego funkcjonalności i wyglądu.</h4>
 </p>
 
-# Obecnie dostępny dla Firefoxa: <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Kliknij tutaj</a>
+# Obecnie dostępne dla:
+## • Google Chrome: <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Kliknij tutaj</a>
+## • Firefoxa: <a href="https://addons.mozilla.org/en-US/firefox/addon/libruspro/">Kliknij tutaj</a>
+## • Microsoft Edge (XD): <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Kliknij tutaj</a>
 
 
 # Funkcje
