@@ -67,8 +67,14 @@ img {
 #przedmioty_zachowanie > td {
 	background: var(--darkbackground) !important;
 }
-#przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr > td {
-	background: var(--darkbackground) !important;
+#przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr:nth-child(2n) > td {
+	background: #343434 !important;
+}
+#przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr:nth-child(2n + 1) > td {
+	background: #393939 !important;
+}
+#przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr:hover > td {
+	background: #323232 !important;
 }
 /* #body > form:nth-child(5) > div > div > h3,
 #gradeAverangeGraph > h3 {
@@ -242,11 +248,6 @@ select:not([name="rgbKoloru"]) > option {
 .legend {
 	color: #adadad !important;
 }
-
-/* .line0:not([name="przedmioty_all"]):not(.detail-grades) > td,
-.line1:not([name="przedmioty_all"]):not(.detail-grades) > td {
-	background: red !important;
-} */
 
 #body
 	> form:nth-child(5)

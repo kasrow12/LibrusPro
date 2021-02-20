@@ -6,6 +6,20 @@
 // key: '17 Październik 2019'
 // value: [[nr lekcji, godz, przedmiot, typ, opis, hex color, hex color, url obrazka, data dodania, data ost. modyfikacji], [nr lekcji, godz, przedmiot, typ, opis, hex color, hex color, url obrazka, data dodania, data ost. modyfikacji]]
 // value: [['4','','Historia','Kartkówka','zabawa','#xxxxxx','#xxxxxx','google.com/pic.png','31.01.2021, 13:36:29','31.01.2021, 13:40:29'],['','18:00','Historia','Kartkówka','zabawa','#xxxxxx','#xxxxxx','google.com/pic.png','31.01.2021, 13:36:29','31.01.2021, 13:40:29']]
+/*
+{
+  lesson: '',
+  time: '',
+  subject: '',
+  type: '',
+  description: '',
+  background: '',
+  color: '',
+  url: '',
+  dateAdded: '',
+  dateModified: '',
+}
+*/
 
 
 let klasa;
@@ -381,7 +395,7 @@ for (let i = 0; i < days.length; i++) {
   createCell(day, key);
 }
 
-// -------------------- CREATE CELL FUNCTION CALLED BY ASYNC FUNCTION ----------------
+// -------------------- CREATE CELL ASYNC FUNCTION  ----------------
 function createCell(cellDay, cellKey) {
   browserAPI.storage.sync.get([cellKey], function (result) {
     const dayCells = result[cellKey];

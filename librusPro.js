@@ -301,7 +301,8 @@ function librusPro_insertSrednie() {
   // Wyświetlanie średnich dla poszczególnych przedmiotów
   // I sem
   document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indexy["sredniaI"] + offsetCSS})`).forEach(e => {
-    e.innerText = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`)) + (debug ? (" (" + e.innerText + ")") : "")
+    e.innerText = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`)) + (debug ? (" (" + e.innerText + ")") : "");
+    e.classList.add("right");
   });
   // II sem
   document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indexy["sredniaII"] + offsetCSS})`).forEach(e => {
