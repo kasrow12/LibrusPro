@@ -7,10 +7,11 @@ body
 {
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 	text-align: center;
-	padding: 5px 10px;
-	background: #f5f5f5;
+	padding: 15px 30px 5px 30px;
+	background: #363636;
+	min-width: 200px;
 }
-.title
+/* .title
 {
 	font-size: 21px;
 	padding: 0px 10px;
@@ -67,20 +68,133 @@ input[type="number"]
 .select
 {
 	margin-bottom: 5px;
-}
-img {
+}*/
+.logo {
 	display: block;
-	width: 100px;
+	width: 75px;
 	margin: 0 auto;
+} 
+* {
+font-family: 'Roboto', sans-serif;
+}
+/* .container {
+position: absolute;
+top:50%;
+left:50%;
+margin-left: -65px;
+margin-top: -20px;
+width: 130px;
+height: 40px;
+text-align: center;
+} */
+.container {
+	margin: 0 auto;
+}
+.button {
+outline:none;
+height: 30px;
+text-align: center;
+width: 100px;
+border-radius:30px;
+background: #fff;
+border: 2px solid #361634;
+color:#361634;
+letter-spacing:1px;
+text-shadow:0;
+font-size:12px;
+font-weight: bold;
+cursor: pointer;
+transition: all 0.4s ease;
+}
+.button:hover {
+color:white;
+background: #361634;
+}
+.button:active {
+letter-spacing: 2px ;
+}
+#saveButton:after {
+content:"Zapisz";
+}
+#clearButton:after {
+content:"Wyczyść terminarz";
+}
+.onclick {
+width: 30px;
+border-color:#bbbbbb;
+border-width:3px;
+font-size:0;
+border-left-color:#361634;
+animation: rotating 1s 0.25s linear infinite;
+}
+.onclick:after {
+content:"";
+}
+.onclick:hover {
+color:#361634;
+background: white;
+}
+.validate {
+font-size:13px;
+color: white;
+background: #361634;
+}
+#saveButton.validate:after {
+content:"✓";
+}
+#clearButton.validate:after {
+content:"✓";
+}
+
+@keyframes rotating {
+from {
+	transform: rotate(0deg);
+}
+to {
+	transform: rotate(360deg);
+}
 }
 </style>
 </head>
 <body>
-	<img src="img/icon.png">
+	<img src="img/icon.png" class="logo">
 	<div class="title">LibrusPro v<span id="ver"></span></div>
 	<div class="sub-title">Autor:<br>Maks&nbsp;Kowalski</div>
 	<div><a class="sub-link" target="_blank" href="https://github.com/kasrow12/LibrusPro">Github</a></div>
-	<div class="normal-button button" id="clear">Wyczyść terminarz</div>
+	<form id="form">
+		<div>
+			<label>
+				Ukryj przedmioty
+				<input type="checkbox" id="hideSubjects" name="hideSubjects">
+			</label>
+		</div>
+		<div>
+			<label>
+				Wersja depresyjna
+				<input type="checkbox" id="depressionMode" name="depressionMode">
+			</label>
+		</div>
+		<div>
+			<label>
+				Wartość plusa
+				<input type="number" id="plusValue" name="plusValue" min="0" max="1" value="0.5" step="0.01">
+			</label>
+		</div>
+		<div>
+			<label>
+				Wartość minusa
+				<input type="number" id="minusValue" name="minusValue" min="0" max="1" value="0.25" step="0.01">
+			</label>
+		</div>
+		<div class="container">
+			<button class="button" id="saveButton">
+		</div>
+	</form>
+	<!-- 
+	<div class="container">
+		<button id="clearButton"></button>
+	</div> -->
+</div>
 </body>
 <script src="popup.js"></script>
 </html>
