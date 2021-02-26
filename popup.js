@@ -47,6 +47,17 @@ function clear() {
 }
 // document.getElementById('clear').addEventListener('click', clear);
 
+function restoreDefaults() {
+  browserAPI.storage.sync.set({ ["options"]: {
+    hideSubjects: true,
+    depressionMode: false,
+    plusValue: 0.5,
+    minusValue: 0.25,
+  } });
+  window.location.reload();
+  return;
+}
+
 function hideSubjects() {
   browserAPI.storage.sync.get(["options"], function (r) {
     const options = r["options"];
@@ -64,6 +75,9 @@ function depressionMode() {
 
 browserAPI.storage.sync.get(["options"], function (t) {
   options = t["options"];
+  if (options == null) {
+    restoreDefaults();
+  }
   document.getElementById('hideSubjects').checked = options.hideSubjects;
   document.getElementById('depressionMode').checked = options.depressionMode;
   document.getElementById('plusValue').value = options.plusValue;
@@ -71,7 +85,13 @@ browserAPI.storage.sync.get(["options"], function (t) {
 });
 
 let saveButtonInUse = false;
+let resetButtonInUse = false;
 const saveButton = document.getElementById("saveButton");
+const resetButton = document.getElementById("resetButton");
+resetButton.onclick = () => {
+  alert(1);
+  return false;
+};
 
 function validate() {
   setTimeout(function() {
@@ -107,6 +127,8 @@ function updateOptions() {
 // document.getElementById('depressionMode').addEventListener('change', depressionMode);
 document.getElementById('form').onsubmit = updateOptions;
 
+
+document.getElementById('copyright-year').innerText = new Date().getFullYear();
 
 
 // Update number and class

@@ -7,96 +7,100 @@ body
 {
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 	text-align: center;
-	padding: 15px 30px 5px 30px;
+	padding: 5px 30px 0 30px;
 	background: #363636;
 	min-width: 200px;
 }
-/* .title
+.logo-container {
+	display: flex;
+	margin: 10px 0 5px 0;
+	align-items: center;
+	justify-content: center;
+}
+.logo {
+	width: 75px;
+	height: 75px;
+	margin-right: 10px;
+} 
+.title
 {
-	font-size: 21px;
+	font-family: "Comic Sans MS", "Comic Sans", cursive;
+	font-size: 25px;
 	padding: 0px 10px;
-	margin: 15px 0;
-	color: #ac4473;
+	color: #ce7a9f;
 }
 .sub-title
 {
 	font-size: 15px;
 	padding: 0px 5px;
-	margin-bottom: 10px;
-	color: #42791e;
+	/* margin-bottom: 10px; */
+	color: #47667b;
 }
-.sub-link
-{
-	display: block;
-	font-size: 15px;
-	padding: 0px 5px;
-	margin-bottom: 10px;
-	color: #1e5079;
-	text-decoration: underline;
+.quote {
+	font-size: 17px;
+	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+	margin: 10px 0 20px 0;
+	color: #cccccc;
+	font-style: italic;
 }
-.button
-{
+input[type="number"] {
+	margin-left: 20px;
+	border-radius: 5px;
 	padding: 3px 5px;
-	font-size: 15px;
-	transition: all 0.2s;
-	border-radius: 3px;
-	margin-bottom: 10px;
-	cursor: pointer;
+	outline: none;
+	background: #555555;
+	color: #ffffff;
+	border: 1px solid #222222;
+	box-shadow: 1px 1px 3px #222222;
+	-webkit-box-shadow: 1px 1px 3px #222222;
 }
-.button:hover
-{
-	box-shadow: 0px 0px 5px #ac4473;
+.option-container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	color: #aaaaaa;
+	margin-bottom: 9px;
+	font-size: 14px;
 }
-.rainbow-button
-{
-	background: linear-gradient(135deg, #ff1919 0%,#ffd859 25%,#59ffd5 75%,#bf59ff 97%);
-	color: #ff8686;
+.footer {
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	padding: 15px 10px 0 10px;
+	bottom: 0;
+	color: #a7a7a7;
+	font-size: 13px;
 }
-.normal-button
+.github-link
 {
-	background: #ffffff;
-	color: #333333;
+	color: #4c7d9e;
 }
-.button:last-child
-{
-	margin-bottom: 0;
+.github-link:hover {
+	color: #ffffff;
+	transition: color 0.3s;
 }
-input[type="number"]
-{
-	margin-bottom: 5px;
+.version {
+	color: #888888;
 }
-.select
-{
-	margin-bottom: 5px;
-}*/
-.logo {
-	display: block;
-	width: 75px;
-	margin: 0 auto;
-} 
+.buttons-container {
+	margin-top: 20px;
+	display: flex;
+	justify-content: space-between;
+}
+
 * {
 font-family: 'Roboto', sans-serif;
 }
-/* .container {
-position: absolute;
-top:50%;
-left:50%;
-margin-left: -65px;
-margin-top: -20px;
-width: 130px;
-height: 40px;
-text-align: center;
-} */
 .container {
-	margin: 0 auto;
+	width: 50%;
 }
 .button {
 outline:none;
-height: 30px;
+height: 34px;
 text-align: center;
 width: 100px;
 border-radius:30px;
-background: #fff;
+background: #f0f0f0;
 border: 2px solid #361634;
 color:#361634;
 letter-spacing:1px;
@@ -104,7 +108,7 @@ text-shadow:0;
 font-size:12px;
 font-weight: bold;
 cursor: pointer;
-transition: all 0.4s ease;
+transition: all 0.3s ease;
 }
 .button:hover {
 color:white;
@@ -116,11 +120,11 @@ letter-spacing: 2px ;
 #saveButton:after {
 content:"Zapisz";
 }
-#clearButton:after {
-content:"Wyczyść terminarz";
+#resetButton:after {
+content:"Przywróć domyślne";
 }
 .onclick {
-width: 30px;
+width: 34px;
 border-color:#bbbbbb;
 border-width:3px;
 font-size:0;
@@ -142,10 +146,9 @@ background: #361634;
 #saveButton.validate:after {
 content:"✓";
 }
-#clearButton.validate:after {
+#resetButton.validate:after {
 content:"✓";
 }
-
 @keyframes rotating {
 from {
 	transform: rotate(0deg);
@@ -154,46 +157,114 @@ to {
 	transform: rotate(360deg);
 }
 }
+
+.tgl {
+	display: none;
+}
+.tgl, .tgl:after, .tgl:before, .tgl *, .tgl *:after, .tgl *:before, .tgl + .tgl-btn {
+	box-sizing: border-box;
+}
+.tgl::-moz-selection, .tgl:after::-moz-selection, .tgl:before::-moz-selection, .tgl *::-moz-selection, .tgl *:after::-moz-selection, .tgl *:before::-moz-selection, .tgl + .tgl-btn::-moz-selection {
+	background: none;
+}
+.tgl::selection, .tgl:after::selection, .tgl:before::selection, .tgl *::selection, .tgl *:after::selection, .tgl *:before::selection, .tgl + .tgl-btn::selection {
+	background: none;
+}
+.tgl + .tgl-btn {
+	outline: 0;
+	display: block;
+	width: 3em;
+	height: 1.5em;
+	position: relative;
+	cursor: pointer;
+	-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+			user-select: none;
+}
+.tgl + .tgl-btn:after, .tgl + .tgl-btn:before {
+	position: relative;
+	display: block;
+	content: "";
+	width: 50%;
+	height: 100%;
+}
+.tgl + .tgl-btn:after {
+	left: 0;
+}
+.tgl + .tgl-btn:before {
+	display: none;
+}
+.tgl:checked + .tgl-btn:after {
+	left: 50%;
+}
+.tgl-light + .tgl-btn {
+	background: #8a8a8a;
+	border-radius: 2em;
+	padding: 2px;
+	transition: all 0.4s ease;
+}
+.tgl-light + .tgl-btn:after {
+	border-radius: 50%;
+	background: #dadada;
+	transition: all 0.2s ease;
+}
+.tgl-light:checked + .tgl-btn {
+	background: #338f4b;
+}
 </style>
 </head>
 <body>
-	<img src="img/icon.png" class="logo">
-	<div class="title">LibrusPro v<span id="ver"></span></div>
-	<div class="sub-title">Autor:<br>Maks&nbsp;Kowalski</div>
-	<div><a class="sub-link" target="_blank" href="https://github.com/kasrow12/LibrusPro">Github</a></div>
+	<div class="logo-container">
+		<img src="img/icon.png" class="logo">
+		<div class="title">LibrusPro<div class="sub-title">Autor:<br>Maks&nbsp;Kowalski</div></div>
+	</div>
+	<div class="quote">Ulepsz Librusa już dziś!</div>
 	<form id="form">
 		<div>
-			<label>
+			<label class="option-container">
 				Ukryj przedmioty
-				<input type="checkbox" id="hideSubjects" name="hideSubjects">
+				<input class="tgl tgl-light" id="hideSubjects" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="hideSubjects"></label>
 			</label>
 		</div>
 		<div>
-			<label>
+			<label class="option-container">
 				Wersja depresyjna
-				<input type="checkbox" id="depressionMode" name="depressionMode">
+				<input class="tgl tgl-light" id="depressionMode" type="checkbox"/>
+				<label class="tgl-btn" for="depressionMode"></label>
 			</label>
 		</div>
 		<div>
-			<label>
+			<label class="option-container">
 				Wartość plusa
 				<input type="number" id="plusValue" name="plusValue" min="0" max="1" value="0.5" step="0.01">
 			</label>
 		</div>
 		<div>
-			<label>
+			<label class="option-container">
 				Wartość minusa
 				<input type="number" id="minusValue" name="minusValue" min="0" max="1" value="0.25" step="0.01">
 			</label>
 		</div>
-		<div class="container">
-			<button class="button" id="saveButton">
+		<div class="buttons-container">
+			<div class="container">
+				<button class="button" id="saveButton">
+			</div>
+			<div class="container">
+				<button class="button" id="resetButton">
+			</div>
 		</div>
 	</form>
 	<!-- 
 	<div class="container">
 		<button id="clearButton"></button>
 	</div> -->
+</div>
+<div class="footer">
+	<a class="github-link" target="_blank" href="https://github.com/kasrow12/LibrusPro">Github</a>
+	<div class="copyright">© <span id="copyright-year"></span></div>
+	<div class="version">v<span id="ver"></span></div>
 </div>
 </body>
 <script src="popup.js"></script>
