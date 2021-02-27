@@ -113,10 +113,7 @@ table.decorated tbody tr.line1:not(.detail-grades) td {
 #user-section {
 	color: #949494 !important;
 }
-#top-banner {
-	-webkit-filter: brightness(0.8) contrast(0.7);
-	filter: brightness(0.8) contrast(0.7);
-}
+
 /* #body > form:nth-child(5) > div > h2 {
 	background: #272727 !important;
 } */
@@ -671,7 +668,6 @@ table.decorated tfoot tr td,
 #body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td:nth-child(6) {
 	border-left: none;
 }
-
 /* .grade-box {
 	background: #6d7381 !important;
 } */

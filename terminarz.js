@@ -35,14 +35,23 @@
 
 
 // Klasa do wklejania do każdego własnego wydarzenia np. XD LO
-let klasa;
-browserAPI.storage.sync.get(["klasa"], function (r) {
-  klasa = r["klasa"];
+let currentClass;
+browserAPI.storage.sync.get(["dane"], function (t) {
+  dane = t["dane"];
+  if (dane != null && dane.currentClass != null) {
+    currentClass = dane.currentClass;
+  } else {
+    updateDetails(dane, "https://synergia.librus.pl/terminarz");
+  }
 });
 
 browserAPI.storage.onChanged.addListener(function(changes, namespace) {
-  window.location.reload();
+  // window.location.reload();
+
+  window.location.replace(window.location.href);
+
 });
+
 
 // ---------------------- ISEMPTY FUNCTION --------------------------
 function isEmpty(obj) { 
@@ -113,8 +122,8 @@ overlay.innerHTML = `
     </style>
     <div class="librusPro_container">
         <div class="librusPro_text" id="librusPro_header">Dodaj zdarzenie</div>
-        <div class="librusPro_date"><input id="librusPro_datePicker" type="date"></div>
         <div class="librusPro_error" id="librusPro_error"></div>
+        <div class="librusPro_date"><input id="librusPro_datePicker" type="date"></div>
         <div class="librusPro_twoFieldContainer">
             <div class="librusPro_twoField" id="twoField1" style="width: 45%">
                 <label class="librusPro_title" style="margin-top: 5px;" for="librusPro_lesson">Nr lekcji:</label>
@@ -257,7 +266,7 @@ pageScript.innerHTML = `
       if (color != "#ff0000") {
         if (librusPro_isLightFontColorForBackground(color)) document.getElementById("librusPro_colorHexSpan").classList.remove("librusPro_darkDot");
         else document.getElementById("librusPro_colorHexSpan").classList.add("librusPro_darkDot");
-        document.getElementById("librusPro_hexRadio").value = color + "|" + (librusPro_isLightFontColorForBackground(color) ? "#ffffff" : "#333333");
+        document.getElementById("librusPro_hexRadio").value = color + "|" + (librusPro_isLightFontColorForBackground(color) ? "#ffffff" : "#222222");
       } else {
         document.getElementById("librusPro_hexRadio").value = color + "|#ffffff";
       }
@@ -266,9 +275,9 @@ pageScript.innerHTML = `
     }
     function librusPro_isLightFontColorForBackground(bgColor) {
       var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
-      var r = parseInt(color.substring(0, 2), 16); // hexToR
-      var g = parseInt(color.substring(2, 4), 16); // hexToG
-      var b = parseInt(color.substring(4, 6), 16); // hexToB
+      var r = parseInt(color.substring(0, 2), 16);
+      var g = parseInt(color.substring(2, 4), 16);
+      var b = parseInt(color.substring(4, 6), 16);
       var uicolors = [r / 255, g / 255, b / 255];
       var c = uicolors.map((col) => {
         if (col <= 0.03928) {
@@ -296,7 +305,7 @@ month = month.options[month.selectedIndex].innerText;
 
 // ---------------- CREATE YEAR VARIABLE --------------------
 let year = document.getElementsByName("rok")[0];
-year = year.options[year.selectedIndex].innerText.substring(1);
+year = year.options[year.selectedIndex].innerText.replaceAll(" ", "");
 
 // ---------------- "[+]" BUTTON LISTENER --------------------
 function addListenerToAddButton(button, targetKey) {
@@ -353,6 +362,10 @@ function addCustomCell(dateAdded = "") {
   const colorRadioValue = document
     .querySelector("input[name=librusPro_color]:checked")
     .value.split("|");
+  if (overlayDate.value == "") {
+    document.getElementById("librusPro_error").innerText = "Wybierz datę";
+    return;
+  }
   if (colorRadioValue == "") {
     document.getElementById("librusPro_error").innerText = "Wybierz kolor";
     return;
@@ -474,7 +487,7 @@ function createCell(cellDay, cellKey) {
       cell.style.color = event.color;
       cell.style.overflowWrap = "break-word";
       cell.style.wordWrap = "break-word";
-      cell.style.animation = "zabawa 3s infinite ease-in-out";
+      cell.style.animation = "zabawa 4s infinite ease-in-out";
       cell.style.wordBreak = "break-word";
       cell.classList.add("no-border-left", "no-border-right");
 
@@ -485,7 +498,6 @@ function createCell(cellDay, cellKey) {
       if (event.lesson != "") {
         if (event.lesson.length > 30) {
           temp += `Nr lekcji: ${event.lesson.slice(0, 30)}[...]\n`;
-          cell.title += "Nr lekcji: " + event.lesson;
         } else {
           temp += `Nr lekcji: ${event.lesson}\n`;
         }
@@ -506,9 +518,9 @@ function createCell(cellDay, cellKey) {
 
         temp += (event.type == "") ?  "\n" : ", ";
 
-        cell.title += `\n${event.subject}` + ((event.type == "") ?  "" : `, ${event.type}`);
+        cell.title += `${event.subject}` + ((event.type == "") ?  "\n" : `, ${event.type}\n`);
       } else {        
-        cell.title += `\n` + ((event.type == "") ?  "" : `${event.type}`);
+        cell.title += ((event.type == "") ?  "" : `${event.type}\n`);
       }
 
       // Typ
@@ -521,21 +533,8 @@ function createCell(cellDay, cellKey) {
       }
 
       // Klasa
-      if (klasa != undefined) {
-        temp += klasa;
-      } else {
-        let klasaRegex = /<th class="big">Klasa <\/th>\n                <td>\n                (.*)\n                <\/td>/;
-        let nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
-
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
-            browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
-          }
-        };
-        xhttp.open("GET", "https://synergia.librus.pl/informacja", true);
-        xhttp.send();
+      if (currentClass != undefined) {
+        temp += currentClass;
       }
 
       // Opis
@@ -561,9 +560,9 @@ function createCell(cellDay, cellKey) {
       }
 
       
-      if (event.description != "") cell.title += "\nOpis: " + event.description;
-      cell.title += "\nData dodania: " + event.dateAdded;
-      if (event.dateModified != "") cell.title += "\nData ostatniej modyfikacji: " + event.dateModified;
+      if (event.description != "") cell.title += "Opis: " + event.description + "\n";
+      cell.title += "Data dodania: " + event.dateAdded;
+      if (event.dateModified != "") cell.title += "\nData ostatniej modyfikacji: " + event.dateModified ;
 
       const removeButton = document.createElement("a");
       removeButton.innerText = "⨉";
@@ -684,6 +683,10 @@ function editCustomCell(targetKey, editIndex) {
   const colorSelectValue = document
     .querySelector("input[name=librusPro_color]:checked")
     .value.split("|");
+  if (overlayDate.value == "") {
+    document.getElementById("librusPro_error").innerText = "Wybierz datę";
+    return;
+  }
   if (colorSelectValue == "") {
     document.getElementById("librusPro_error").innerText = "Wybierz kolor";
     return;

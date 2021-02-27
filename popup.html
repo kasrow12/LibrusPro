@@ -212,6 +212,10 @@ to {
 .tgl-light:checked + .tgl-btn {
 	background: #338f4b;
 }
+.description {
+	font-size: 11px;
+	font-style: italic;
+}
 </style>
 </head>
 <body>
@@ -237,13 +241,20 @@ to {
 		</div>
 		<div>
 			<label class="option-container">
-				Wartość plusa
+				Ukrywanie jedynek
+				<input class="tgl tgl-light" id="hideOnes" type="checkbox"/>
+				<label class="tgl-btn" for="hideOnes"></label>
+			</label>
+		</div>
+		<div>
+			<label class="option-container">
+				<div>Wartość plusa<div class="description">np. 5+&nbsp;&nbsp;=&nbsp;&nbsp;5,50</div></div>
 				<input type="number" id="plusValue" name="plusValue" min="0" max="1" value="0.5" step="0.01">
 			</label>
 		</div>
 		<div>
 			<label class="option-container">
-				Wartość minusa
+				<div>Wartość minusa<div class="description">np. 5-&nbsp;&nbsp;=&nbsp;&nbsp;4,75</div></div>
 				<input type="number" id="minusValue" name="minusValue" min="0" max="1" value="0.25" step="0.01">
 			</label>
 		</div>

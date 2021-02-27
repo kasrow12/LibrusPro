@@ -27,10 +27,54 @@ if (typeof chrome != null) {
 
 const noAverage = "-";
 
+function updateDetails(dane, href) {
+  const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
+  const xhttpNr = new XMLHttpRequest();
+  xhttpNr.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      let nr = this.responseText.match(nrRegex);
+      if (nr != null) {
+        nr = nr[1];
+      }
+
+      const klasaRegex = /<b>Klasa: <\/b>(.*)&nbsp;<\/p>/;
+      const xhttpKlasa = new XMLHttpRequest();
+      xhttpKlasa.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          let klasa = this.responseText.match(klasaRegex);
+          if (klasa != null) {
+            klasa = klasa[1];
+          }
+
+          if (dane == null || nr != dane.nr || klasa != dane.currentClass) {
+            let temp = {
+              nr: null,
+              currentClass: null,
+            }
+            if (klasa != null) temp.currentClass = klasa;
+            if (nr != null) temp.nr = nr;
+            browserAPI.storage.sync.set({ ["dane"]: temp });
+            
+          }
+
+        }
+        document.location.replace(href);
+      };
+      xhttpKlasa.open("GET", "https://synergia.librus.pl/przegladaj_oceny/uczen", true);
+      xhttpKlasa.send();
+    }
+  };
+  xhttpNr.open("GET", "https://synergia.librus.pl/informacja", true);
+  xhttpNr.send();
+}
+
+
 // Co to po komu ta strona startowa?
 if (window.location.href == "https://synergia.librus.pl/uczen/index" || window.location.href == "https://synergia.librus.pl/rodzic/index") {
-  // window.location.href = "https://synergia.librus.pl/przegladaj_oceny/uczen";
-  document.location.replace("https://synergia.librus.pl/przegladaj_oceny/uczen");
+  browserAPI.storage.sync.get(["dane"], function (t) {
+    let dane = t["dane"];
+    updateDetails(dane, "https://synergia.librus.pl/przegladaj_oceny/uczen");
+  });
 }
 
 // Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest. Pozdro
@@ -185,7 +229,18 @@ function librusPro_insertSrednie() {
 
   browserAPI.storage.sync.get(["options"], function (t) {
     options = t["options"];
-    if (options == null) alert(1);
+    if (options == null) {
+      options = {
+        hideSubjects: true,
+        depressionMode: false,
+        hideOnes: false,
+        plusValue: 0.5,
+        minusValue: 0.25,
+      }
+      browserAPI.storage.sync.set({ ["options"]: options });
+      document.location.replace(window.location.href);
+      return;
+    }
 
     const plusValue = options.plusValue;
     const minusValue = options.minusValue;
@@ -263,6 +318,24 @@ function librusPro_hideSubjects() {
     }
   });
 }
+// Usuwanie jedynek
+function librusPro_hideOnes() {
+  // Oceny poprawione (w dodatkowym spanie)
+  document.querySelectorAll("span > .grade-box > a:not(#ocenaTest)").forEach(e => {
+    if (/[0-1][+-]?/.test(e.innerText)) {
+      [...e.parentElement.parentElement.childNodes].forEach(elm => elm.nodeType != 1 && elm.parentNode.removeChild(elm));
+      const regex = /<br \/>Poprawa oceny:(.*)/;
+      e.parentElement.nextElementSibling.firstElementChild.title = e.parentElement.nextElementSibling.firstElementChild.title.replace(regex, "");
+      e.parentElement.remove();
+    }
+  });
+  // Oceny zwykłe
+  document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {
+    if (/[0-1][+-]?/.test(e.innerText)) {
+      e.parentElement.remove();
+    }
+  });
+}
 
 // Od ostatniego logowania/w tym tygodniu
 let odOstLogowania = false;
@@ -282,6 +355,7 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
       options = {
         hideSubjects: true,
         depressionMode: false,
+        hideOnes: false,
         plusValue: 0.5,
         minusValue: 0.25,
       }
@@ -291,21 +365,22 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
     if (options.hideSubjects) {
       librusPro_hideSubjects();
     }
+    if (options.hideOnes) {
+      librusPro_hideOnes();
+    }
   });
 
   browserAPI.storage.onChanged.addListener(function(changes, namespace) {
     for (let key in changes) {
       if (key === "options") {
-        window.location.reload();
+
+        window.location.replace(window.location.href);
+
       }
     }
   });
 
 }
-
-// Pokaż wiersze zawierające przynajmniej jedną ocenę
-// Uwaga na oceny poprawiane - są w dodatkowym spanie
-// document.querySelectorAll(".grade-box").forEach(e => {e.parentElement.tagName == "SPAN" ? e.parentElement.parentElement.parentElement.style.display = "table-row" : e.parentElement.parentElement.style.display = "table-row";});
 
 
 // Zamiany obrazków na ich ciemne wersje
@@ -337,7 +412,6 @@ if (document.querySelector(".tree-first-branch") != null) {
 // document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach(e => {e.innerText = "6.00"});
 // document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerText = "wzorowe";
 // document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)").innerText = "wzorowe";
-
 
 
 // ---------------------------------------- ZACHOWANIE ----------------------------------------
@@ -465,18 +539,17 @@ librusPro_adjustNavbar();
 function librusPro_adjustHeader() {
   const numerek = document.querySelector("#user-section > span.luckyNumber");
   if (numerek != null) {
-    let nr;
-    browserAPI.storage.sync.get(["nr"], function (r) {
-      nr = r["nr"];
-      if (nr != undefined){
+    browserAPI.storage.sync.get(["dane"], function (t) {
+      let dane = t["dane"];
+      if (dane != undefined) {
         let yourNumber = document.createElement("SPAN");
         yourNumber.innerText = "Twój numerek w dzienniku: ";
         const number = document.createElement("B");
-        number.innerText = nr;
+        number.innerText = dane.nr;
         number.style.color = "#eeeeee";
         yourNumber.appendChild(number);
         
-        if (document.querySelector("#user-section > span.luckyNumber > b").innerText == nr) {
+        if (document.querySelector("#user-section > span.luckyNumber > b").innerText == dane.nr) {
           const gratulacje = document.createElement("SPAN");
           gratulacje.style.color = "lime";
           gratulacje.style.marginLeft = "5px";
@@ -486,19 +559,7 @@ function librusPro_adjustHeader() {
 
         numerek.parentElement.insertBefore(yourNumber, numerek.nextSibling);
       } else {
-        const klasaRegex = /<th class="big">Klasa <\/th>\n                <td>\n                (.*)\n                <\/td>/;
-        const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
-
-        const xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
-            browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
-            window.location.reload();
-          }
-        };
-        xhttp.open("GET", "https://synergia.librus.pl/informacja", true);
-        xhttp.send();
+        updateDetails(dane, window.location.href);
       }
     });
   }
