@@ -554,17 +554,19 @@ librusPro_adjustNavbar();
 // Wyświetlanie numeru z dziennika obok szczęśliwego + informacja gdy nim jest Twój
 function librusPro_adjustHeader() {
   const numerek = document.querySelector("#user-section > span.luckyNumber");
+  const numerekDisabled = document.querySelector("#user-section > a > span.luckyNumber");
+
+  let yourNumber = document.createElement("SPAN");
+  yourNumber.innerText = "Twój numerek w dzienniku: ";
+  const number = document.createElement("B");
+  number.style.color = "#eeeeee";
+  yourNumber.appendChild(number);
+
   if (numerek != null) {
     browserAPI.storage.sync.get(["dane"], function (t) {
       let dane = t["dane"];
       if (dane != undefined) {
-        let yourNumber = document.createElement("SPAN");
-        yourNumber.innerText = "Twój numerek w dzienniku: ";
-        const number = document.createElement("B");
         number.innerText = dane.nr;
-        number.style.color = "#eeeeee";
-        yourNumber.appendChild(number);
-        
         if (document.querySelector("#user-section > span.luckyNumber > b").innerText == dane.nr) {
           const gratulacje = document.createElement("SPAN");
           gratulacje.style.color = "lime";
@@ -574,6 +576,16 @@ function librusPro_adjustHeader() {
         }
 
         numerek.parentElement.insertBefore(yourNumber, numerek.nextSibling);
+      } else {
+        updateDetails(dane, window.location.href);
+      }
+    });
+  } else if (numerekDisabled != null) {
+    browserAPI.storage.sync.get(["dane"], function (t) {
+      let dane = t["dane"];
+      if (dane != undefined) {
+        number.innerText = dane.nr;
+        numerekDisabled.parentElement.parentElement.insertBefore(yourNumber, numerekDisabled.parentElement.nextSibling);
       } else {
         updateDetails(dane, window.location.href);
       }
