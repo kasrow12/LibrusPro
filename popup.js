@@ -127,7 +127,7 @@ function callback() {
   setTimeout(function() {
     saveButton.classList.remove("validate");
     saveButtonInUse = false;
-  }, 1250 );
+  }, 750 );
 }
 function updateOptions() {
   if (!saveButtonInUse) {

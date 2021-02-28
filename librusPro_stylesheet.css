@@ -407,7 +407,6 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 }
 
 /* ogloszenia */
-
 #adresaci > table tr > td,
 #adresaci > table > tbody > tr:nth-child(2n + 1) > td,
 #body > div > div > table > tbody > tr:nth-child(2n + 1) > th,
@@ -434,15 +433,6 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 }
 
 /* wiadomości */
-/* .tree-first-branch {
-	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko4_dark.png") !important;
-}
-.tree-next-branch {
-	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko1_dark.png") !important;
-}
-.tree-last-branch {
-	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko2_dark.png") !important;
-} */
 #formWiadomosci
 	> div
 	> div
@@ -638,10 +628,6 @@ td.today {
 	height: 20px;
 }
 
-/*   WAGOWE KOLORKI
-.grade-box {
-	background-color: white !important;
-} */
 #formWiadomosci > div > div > table.decorated.filters.center.small > tfoot > tr > td,
 #formFiltrZadania > table > tfoot > tr > td,
 #formPrzegladanieRealizacji > table > tfoot > tr > td,
@@ -657,17 +643,12 @@ td.today {
 span.warning-title {
 	color: white;
 }
-
 table.decorated tfoot tr th,
 /* table.decorated tbody tr.line0 th, */ table.decorated tbody tr th,
 table.decorated tfoot tr td,
 /* table.decorated tbody tr.line0 td, */ table.decorated tbody tr td {
 	border-top: 1px solid #000000 !important;
 }
-
 #body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td:nth-child(6) {
 	border-left: none;
 }
-/* .grade-box {
-	background: #6d7381 !important;
-} */

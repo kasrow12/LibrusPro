@@ -666,10 +666,7 @@ function displayOverlayForEditingCell(targetKey, editIndex) {
       document.getElementById("librusPro_colorHexSpan").style.color = event.color;
     }
     if (listenerLambdaFunction != null) {
-      overlayConfirmButton.removeEventListener(
-        "click",
-        listenerLambdaFunction
-      );
+      overlayConfirmButton.removeEventListener("click", listenerLambdaFunction);
     }
     listenerLambdaFunction = function () {
       editCustomCell(`${targetKey}`, `${editIndex}`);
@@ -745,5 +742,16 @@ function addDescriptionToCell(cell) {
   }
 }
 
-// ----------------------- DEBUG --------------------------------
-// pogchamp.storage.sync.clear()
+// Wersja depresyjna terminarza
+browserAPI.storage.sync.get(["options"], function (t) {
+  let options = t["options"];
+  if (options != null) {
+    if (options.depressionMode) {
+      document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td, #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > th").forEach(e => {
+        e.style.filter = "grayscale(70%) brightness(0.6)";
+        e.style.opacity = "0.9";
+        e.style.animation = "";
+      })
+    }
+  }
+});

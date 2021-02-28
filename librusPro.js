@@ -3,19 +3,6 @@
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
 
-/*
-
-TO DO list:
-
-- Ustawienia w popupie
--- włączyć/wyłączyć przycisk pracy domowej
--- szósteczki, random + średnia
-
-
-UKRYWANIE JEDYNEK
-
-*/
-
 const debug = false;
 
 let browserAPI;
@@ -27,6 +14,8 @@ if (typeof chrome != null) {
 
 const noAverage = "-";
 
+
+// Aktualizacja numerku i klasy
 function updateDetails(dane, href) {
   const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
   const xhttpNr = new XMLHttpRequest();
@@ -71,6 +60,7 @@ function updateDetails(dane, href) {
 
 // Co to po komu ta strona startowa?
 if (window.location.href == "https://synergia.librus.pl/uczen/index" || window.location.href == "https://synergia.librus.pl/rodzic/index") {
+  // Przekierowanie i aktualizacja danych (nr i klasa)
   browserAPI.storage.sync.get(["dane"], function (t) {
     let dane = t["dane"];
     updateDetails(dane, "https://synergia.librus.pl/przegladaj_oceny/uczen");
@@ -274,7 +264,7 @@ function librusPro_insertSrednie() {
   
     document.querySelector("#body > form:nth-child(5) > div > div > table > tbody").appendChild(srednieTr);
 
-      // Wyświetlanie średnich dla poszczególnych przedmiotów
+    // Wyświetlanie średnich dla poszczególnych przedmiotów
     // I sem
     document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indices["sredniaI"] + offsetCSS})`).forEach(e => {
       e.innerText = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indices["ocenyI"] + offsetCSS}) span.grade-box > a`), false, plusValue, minusValue).average + (debug ? (" (" + e.innerText + ")") : "");
@@ -318,6 +308,8 @@ function librusPro_hideSubjects() {
     }
   });
 }
+
+
 // Usuwanie jedynek
 function librusPro_hideOnes() {
   // Oceny poprawione (w dodatkowym spanie)
@@ -329,9 +321,33 @@ function librusPro_hideOnes() {
       e.parentElement.remove();
     }
   });
+
+
   // Oceny zwykłe
-  document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {
+  document.querySelectorAll("td:not(.center) > .grade-box > a:not(#ocenaTest)").forEach(e => {
     if (/[0-1][+-]?/.test(e.innerText)) {
+      e.parentElement.remove();
+    }
+  });
+
+  // (Proponowane) (śród)roczne
+  document.querySelectorAll('td.center > .grade-box > a:not(#ocenaTest)').forEach(e => {
+    if (/[0-1][+-]?/.test(e.innerText)) {
+      const el = e.parentElement.cloneNode(true);
+      e.parentElement.parentElement.appendChild(el);
+      el.children[0].innerText = "2";
+      el.children[0].title = "";
+      const nieJedynki = document.querySelectorAll(`td.center:nth-child(${Array.from(e.parentNode.parentNode.parentNode.children).indexOf(e.parentNode.parentNode) + 1}) > .grade-box > a:not(#ocenaTest)`);
+      if (nieJedynki.length != 0) {
+        let color;
+        nieJedynki.forEach((x) => {
+          color = x.parentElement.style.backgroundColor;
+          return;
+        })
+        el.style.backgroundColor = color;
+      } else {
+        el.style.backgroundColor = "#B0C4DE";
+      }
       e.parentElement.remove();
     }
   });
@@ -345,8 +361,6 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
   if (document.querySelector("#body > form:nth-child(5) > div > h2") != null && document.querySelector("#body > form:nth-child(5) > div > h2").innerHTML.includes("-")) {
     odOstLogowania = true;
   }
-
-  librusPro_insertSrednie();
 
   // Ukrywanie przedmiotów bez ocen
   browserAPI.storage.sync.get(["options"], function (t) {
@@ -368,14 +382,16 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
     if (options.hideOnes) {
       librusPro_hideOnes();
     }
+
+
+    librusPro_insertSrednie();
   });
+
 
   browserAPI.storage.onChanged.addListener(function(changes, namespace) {
     for (let key in changes) {
       if (key === "options") {
-
         window.location.replace(window.location.href);
-
       }
     }
   });
