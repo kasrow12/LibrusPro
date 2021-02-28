@@ -3,29 +3,55 @@
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
 
-// key: '17 Październik 2019'
-// value: [[nr lekcji, godz, przedmiot, typ, opis, hex color, hex color, url obrazka, data dodania, data ost. modyfikacji], [nr lekcji, godz, przedmiot, typ, opis, hex color, hex color, url obrazka, data dodania, data ost. modyfikacji]]
-// value: [['4','','Historia','Kartkówka','zabawa','#xxxxxx','#xxxxxx','google.com/pic.png','31.01.2021, 13:36:29','31.01.2021, 13:40:29'],['','18:00','Historia','Kartkówka','zabawa','#xxxxxx','#xxxxxx','google.com/pic.png','31.01.2021, 13:36:29','31.01.2021, 13:40:29']]
 /*
-{
-  lesson: '',
-  time: '',
-  subject: '',
-  type: '',
-  description: '',
-  background: '',
-  color: '',
-  url: '',
-  dateAdded: '',
-  dateModified: '',
-}
+  key: 'yyyy-mm-dd'
+  key: '2019-10-17'
+  value: {
+    lesson: '',
+    time: '',
+    subject: '',
+    type: '',
+    description: '',
+    background: '',
+    color: '',
+    url: '',
+    dateAdded: '',
+    dateModified: '',
+  }
+  
+  i.e. {
+    lesson: "5"
+    time: "21:37"
+    subject: "Matematyka"
+    type: "Sprawdzian"
+    description: "Dział 1"
+    background: "#6a9604"
+    color: "#ffffff"
+    url: ""
+    dateAdded: "10.02.2021, 19:51:12"
+    dateModified: "10.02.2021, 19:59:11"
+  }
 */
 
 
-let klasa;
-browserAPI.storage.sync.get(["klasa"], function (r) {
-  klasa = r["klasa"];
+// Klasa do wklejania do każdego własnego wydarzenia np. XD LO
+let currentClass;
+browserAPI.storage.sync.get(["dane"], function (t) {
+  dane = t["dane"];
+  if (dane != null && dane.currentClass != null) {
+    currentClass = dane.currentClass;
+  } else {
+    updateDetails(dane, "https://synergia.librus.pl/terminarz");
+  }
 });
+
+browserAPI.storage.onChanged.addListener(function(changes, namespace) {
+  // window.location.reload();
+
+  window.location.replace(window.location.href);
+
+});
+
 
 // ---------------------- ISEMPTY FUNCTION --------------------------
 function isEmpty(obj) { 
@@ -52,79 +78,86 @@ overlay.classList = "librusPro_body";
 overlay.innerHTML = `
     <style> @media screen and (max-height: 680px) { .librusPro_pageBody { overflow: hidden !important; } .librusPro_body { overflow-y: scroll; } }
     body {overflow: visible;}
-    @keyframes zabawa {0% {filter: invert(0);} 10% {filter: invert(0.3);} 20% {filter: invert(0);}}
-    .librusPro_container {border: 1px solid black; width: 20vw; max-width: 270px; min-width: 230px; margin: 8vh auto 0 auto; background: #323232; padding: 10px 20px 30px 20px; border-radius: 5px; box-shadow: 2px 3px 5px #000000}
-    .librusPro_text {text-shadow: 1px 1px 3px #111111;font-size: 19px; color: #dddddd; text-align:center; margin: 10px 0 5px 0}
+    @-webkit-keyframes zabawa {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
+    @keyframes zabawa {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
+    .librusPro_container {border: 1px solid black; width: 20vw; max-width: 270px; min-width: 270px; margin: 8vh auto 0 auto; background: #323232; padding: 10px 20px 7px 20px; border-radius: 5px; -webkit-box-shadow: 2px 3px 5px #000000; box-shadow: 2px 3px 5px #000000}
+    .librusPro_text {text-shadow: 1px 1px 3px #390a3c;font-size: 19px; color: #dddddd; text-align:center; margin: 10px 0 5px 0}
     .librusPro_date {text-shadow: 1px 1px 3px #111111;font-size: 15px; color: #dddddd; text-align:center; padding-bottom: 10px; border-bottom: 1px solid #adadad; width: 90%; margin: 0 auto}
     .librusPro_field {width: 90%; margin: 0 auto}
-    .librusPro_twoFieldContainer {width: 90%; margin: 0 auto; display: flex; }
-    .librusPro_title {font-size: 13px; margin: 7px 0 3px 10px; color: #dddddd}
-    .librusPro_input {box-shadow: 1px 1px 3px #000000;width: 100% !important; margin: 0 !important; background: #ffffff !important; color: #333333 !important; padding: 3px 10px !important; height: initial !important; border: 1px solid #222222 !important}
+    .librusPro_twoFieldContainer {width: 90%; margin: 0 auto; display: -webkit-box; display: -ms-flexbox; display: flex; }
+    .librusPro_title {display: block; font-size: 12px; margin: 10px 0 3px 10px; color: #dddddd}
+    .librusPro_input {-webkit-box-shadow: 1px 1px 3px #000000;box-shadow: 1px 1px 3px #000000;width: 100% !important; margin: 0 !important; background: #454545; color: #dddddd; padding: 3px 10px !important; height: initial !important; border: 1px solid #222222 !important;}
     .librusPro_input:focus {border: 1px solid #666666 !important}
     .librusPro_inputTime {max-width: 90px; height: 25px !important; border-radius: 5px; background: #454545 !important;}
     .librusPro_inputTime:focus {outline: none}
-    .librusPro_select {box-shadow: 1px 1px 3px #111111;background: #ffffff; margin: 0 !important; width: 100%; padding: 7px 10px; height: initial; border: 1px solid #222222 !important}
+    .librusPro_select {-webkit-box-shadow: 1px 1px 3px #111111;box-shadow: 1px 1px 3px #111111;background: #ffffff; margin: 0 !important; width: 100%; padding: 7px 7px; height: initial; border: 1px solid #222222 !important; font-size: 13px;}
     .librusPro_select:focus {border: 1px solid #666666 !important; }
-    .librusPro_button {text-align: center; color: #333333; width: 70%; margin: 15px auto 0 auto; padding: 7px; border-radius: 5px; transition: background 0.2s; cursor: pointer; color: #eeeeee}
-    .librusPro_button-add {background: #53b95c}
+    .librusPro_button {text-align: center; color: #333333; width: 70%; margin: 15px auto 0 auto; padding: 7px; border-radius: 5px; -webkit-transition: background 0.2s; -o-transition: background 0.2s; transition: background 0.2s; cursor: pointer; color: #eeeeee; -webkit-filter: brightness(0.9); filter: brightness(0.9);}
+    .librusPro_button-add {background: #429148}
     .librusPro_button-edit {background: #2444ac}
     .librusPro_button-close {margin-top: 10px;background: #c44b4b}
-    .librusPro_button:hover {background: #888888}
+    .librusPro_button-add:hover {background: #35743a}
+    .librusPro_button-edit:hover {background: #1c327c}
+    .librusPro_button-close:hover {background: #7e3030}
     #twoField1 {margin-right: 0; padding-right: 10px; border-right: 1px solid #8e8e8e00 !important}
     #twoField2 {margin-left: 0; padding-left: 10px;}
     .librusPro_error {color: #ff5555; text-align: center; font-size: 16px; margin: 5px 0}
-    /*.librusPro_twoField::after {content: " "; position:relative; right: -10px; padding: 7px 0; border-right: 1px solid #8e8e8e}*/
-    .librusPro_radioContainer {display: block; position: relative; width: 30px; height: 30px; margin: 5px auto 0 auto; cursor: pointer; font-size: 22px; user-select: none;}
+    .librusPro_radioContainer {display: block; position: relative; width: 30px; height: 30px; margin: 5px auto 0 auto; cursor: pointer; font-size: 22px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-filter: brightness(0.8); filter: brightness(0.8);}
     .librusPro_radioContainer input {position: absolute; opacity: 0; cursor: pointer;}
-    .librusPro_radioSpan {position: absolute; top: 0; left: 0; height: 31px; width: 31px; background-color: #ffffff; border-radius: 50%; box-shadow: 1px 1px 3px #333333;}
+    .librusPro_radioSpan {position: absolute; top: 0; left: 0; height: 31px; width: 31px; background-color: #ffffff; border-radius: 50%; -webkit-box-shadow: 1px 1px 3px #333333; box-shadow: 1px 1px 3px #333333;}
     .librusPro_radioContainer .librusPro_radioSpan::after {top: 11px; left: 11px; width: 9px; height: 9px; border-radius: 50%; background: #ffffff;}
     .librusPro_radioContainer input:checked ~ .librusPro_radioSpan::after {display: block;}
     .librusPro_radioSpan::after {content: ""; position: absolute; display: none;}
-    .librusPro_colorContainer {padding: 7px 0 12px 0 ; border-top: 1px solid #adadad; border-bottom: 1px solid #adadad; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 1px 1px; grid-template-areas: ". . . . . ." ". . . . . ." ". . . . . ."; width: 90%; margin: 12px auto 0 auto;}
+    .librusPro_colorContainer {padding: 7px 0 12px 0 ; border-top: 1px solid #adadad; border-bottom: 1px solid #adadad; display: -ms-grid; display: grid; -ms-grid-columns: 1fr 1px 1fr 1px 1fr 1px 1fr 1px 1fr 1px 1fr; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; -ms-grid-rows: 1fr 1px 1fr 1px 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 1px 1px; grid-template-areas: ". . . . . ." ". . . . . ." ". . . . . ."; width: 90%; margin: 12px auto 0 auto;}
     .librusPro_radioContainer .librusPro_darkDot::after {background: #222222}
-    .librusPro_removeButton {display: none;}
-    .librusPro_editButton {display: none;}
+    .librusPro_removeButton {display: none; position: absolute; top: 3px; right: 5px; color: #ffffff; font-weight: bold; cursor: pointer; text-shadow: 1px 1px 2px #333333;}
+    .librusPro_editButton {display: none; position: absolute; top: 1px; right: 20px; color: #ffffff; font-weight: bold; cursor: pointer; text-shadow: 1px 1px 2px #333333; }
     th:hover > .librusPro_removeButton {display: block;}
     th:hover > .librusPro_editButton {display: block;}
+    textarea {resize: none; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 17px; font-size: 13px; scrollbar-color: dark;}
+    #librusPro_lesson, #librusPro_subject, #librusPro_imageUrl, #librusPro_type {font-size: 13px !important;}
+    #librusPro_datePicker {background: #454545; color: #dddddd; padding: 2px 8px; outline: none; -webkit-box-shadow: 1px 1px 3px #111111; box-shadow: 1px 1px 3px #111111; border-radius: 5px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px;}
+    #librusPro_datePicker:focus {border: 1px solid #666666 !important}
+    .librusPro_footer {font-size: 11px; text-align: center; margin-top: 17px; color: #626262}
     </style>
     <div class="librusPro_container">
-        <div class="librusPro_text">Dodaj zdarzenie</div>
-        <div class="librusPro_date" id="librusPro_date"></div>
+        <div class="librusPro_text" id="librusPro_header">Dodaj zdarzenie</div>
         <div class="librusPro_error" id="librusPro_error"></div>
+        <div class="librusPro_date"><input id="librusPro_datePicker" type="date"></div>
         <div class="librusPro_twoFieldContainer">
             <div class="librusPro_twoField" id="twoField1" style="width: 45%">
-                <div class="librusPro_title" style="margin-top: 5px;">Nr lekcji:</div>
-                <input type="text" id="librusPro_lesson" class="librusPro_input">
+                <label class="librusPro_title" style="margin-top: 5px;" for="librusPro_lesson">Nr lekcji:</label>
+                <input placeholder="3" type="text" id="librusPro_lesson" class="librusPro_input">
             </div>
             <div class="librusPro_twoField" id="twoField2" >
-                <div class="librusPro_title" style="margin-top: 5px;">Godzina:</div>
+                <label class="librusPro_title" style="margin-top: 5px;" for="librusPro_time">Godzina:</label>
                 <input type="time" id="librusPro_time" class="librusPro_input librusPro_inputTime" style="color: #f5f5f5 !important">
             </div> 
         </div>
         <div class="librusPro_field">
-            <div class="librusPro_title">Przedmiot:</div>
-            <input type="text" id="librusPro_subject" class="librusPro_input">
+            <label class="librusPro_title" for="librusPro_subject">Przedmiot:</label>
+            <input placeholder="Matematyka" type="text" id="librusPro_subject" class="librusPro_input">
         </div>
         <div class="librusPro_field">
-            <div class="librusPro_title">Typ:</div>
-                <select id="librusPro_typeSelect" class="librusPro_select" onchange="librusPro_onSelectChange()">
-                    <option value="">-- wybierz --</option>
-                    <option value="Sprawdzian" style="background-color: #ebebeb; color: #333333">Sprawdzian</option>
-                    <option value="Kartkówka">Kartkówka</option>
-                    <option value="Praca domowa" style="background-color: #ebebeb; color: #333333">Praca domowa</option>
-                    <option value="Odpowiedź ustna">Odpowiedź ustna</option>
-                    <option value="Inny" style="background-color: #ebebeb; color: #333333">Inny</option>
+            <label class="librusPro_title" for="librusPro_typeSelect">Typ:</label>
+            <select id="librusPro_typeSelect" class="librusPro_select" onchange="librusPro_onSelectChange()">
+                <option value="">-- wybierz --</option>
+                <option value="Sprawdzian" style="background-color: #ebebeb; color: #333333">Sprawdzian</option>
+                <option value="Kartkówka">Kartkówka</option>
+                <option value="Praca domowa" style="background-color: #ebebeb; color: #333333">Praca domowa</option>
+                <option value="Odpowiedź ustna">Odpowiedź ustna</option>
+                <option value="Inny" style="background-color: #ebebeb; color: #333333">Inny</option>
             </select>
-            <div id="librusPro_typeTitle" class="librusPro_title" style="display: none">Typ:</div>
-            <input type="text" id="librusPro_type" class="librusPro_input" style="display: none; /*margin-top: 15px*/">
+            <label id="librusPro_typeTitle" class="librusPro_title" style="display: none" for="librusPro_type">Typ:</label>
+            <input placeholder="Zaliczenie" type="text" id="librusPro_type" class="librusPro_input" style="display: none; /*margin-top: 15px*/">
         </div>
         <div class="librusPro_field">
-            <div class="librusPro_title">Opis:</div>
-            <input type="text" id="librusPro_description" class="librusPro_input">
+            <label class="librusPro_title" for="librusPro_description">Opis:</label>
+            <textarea placeholder="Rozdział 2" id="librusPro_description" class="librusPro_input" rows="3"></textarea>
         </div>
         <div class="librusPro_field">
-            <div class="librusPro_title">URL obrazka:</div>
-            <input type="text" id="librusPro_imageUrl" class="librusPro_input">
+            <label class="librusPro_title" for="librusPro_imageUrl">URL obrazka:</label>
+            <input placeholder="https://www.google.com/logo.png" type="text" id="librusPro_imageUrl" class="librusPro_input">
         </div>
         <div class="librusPro_colorContainer">
             <label class="librusPro_radioContainer">
@@ -196,12 +229,14 @@ overlay.innerHTML = `
                 <span class="librusPro_radioSpan" style="background: #aaaaaa"></span>
             </label>
             <label class="librusPro_radioContainer">
-                <input type="radio" name="librusPro_color" value="#222222|#ffffff">
-                <span class="librusPro_radioSpan" style="background: #222222"></span>
+                <input type="color" name="librusPro_colorHex" style="visibility: hidden;" onchange="librusPro_eventHexColor(this.value)" id="librusPro_inputColor" value="#010101">
+                <input type="radio" name="librusPro_color" value="#aaaaaa|#ffffff" id="librusPro_hexRadio">
+                <span class="librusPro_radioSpan librusPro_darkDot" style="background: linear-gradient(216deg, rgba(255,0,0,1) 0%, rgba(255,115,0,1) 23%, rgba(249,255,0,1) 43%, rgba(0,255,115,1) 64%, rgba(0,35,255,1) 85%)" id="librusPro_colorHexSpan"></span>
             </label>
         </div>
         <div class="librusPro_button librusPro_button-add" id="librusPro_add">Dodaj</div>
         <div class="librusPro_button librusPro_button-close" id="librusPro_close">Zamknij</div>
+        <div class="librusPro_footer">LibrusPro © 2021</div>
     </div>
 `;
 document.body.appendChild(overlay);
@@ -226,15 +261,33 @@ pageScript.innerHTML = `
         typeInput.value = typeSelect;
       }
     }
-    // Niech sobie to tu posiedzi, może przyda się kiedyś
-    // function pickTextColorBasedOnBgColorSimple(bgColor, lightColor, darkColor) {
-    //     var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
-    //     var r = parseInt(color.substring(0, 2), 16);
-    //     var g = parseInt(color.substring(2, 4), 16);
-    //     var b = parseInt(color.substring(4, 6), 16);
-    //     return (((r * 0.299) + (g * 0.587) + (b * 0.114)) > 186) ?
-    //       darkColor : lightColor;
-    // }
+    function librusPro_eventHexColor(color) {
+      document.getElementById("librusPro_colorHexSpan").style.background = color;
+      if (color != "#ff0000") {
+        if (librusPro_isLightFontColorForBackground(color)) document.getElementById("librusPro_colorHexSpan").classList.remove("librusPro_darkDot");
+        else document.getElementById("librusPro_colorHexSpan").classList.add("librusPro_darkDot");
+        document.getElementById("librusPro_hexRadio").value = color + "|" + (librusPro_isLightFontColorForBackground(color) ? "#ffffff" : "#222222");
+      } else {
+        document.getElementById("librusPro_hexRadio").value = color + "|#ffffff";
+      }
+      document.getElementById("librusPro_hexRadio").checked = true;
+
+    }
+    function librusPro_isLightFontColorForBackground(bgColor) {
+      var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+      var r = parseInt(color.substring(0, 2), 16);
+      var g = parseInt(color.substring(2, 4), 16);
+      var b = parseInt(color.substring(4, 6), 16);
+      var uicolors = [r / 255, g / 255, b / 255];
+      var c = uicolors.map((col) => {
+        if (col <= 0.03928) {
+          return col / 12.92;
+        }
+        return Math.pow((col + 0.055) / 1.055, 2.4);
+      });
+      var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+      return (L > 0.179) ? false : true;
+    }
 `;
 document.body.appendChild(pageScript);
 
@@ -252,7 +305,7 @@ month = month.options[month.selectedIndex].innerText;
 
 // ---------------- CREATE YEAR VARIABLE --------------------
 let year = document.getElementsByName("rok")[0];
-year = year.options[year.selectedIndex].innerText;
+year = year.options[year.selectedIndex].innerText.replaceAll(" ", "");
 
 // ---------------- "[+]" BUTTON LISTENER --------------------
 function addListenerToAddButton(button, targetKey) {
@@ -262,14 +315,16 @@ function addListenerToAddButton(button, targetKey) {
 }
 
 // ---------------- "[+]" CLICKED --------------------
+const overlayHeader = document.getElementById("librusPro_header");
 const overlayConfirmButton = document.getElementById("librusPro_add");
-const overlayDate = document.getElementById("librusPro_date");
+const overlayDate = document.getElementById("librusPro_datePicker");
 let listenerLambdaFunction;
 
 function displayOverlayForAdding(cellKey) {
   document.body.classList.toggle("librusPro_pageBody");
   overlay.style.display = "block";
-  overlayDate.innerText = cellKey;
+  overlayDate.value = cellKey;
+  overlayHeader.innerText = "Dodaj zdarzenie";
   overlayConfirmButton.innerText = "Dodaj";
   overlayConfirmButton.classList.remove("librusPro_button-edit");
   overlayConfirmButton.classList.add("librusPro_button-add");
@@ -286,12 +341,12 @@ function displayOverlayForAdding(cellKey) {
     overlayConfirmButton.removeEventListener("click", listenerLambdaFunction);
   }
   listenerLambdaFunction = function () {
-    addCustomCell(`${cellKey}`);
+    addCustomCell();
   };
   overlayConfirmButton.addEventListener("click", listenerLambdaFunction);
 }
 
-// ---------------- "ADD" CLICKED INSIDE "[+]" --------------------
+// ---------------- "ADD" CLICKED INSIDE "[+]" / CREATE CUSTOM EVENT --------------------
 const lesson = document.getElementById("librusPro_lesson");
 const time = document.getElementById("librusPro_time");
 const subject = document.getElementById("librusPro_subject");
@@ -303,54 +358,64 @@ const description = document.getElementById("librusPro_description");
 const imageUrl = document.getElementById("librusPro_imageUrl");
 const firstRadioElement = document.getElementById("librusPro_firstRadio");
 
-function addCustomCell(cellKey) {
+function addCustomCell(dateAdded = "") {
   const colorRadioValue = document
     .querySelector("input[name=librusPro_color]:checked")
     .value.split("|");
+  if (overlayDate.value == "") {
+    document.getElementById("librusPro_error").innerText = "Wybierz datę";
+    return;
+  }
   if (colorRadioValue == "") {
     document.getElementById("librusPro_error").innerText = "Wybierz kolor";
     return;
   }
 
   overlay.style.display = "none";
+  
+  let _dateAdded = new Date().toLocaleString();
+  let _dateModified = "";
+  if (dateAdded != "") {
+    _dateAdded = dateAdded;
+    _dateModified = new Date().toLocaleString();
+  }
 
-  browserAPI.storage.sync.get([cellKey], function (temp) {
+  browserAPI.storage.sync.get([overlayDate.value], function (temp) {
     // Czy już są jakieś wydarzenia dla tego dnia
     if (isEmpty(temp)) {
       browserAPI.storage.sync.set({
-        [cellKey]: [
-          [
-            lesson.value,
-            time.value,
-            subject.value,
-            type.value,
-            description.value,
-            colorRadioValue[0],
-            colorRadioValue[1],
-            imageUrl.value,
-            new Date().toLocaleString(),
-            "",
-          ],
-        ],
+        [overlayDate.value]: [
+          {
+            lesson: lesson.value,
+            time: time.value,
+            subject: subject.value,
+            type: type.value,
+            description: description.value,
+            background: colorRadioValue[0],
+            color: colorRadioValue[1],
+            url: imageUrl.value,
+            dateAdded: _dateAdded,
+            dateModified: _dateModified,
+          },
+        ]
       });
     } else {
-      let t = temp[cellKey];
-      t.push([
-        lesson.value,
-        time.value,
-        subject.value,
-        type.value,
-        description.value,
-        colorRadioValue[0],
-        colorRadioValue[1],
-        imageUrl.value,
-        new Date().toLocaleString(),
-        "",
-      ]);
-      browserAPI.storage.sync.set({ [cellKey]: t });
+      let t = temp[overlayDate.value];
+      t.push({
+        lesson: lesson.value,
+        time: time.value,
+        subject: subject.value,
+        type: type.value,
+        description: description.value,
+        background: colorRadioValue[0],
+        color: colorRadioValue[1],
+        url: imageUrl.value,
+        dateAdded: _dateAdded,
+        dateModified: _dateModified,
+      });
+      browserAPI.storage.sync.set({ [overlayDate.value]: t });
     }
   });
-  window.location.reload();
 }
 
 // ------------------------ DISPLAYING CUSTOM CELLS (AND "[+]") --------------------
@@ -359,12 +424,12 @@ const date = new Date();
 
 // Przyciemnianie przeszłych wydarzeń
 let setOpacity = false;
-if (year.substring(1) < date.getFullYear()) setOpacity = true;
-else if (monthId <= date.getMonth() && year.substring(1) == date.getFullYear()) setOpacity = true;
+if (year < date.getFullYear()) setOpacity = true;
+else if (monthId <= date.getMonth() && year == date.getFullYear()) setOpacity = true;
 
 for (let i = 0; i < days.length; i++) {
   const day = days[i];
-  const key = `${day.innerText} ${month}${year}`;
+  const key = `${year}-${(monthId + 1) < 10 ? "0" + (monthId + 1) : monthId + 1}-${day.innerText < 10 ? "0" + day.innerText : day.innerText}`;
   day.style.width = "initial";
   day.style.float = "right";
   day.style.marginBottom = "10px";
@@ -398,8 +463,8 @@ for (let i = 0; i < days.length; i++) {
 // -------------------- CREATE CELL ASYNC FUNCTION  ----------------
 function createCell(cellDay, cellKey) {
   browserAPI.storage.sync.get([cellKey], function (result) {
-    const dayCells = result[cellKey];
-    if (dayCells == null) {
+    const events = result[cellKey];
+    if (events == null) {
       return;
     }
     for (let i = 0; i < cellDay.parentElement.childNodes.length; i++) {
@@ -412,94 +477,80 @@ function createCell(cellDay, cellKey) {
     const table = document.createElement("table");
     table.style.marginTop = "0px";
 
-    for (let i = 0; i < dayCells.length; i++) {
+    for (let i = 0; i < events.length; i++) {
       const row = table.insertRow();
       // 'th' dlatego, aby był title przeglądarkowy, bo Librus ma z***any system custom title :)
       const cell = document.createElement("th");
       row.appendChild(cell);
-      const info = dayCells[i];
-      cell.style.background = info[5];
-      cell.style.color = info[6];
+      const event = events[i];
+      cell.style.background = event.background;
+      cell.style.color = event.color;
       cell.style.overflowWrap = "break-word";
       cell.style.wordWrap = "break-word";
-      cell.style.animation = "zabawa 3s infinite ease-in-out";
+      cell.style.animation = "zabawa 4s infinite ease-in-out";
       cell.style.wordBreak = "break-word";
       cell.classList.add("no-border-left", "no-border-right");
 
-      // cell.title = "Data dodania: " + info[8];
       cell.title = "";
 
       let temp = "";
       // Nr lekcji
-      if (info[0] != "") {
-        if (info[0].length > 30) {
-          temp += `Nr lekcji: ${info[0].slice(0, 30)}[...]\n`;
-          cell.title += "Nr lekcji: " + info[0];
+      if (event.lesson != "") {
+        if (event.lesson.length > 30) {
+          temp += `Nr lekcji: ${event.lesson.slice(0, 30)}[...]\n`;
         } else {
-          temp += `Nr lekcji: ${info[0]}\n`;
+          temp += `Nr lekcji: ${event.lesson}\n`;
         }
       }
 
       // Godzina
-      if (info[1] != "") {
-        temp += `Godz: ${info[1]}\n`;
+      if (event.time != "") {
+        temp += `Godz: ${event.time}\n`;
       }
 
       // Przedmiot
-      if (info[2] != "") {
-        if (info[2].length > 30) {
-          temp += `${info[2].slice(0, 30)}[...]`;
+      if (event.subject != "") {
+        if (event.subject.length > 30) {
+          temp += `${event.subject.slice(0, 30)}[...]`;
         } else {
-          temp += `${info[2]}`;
+          temp += `${event.subject}`;
         }
 
-        temp += (info[3] == "") ?  "\n" : ", ";
+        temp += (event.type == "") ?  "\n" : ", ";
+
+        cell.title += `${event.subject}` + ((event.type == "") ?  "\n" : `, ${event.type}\n`);
+      } else {        
+        cell.title += ((event.type == "") ?  "" : `${event.type}\n`);
       }
 
       // Typ
-      if (info[3] != "") {
-        // temp += info[3] + "\n";
-        if (info[3].length > 30) {
-          temp += `${info[3].slice(0, 30)}[...]\n`;
+      if (event.type != "") {
+        if (event.type.length > 30) {
+          temp += `${event.type.slice(0, 30)}[...]\n`;
         } else {
-          temp += `${info[3]}\n`;
+          temp += `${event.type}\n`;
         }
       }
-      cell.title += `\n${info[2]}` + ((info[3] == "") ?  "\n" : `, ${info[3]}`);
 
       // Klasa
-      if (klasa != undefined) {
-        temp += klasa;
-      } else {
-        let klasaRegex = /<th class="big">Klasa <\/th>\n                <td>\n                (.*)\n                <\/td>/;
-        let nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
-
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
-            browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
-            window.location.reload();
-          }
-        };
-        xhttp.open("GET", "https://synergia.librus.pl/informacja", true);
-        xhttp.send();
+      if (currentClass != undefined) {
+        temp += currentClass;
       }
 
       // Opis
-      if (info[4] != "") {
-        if (info[4].length > 200) {
-          temp += `\nOpis: ${info[4].replaceAll("<br />", "\n").slice(0, 250)}` + "\n[...]";
+      if (event.description != "") {
+        if (event.description.length > 200) {
+          temp += `\nOpis: ${event.description.replaceAll("<br />", "\n").slice(0, 250)}` + "\n[...]";
         } else {
-          temp += `\nOpis: ${info[4].replaceAll("<br />", "\n")}`;
+          temp += `\nOpis: ${event.description.replaceAll("<br />", "\n")}`;
         }
       }
       cell.innerText = temp;
 
-      if (info[7] != "" && info[7] !== undefined) {
-        // temp += `\n<img src="${info[7]}" style="width: 100%; filter: drop-shadow(3px 3px 2px #000000); border-radius: 5px; margin: 5px 0">`;
+      if (event.url != "" && event.url !== undefined) {
+        // temp += `\n<img src="${info.url}" style="width: 100%; filter: drop-shadow(3px 3px 2px #000000); border-radius: 5px; margin: 5px 0">`;
         const image = document.createElement("IMG");
-        image.src = info[7];
+        image.src = event.url;
         image.style.width = "80%";
         image.style.display = "block";
         image.style.margin = "5px auto";
@@ -509,35 +560,20 @@ function createCell(cellDay, cellKey) {
       }
 
       
-      if (info[4] != "") cell.title += "\nOpis: " + info[4];
-      cell.title += "\nData dodania: " + info[8];
-      if (info[9] != "") cell.title += "\nData ostatniej modyfikacji: " + info[9];
+      if (event.description != "") cell.title += "Opis: " + event.description + "\n";
+      cell.title += "Data dodania: " + event.dateAdded;
+      if (event.dateModified != "") cell.title += "\nData ostatniej modyfikacji: " + event.dateModified ;
 
       const removeButton = document.createElement("a");
       removeButton.innerText = "⨉";
-      removeButton.style.position = "absolute";
-      removeButton.style.top = "3px";
-      removeButton.style.right = "5px";
-      removeButton.style.color = "#ffffff";
-      removeButton.style.fontWeight = "bold";
-      removeButton.style.cursor = "pointer";
-      removeButton.style.textShadow = "1px 1px 2px #333333";
       removeButton.classList += "librusPro_removeButton";
       addListenerToRemoveButton(removeButton, cellKey, i);
       
       const editButton = document.createElement("a");
       editButton.innerText = "✎";
-      editButton.style.position = "absolute";
-      editButton.style.top = "1px";
-      editButton.style.right = "20px";
-      editButton.style.color = "#ffffff";
-      editButton.style.fontWeight = "bold";
-      editButton.style.cursor = "pointer";
-      editButton.style.textShadow = "1px 1px 2px #333333";
       editButton.classList += "librusPro_editButton";
       addListenerToEditButton(editButton, cellKey, i);
 
-      cell.style.position = "relative";
       cell.appendChild(removeButton);
       cell.appendChild(editButton);
       cellDay.parentElement.appendChild(table);
@@ -547,8 +583,8 @@ function createCell(cellDay, cellKey) {
         this.style.color = "#ffffff";
       };
       cell.onmouseleave = function () {
-        this.style.background = `${info[5]}`;
-        this.style.color = `${info[6]}`;
+        this.style.background = `${event.background}`;
+        this.style.color = `${event.color}`;
       };
 
       
@@ -573,7 +609,6 @@ function removeCustomCell(targetKey, removeIndex) {
       t.splice(removeIndex, 1);
       browserAPI.storage.sync.set({ [targetKey]: t });
     }
-    window.location.reload();
   });
 }
 
@@ -588,28 +623,33 @@ function addListenerToEditButton(addTo, targetKey, index) {
 function displayOverlayForEditingCell(targetKey, editIndex) {
   document.body.classList.toggle("librusPro_pageBody");
   overlay.style.display = "block";
+  overlayHeader.innerText = "Edytuj zdarzenie";
   overlayConfirmButton.innerText = "Edytuj";
   overlayConfirmButton.classList.remove("librusPro_button-add");
   overlayConfirmButton.classList.add("librusPro_button-edit");
-  overlayDate.innerText = targetKey;
+  overlayDate.value = targetKey;
 
   browserAPI.storage.sync.get([targetKey], function (r) {
-    const editInfo = r[targetKey][editIndex];
-    [lesson.value, time.value, subject.value, type.value, description.value] = r[targetKey][editIndex];
+    const event = r[targetKey][editIndex];
+    lesson.value = event.lesson
+    time.value = event.time;
+    subject.value = event.subject;
+    type.value = event.type;
+    description.value = event.description;
     typeSelect.value = "Inny";
     typeInputTitle.style.display = "none";
     typeInput.style.display = "none";
     for (let i = 0; i < typeSelect.options.length; i++) {
-      if (typeSelect.options[i].value === editInfo[3]) {
-        typeSelect.value = editInfo[3];
+      if (typeSelect.options[i].value === event.type) {
+        typeSelect.value = event.type;
       }
     }
     if (typeSelect.value == "Inny") {
       typeInputTitle.style.display = "block";
       typeInput.style.display = "block";
     }
-    imageUrl.value = editInfo[7];
-    const color = editInfo[5] + "|" + editInfo[6];
+    imageUrl.value = event.url;
+    const color = event.background + "|" + event.color;
     const colorInput = document.querySelector(`input[value="${color}"]`);
     if (colorInput !== null) {
       for (let x = 0; x < 18; x++) {
@@ -619,13 +659,14 @@ function displayOverlayForEditingCell(targetKey, editIndex) {
         }
       }
     } else {
-      firstRadioElement.checked = "true";
+      document.getElementById("librusPro_inputColor").value = event.background;
+      document.getElementById("librusPro_hexRadio").checked = true;
+      document.getElementById("librusPro_hexRadio").value = color;
+      document.getElementById("librusPro_colorHexSpan").style.background = event.background;
+      document.getElementById("librusPro_colorHexSpan").style.color = event.color;
     }
     if (listenerLambdaFunction != null) {
-      overlayConfirmButton.removeEventListener(
-        "click",
-        listenerLambdaFunction
-      );
+      overlayConfirmButton.removeEventListener("click", listenerLambdaFunction);
     }
     listenerLambdaFunction = function () {
       editCustomCell(`${targetKey}`, `${editIndex}`);
@@ -639,29 +680,39 @@ function editCustomCell(targetKey, editIndex) {
   const colorSelectValue = document
     .querySelector("input[name=librusPro_color]:checked")
     .value.split("|");
+  if (overlayDate.value == "") {
+    document.getElementById("librusPro_error").innerText = "Wybierz datę";
+    return;
+  }
   if (colorSelectValue == "") {
     document.getElementById("librusPro_error").innerText = "Wybierz kolor";
     return;
   }
   overlay.style.display = "none";
 
-  browserAPI.storage.sync.get([targetKey], function (tempResult) {
-    const t = tempResult[targetKey];
-    t[editIndex] = [
-      lesson.value,
-      time.value,
-      subject.value,
-      type.value,
-      description.value,
-      colorSelectValue[0],
-      colorSelectValue[1],
-      imageUrl.value,
-      tempResult[targetKey][editIndex][8],
-      new Date().toLocaleString(),
-    ];
-    browserAPI.storage.sync.set({ [targetKey]: t });
-  });
-  window.location.reload();
+  if (overlayDate.value == targetKey) {
+    browserAPI.storage.sync.get([targetKey], function (tempResult) {
+      const t = tempResult[targetKey];
+      t[editIndex] = {
+          lesson: lesson.value,
+          time: time.value,
+          subject: subject.value,
+          type: type.value,
+          description: description.value,
+          background: colorSelectValue[0],
+          color: colorSelectValue[1],
+          url: imageUrl.value,
+          dateAdded: t[editIndex].dateAdded,
+          dateModified: new Date().toLocaleString(),
+        },
+      browserAPI.storage.sync.set({ [targetKey]: t });
+    });
+  } else {
+    browserAPI.storage.sync.get([targetKey], function (tempResult) {
+      addCustomCell(tempResult[targetKey][editIndex].dateAdded);
+      removeCustomCell(targetKey, editIndex);
+    });
+  }
 }
 
 // ------------------- ADD DESCRIPTIONS TO ALL CELLS AND CHANGE "INNE" COLOR ---------------
@@ -691,5 +742,16 @@ function addDescriptionToCell(cell) {
   }
 }
 
-// ----------------------- DEBUG --------------------------------
-// pogchamp.storage.sync.clear()
+// Wersja depresyjna terminarza
+browserAPI.storage.sync.get(["options"], function (t) {
+  let options = t["options"];
+  if (options != null) {
+    if (options.depressionMode) {
+      document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td, #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > th").forEach(e => {
+        e.style.filter = "grayscale(70%) brightness(0.6)";
+        e.style.opacity = "0.9";
+        e.style.animation = "";
+      })
+    }
+  }
+});

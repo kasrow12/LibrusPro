@@ -40,12 +40,19 @@ Some schools disable the ability to display grade point average. If they don't w
 ## • Hiding subjects without grades
 Why should they even display if you don't get a single grade out of them all year?
 
+## • Depression Mode
+Subdued colors for grades and schedule events when you are not feeling well. Depression mode can be enabled in the extension options menu.
+
 ## • Visual improvements
 - displaying the proposed behavior in the main table,
+- option to disable the display of ones,
 - removing unnecessary buttons from the navigation bar (Surveys, Library),
-- adding a Lesson Plan button instead,
+- removing the alternative version button, because who the hell needs it anyway,
+- adding a Lesson Plan button instead, which opens in new tab instead of window
 - adding event descriptions in the schedule with no need to hover over them to read,
 - information about your number from the journal next to the Lucky Number and information when it will be yours!
 
 # License
 This project is licensed under the terms of the MIT license. See the [LICENSE](LICENSE.md) file for license rights and limitations.
+
+<i>LibrusPro © 2021 Maks Kowalski</i>

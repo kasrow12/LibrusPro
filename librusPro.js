@@ -3,23 +3,6 @@
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
 
-/*
-
-TO DO list:
-
-- Ustawienia w popupie
--- włączyć/wyłączyć przycisk pracy domowej
--- szósteczki, random + średnia
--- kolory w zależności od wagi
--- wielkość w zależności od wagi
--- ukrywanie pustych przedmiotów
--- wartość plusów i minusów
--- plan lekcji _blank czy nowe okno
-
-- ↓ ↑ proponowana vs. średnia
-
-*/
-
 const debug = false;
 
 let browserAPI;
@@ -29,17 +12,66 @@ if (typeof chrome != null) {
   browserAPI = browser;
 }
 
+const noAverage = "-";
 
-// Co to po komu?
-if (window.location.href == "https://synergia.librus.pl/uczen/index" || window.location.href == "https://synergia.librus.pl/rodzic/index") {
-  window.location.href = "https://synergia.librus.pl/przegladaj_oceny/uczen";
+
+// Aktualizacja numerku i klasy
+function updateDetails(dane, href) {
+  const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
+  const xhttpNr = new XMLHttpRequest();
+  xhttpNr.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      let nr = this.responseText.match(nrRegex);
+      if (nr != null) {
+        nr = nr[1];
+      }
+
+      const klasaRegex = /<b>Klasa: <\/b>(.*)&nbsp;<\/p>/;
+      const xhttpKlasa = new XMLHttpRequest();
+      xhttpKlasa.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          let klasa = this.responseText.match(klasaRegex);
+          if (klasa != null) {
+            klasa = klasa[1];
+          }
+
+          if (dane == null || nr != dane.nr || klasa != dane.currentClass) {
+            let temp = {
+              nr: null,
+              currentClass: null,
+            }
+            if (klasa != null) temp.currentClass = klasa;
+            if (nr != null) temp.nr = nr;
+            browserAPI.storage.sync.set({ ["dane"]: temp });
+            
+          }
+
+        }
+        document.location.replace(href);
+      };
+      xhttpKlasa.open("GET", "https://synergia.librus.pl/przegladaj_oceny/uczen", true);
+      xhttpKlasa.send();
+    }
+  };
+  xhttpNr.open("GET", "https://synergia.librus.pl/informacja", true);
+  xhttpNr.send();
 }
 
-// Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest.
+
+// Co to po komu ta strona startowa?
+if (window.location.href == "https://synergia.librus.pl/uczen/index" || window.location.href == "https://synergia.librus.pl/rodzic/index") {
+  // Przekierowanie i aktualizacja danych (nr i klasa)
+  browserAPI.storage.sync.get(["dane"], function (t) {
+    let dane = t["dane"];
+    updateDetails(dane, "https://synergia.librus.pl/przegladaj_oceny/uczen");
+  });
+}
+
+// Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest. Pozdro
 // JS liczy od 0, CSS od 1
 const offsetJS = 2;
 const offsetCSS = 3;
-const indexy = {
+const indices = {
   ocenyI: -1,
   sredniaI: -1,
   proponowaneI: -1,
@@ -57,45 +89,314 @@ const indexy = {
 document.querySelectorAll("#body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td").forEach(e => {
   const index = [...e.parentElement.children].indexOf(e);
 
-  if (e.innerText == "Śr.I") indexy["sredniaI"] = index;
-  if (e.innerText == "(I)") indexy["proponowaneI"] = index;
-  if (e.innerText == "I") indexy["srodroczneI"] = index;
+  if (e.innerText == "Śr.I") indices["sredniaI"] = index;
+  if (e.innerText == "(I)") indices["proponowaneI"] = index;
+  if (e.innerText == "I") indices["srodroczneI"] = index;
 
-  if (e.innerText == "Śr.II") indexy["sredniaII"] = index;
-  if (e.innerText == "(II)") indexy["proponowaneII"] = index;
-  if (e.innerText == "II") indexy["srodroczneII"] = index;
+  if (e.innerText == "Śr.II") indices["sredniaII"] = index;
+  if (e.innerText == "(II)") indices["proponowaneII"] = index;
+  if (e.innerText == "II") indices["srodroczneII"] = index;
 
-  if (e.innerText == "Śr.R") indexy["sredniaR"] = index;
-  if (e.innerText == "(R)") indexy["proponowaneR"] = index;
-  if (e.innerText == "R") indexy["roczne"] = index;
+  if (e.innerText == "Śr.R") indices["sredniaR"] = index;
+  if (e.innerText == "(R)") indices["proponowaneR"] = index;
+  if (e.innerText == "R") indices["roczne"] = index;
 
 });
 // Oceny bieżące są zawsze jeden przed średnimi
-indexy["ocenyI"] = indexy["sredniaI"] - 1;
-indexy["ocenyII"] = indexy["sredniaII"] - 1;
+indices["ocenyI"] = indices["sredniaI"] - 1;
+indices["ocenyII"] = indices["sredniaII"] - 1;
+
+// ----------------------------------------------- ŚREDNIE -----------------------------------------------
+
+// Liczenie średniej arytmetycznej np. do proponowanych
+function liczSrednia(elements, background, plusValue, minusValue, depressionMode = false) {
+  if (elements.length < 1)
+    return noAverage;
+
+  let suma = 0;
+  elements.forEach(e => {
+    if (e.innerText.length == 1) suma += +e.innerText;
+    else if (e.innerText[1] == "+") suma += +e.innerText[0] + +plusValue;
+    else if (e.innerText[1] == "-") suma += +e.innerText[0] - -minusValue;
+    else suma += +e.innerText[0];
+
+    if (depressionMode) {
+      e.parentElement.style.background = background;
+    }
+  });
+
+  return (Math.round( suma / elements.length  * 100 + Number.EPSILON ) / 100).toFixed(2);
+}
+
+// Liczenie średniej ważonej, zwracając uwagę na parametr Licz do średniej:
+function liczSredniaWazona(elements, depressionMode = false, plusValue, minusValue) {
+  if (elements.length < 1)
+    return {
+      average: noAverage,
+      sum: 0,
+      weights: 0,
+    };
+
+  let sum = 0;
+  let weights = 0;
+  elements.forEach(e => {
+    if (/[0-6][+-]?/.test(e.innerText)) {
+      let regexp = /<br>Licz do średniej: (.){3}<br>/gi;
+      let liczDoSredniej = e.title.match(regexp)[0];
+      liczDoSredniej = liczDoSredniej.replace("<br>Licz do średniej: ", "").replace("<br>", "");
+      if (liczDoSredniej == "nie") {
+        if (depressionMode) {
+          e.parentElement.style.setProperty("background", "#8592b1", "important");
+        }
+        return;
+      }
+      
+      regexp = /<br>Waga: .{1}<br>/;
+      let weight = e.title.match(regexp)[0];
+      weight = weight.replace("<br>Waga: ", "").replace("<br>", "");
+      weights += +weight;
+      
+      if (e.innerText.length == 1) sum += (+e.innerText) * weight;
+      else if (e.innerText[1] == "+") sum += (+e.innerText[0] + +plusValue) * weight;
+      else if (e.innerText[1] == "-") sum += (+e.innerText[0] - -minusValue) * weight;
+      
+      if (depressionMode) {
+        if (weight == 1) e.parentElement.style.background = "#777777";
+        else if (weight == 2) e.parentElement.style.background = "#bbbbbb";
+        else if (weight == 3) e.parentElement.style.background = "#ffffff", e.parentElement.style.filter = "brightness(0.8)";
+        else if (weight == 4) e.parentElement.style.background = "#ffaaaa";
+        else if (weight >= 5) e.parentElement.style.background = "#ff6666";
+      }
+    }
+    else if (depressionMode) {
+      e.parentElement.style.setProperty("background", "#8592b1", "important");
+    }
+    
+  });
+
+  if (sum <= 0)
+    return {
+      average: noAverage,
+      sum: 0,
+      weights: 0,
+    };
+  return {
+    average: (Math.round( sum / weights  * 100 + Number.EPSILON ) / 100).toFixed(2),
+    sum,
+    weights,
+  };
+}
+
+function liczSredniaRoczna(semI, semII) {
+  return (Math.round( (semI.sum + semII.sum) / (semI.weights + semII.weights)  * 100 + Number.EPSILON ) / 100).toFixed(2);
+}
+
+function librusPro_insertSrednie() {
+  if (document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(1)") == null) return;
+
+  // Tworzenie wiersza ze średnimi
+  const srednieTr = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(1)").cloneNode(true);
+
+  const ocenyI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:not(.bolded) > td:nth-child(${indices["ocenyI"] + offsetCSS}) span.grade-box > a`);
+  const proponowaneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:not(.bolded) > td:nth-child(${indices["proponowaneI"] + offsetCSS}) > span > a`);
+  const srodroczneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indices["srodroczneI"] + offsetCSS}) > span > a`);
+
+  const ocenyII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indices["ocenyII"] + offsetCSS}) span.grade-box > a`);
+  const proponowaneII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indices["proponowaneII"] + offsetCSS}) > span > a`);
+  const srodroczneII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indices["srodroczneII"] + offsetCSS}) > span > a`);
+
+  // const ocenyR = [...ocenyI, ...ocenyII];
+  const proponowaneR = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indices["proponowaneR"] + offsetCSS}) > span > a`);
+  const roczne = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indices["roczne"] + offsetCSS}) > span > a`);
+
+
+  // Wstawienie średnich w wiersz tabeli
+  srednieTr.children[0].innerText = "";
+  srednieTr.children[1].innerText = "Średnia";
+  srednieTr.children[indices["ocenyI"] + offsetJS].innerText = "";
+  srednieTr.children[indices["ocenyII"] + offsetJS].innerText = ""
+  srednieTr.classList.add("librusPro_average");
+
+  browserAPI.storage.sync.get(["options"], function (t) {
+    options = t["options"];
+    if (options == null) {
+      options = {
+        hideSubjects: true,
+        depressionMode: false,
+        hideOnes: false,
+        plusValue: 0.5,
+        minusValue: 0.25,
+      }
+      browserAPI.storage.sync.set({ ["options"]: options });
+      document.location.replace(window.location.href);
+      return;
+    }
+
+    const plusValue = options.plusValue;
+    const minusValue = options.minusValue;
+
+    const ocenyIresult = liczSredniaWazona(ocenyI, options.depressionMode, plusValue, minusValue);
+    srednieTr.children[indices["sredniaI"] + offsetJS].innerText = ocenyIresult.average;
+  
+    const ocenyIIresult = liczSredniaWazona(ocenyII, options.depressionMode, plusValue, minusValue);
+    srednieTr.children[indices["sredniaII"] + offsetJS].innerText = ocenyIIresult.average;
+  
+    srednieTr.children[indices["sredniaR"] + offsetJS].innerText = liczSredniaRoczna(ocenyIresult, ocenyIIresult);
+
+    srednieTr.children[indices["srodroczneI"] + offsetJS].innerText = liczSrednia(srodroczneI, "#B0C4DE", plusValue, minusValue);
+    srednieTr.children[indices["srodroczneII"] + offsetJS].innerText = liczSrednia(srodroczneII, "#B0C4DE", plusValue, minusValue);
+    srednieTr.children[indices["roczne"] + offsetJS].innerText = liczSrednia(roczne, "#B0C4DE", plusValue, minusValue);
+    
+    if (indices["proponowaneI"] > 0) {
+      srednieTr.children[indices["proponowaneI"] + offsetJS].innerText = liczSrednia(proponowaneI, "#aaad84", plusValue, minusValue, options.depressionMode);
+      srednieTr.children[indices["proponowaneI"] + offsetJS].classList.add("right");
+    }
+  
+    if (indices["proponowaneII"] > 0) {
+      srednieTr.children[indices["proponowaneII"] + offsetJS].innerText = liczSrednia(proponowaneII, "#aaad84", plusValue, minusValue, options.depressionMode);
+      srednieTr.children[indices["proponowaneII"] + offsetJS].classList.add("right");
+    }
+    
+    if (indices["proponowaneR"] > 0) {
+      srednieTr.children[indices["proponowaneR"] + offsetJS].innerText = liczSrednia(proponowaneR, "#aaad84", plusValue, minusValue, options.depressionMode);
+      srednieTr.children[indices["proponowaneR"] + offsetJS].classList.add("right");
+    }
+  
+    document.querySelector("#body > form:nth-child(5) > div > div > table > tbody").appendChild(srednieTr);
+
+    // Wyświetlanie średnich dla poszczególnych przedmiotów
+    // I sem
+    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indices["sredniaI"] + offsetCSS})`).forEach(e => {
+      e.innerText = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indices["ocenyI"] + offsetCSS}) span.grade-box > a`), false, plusValue, minusValue).average + (debug ? (" (" + e.innerText + ")") : "");
+      e.classList.add("right");
+    });
+    // II sem
+    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indices["sredniaII"] + offsetCSS})`).forEach(e => {
+      e.innerText = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indices["ocenyII"] + offsetCSS}) span.grade-box > a`), false, plusValue, minusValue).average + (debug ? (" (" + e.innerText + ")") : "");
+      e.classList.add("right");
+    });
+    // Roczna
+    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indices["sredniaR"] + offsetCSS})`).forEach(e => {
+      e.innerText = liczSredniaWazona([...e.parentElement.querySelectorAll(`td:nth-child(${indices["ocenyI"] + offsetCSS}) span.grade-box > a`), ...e.parentElement.querySelectorAll(`td:nth-child(${indices["ocenyII"] + offsetCSS}) span.grade-box > a`)], false, plusValue, minusValue).average + (debug ? (" (" + e.innerText + ")") : "");
+      e.classList.add("right");
+    });
+
+
+    // Zmiana koloru ocen z zachowania
+    if (options.depressionMode) {
+      document.querySelectorAll(".negative-behaviour").forEach((e) => {
+        e.style.background = "#927265";
+      });
+      document.querySelectorAll(".positive-behaviour").forEach((e) => {
+        e.style.background = "#98a987";
+      });
+    }
+
+  });
+
+}
+
+
+// ---------------------------------------------------------------------
+function librusPro_hideSubjects() {
+  document.querySelectorAll("tr[name=przedmioty_all]").forEach((e) => {
+    const el = e.previousElementSibling;
+    if (el.children[indices["ocenyI"] + offsetJS].textContent == "Brak ocen" && el.children[indices["ocenyII"] + offsetJS].textContent == "Brak ocen")
+    {
+      el.remove();
+      e.remove();
+    }
+  });
+}
+
+
+// Usuwanie jedynek
+function librusPro_hideOnes() {
+  // Oceny poprawione (w dodatkowym spanie)
+  document.querySelectorAll("span > .grade-box > a:not(#ocenaTest)").forEach(e => {
+    if (/[0-1][+-]?/.test(e.innerText)) {
+      [...e.parentElement.parentElement.childNodes].forEach(elm => elm.nodeType != 1 && elm.parentNode.removeChild(elm));
+      const regex = /<br \/>Poprawa oceny:(.*)/;
+      e.parentElement.nextElementSibling.firstElementChild.title = e.parentElement.nextElementSibling.firstElementChild.title.replace(regex, "");
+      e.parentElement.remove();
+    }
+  });
+
+
+  // Oceny zwykłe
+  document.querySelectorAll("td:not(.center) > .grade-box > a:not(#ocenaTest)").forEach(e => {
+    if (/[0-1][+-]?/.test(e.innerText)) {
+      e.parentElement.remove();
+    }
+  });
+
+  // (Proponowane) (śród)roczne
+  document.querySelectorAll('td.center > .grade-box > a:not(#ocenaTest)').forEach(e => {
+    if (/[0-1][+-]?/.test(e.innerText)) {
+      const el = e.parentElement.cloneNode(true);
+      e.parentElement.parentElement.appendChild(el);
+      el.children[0].innerText = "2";
+      el.children[0].title = "";
+      const nieJedynki = document.querySelectorAll(`td.center:nth-child(${Array.from(e.parentNode.parentNode.parentNode.children).indexOf(e.parentNode.parentNode) + 1}) > .grade-box > a:not(#ocenaTest)`);
+      if (nieJedynki.length != 0) {
+        let color;
+        nieJedynki.forEach((x) => {
+          color = x.parentElement.style.backgroundColor;
+          return;
+        })
+        el.style.backgroundColor = color;
+      } else {
+        el.style.backgroundColor = "#B0C4DE";
+      }
+      e.parentElement.remove();
+    }
+  });
+}
 
 // Od ostatniego logowania/w tym tygodniu
 let odOstLogowania = false;
+
+// Jeśli w widoku ocen
 if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
   if (document.querySelector("#body > form:nth-child(5) > div > h2") != null && document.querySelector("#body > form:nth-child(5) > div > h2").innerHTML.includes("-")) {
     odOstLogowania = true;
-  } else {
-    // Usunięcie wierszy bez ocen
-    const ocenyTr = document.querySelectorAll("tr[name=przedmioty_all] + tr");
-    for (let i = 0; i < ocenyTr.length; i++)
-    {
-      if (ocenyTr[i].children[2].textContent == "Brak ocen")
-      {
-        ocenyTr[i].nextElementSibling.remove();
-        ocenyTr[i].remove();
+  }
+
+  // Ukrywanie przedmiotów bez ocen
+  browserAPI.storage.sync.get(["options"], function (t) {
+    options = t["options"];
+    if (options == null) {
+      options = {
+        hideSubjects: true,
+        depressionMode: false,
+        hideOnes: false,
+        plusValue: 0.5,
+        minusValue: 0.25,
+      }
+      browserAPI.storage.sync.set({ ["options"]: options });
+      return;
+    }
+    if (options.hideSubjects) {
+      librusPro_hideSubjects();
+    }
+    if (options.hideOnes) {
+      librusPro_hideOnes();
+    }
+
+
+    librusPro_insertSrednie();
+  });
+
+
+  browserAPI.storage.onChanged.addListener(function(changes, namespace) {
+    for (let key in changes) {
+      if (key === "options") {
+        window.location.replace(window.location.href);
       }
     }
-  }
-}
+  });
 
-// Pokaż wiersze zawierające przynajmniej jedną ocenę
-// Uwaga na oceny poprawiane - są w dodatkowym spanie
-document.querySelectorAll(".grade-box").forEach(e => {e.parentElement.tagName == "SPAN" ? e.parentElement.parentElement.parentElement.style.display = "table-row" : e.parentElement.parentElement.style.display = "table-row";});
+}
 
 
 // Zamiany obrazków na ich ciemne wersje
@@ -129,7 +430,6 @@ if (document.querySelector(".tree-first-branch") != null) {
 // document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)").innerText = "wzorowe";
 
 
-
 // ---------------------------------------- ZACHOWANIE ----------------------------------------
 
 
@@ -148,6 +448,8 @@ function librusPro_insertZachowanie() {
   // Pobranie wartości proponowanego zachowania
   propZachSrodroczne = propZachSrodroczne.innerText.split(': ')[1];
   propZachRoczne = propZachRoczne.innerText.split(': ')[1];
+  if (propZachSrodroczne == null) return;
+  if (propZachSrodroczne != null && propZachRoczne == null) propZachRoczne = "-";
 
   // Elementy zachowania (śród)rocznego (i proponowanego) [niezmienne od proponowanych ocen I, II i R]
   const zachSrodroczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded > td:nth-child(4)");
@@ -156,8 +458,8 @@ function librusPro_insertZachowanie() {
   const propZachRoczneElement = zachRoczneElement.cloneNode(true);
   
   // "-", bądź ocena z zachowania
-  propZachSrodroczneElement.innerText = propZachSrodroczne == "" ? "-" : propZachSrodroczne;
-  propZachRoczneElement.innerText = propZachRoczne == "" ? "-" : propZachRoczne;
+  propZachSrodroczneElement.innerText = propZachSrodroczne || "-";
+  propZachRoczneElement.innerText = propZachRoczne || "-";
   
   // Stylizacja proponowanych zachowań
   propZachSrodroczneElement.style.fontStyle = "italic";
@@ -171,10 +473,10 @@ function librusPro_insertZachowanie() {
   
   // Zwężenie komórek, aby zrobić miejsce na nowe i wypełnić wiersz
   document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded > td:nth-child(3)").colSpan = "1";
-  propZachSrodroczneElement.colSpan = indexy["proponowaneI"] != -1 ? "2" : "1";
+  propZachSrodroczneElement.colSpan = indices["proponowaneI"] != -1 ? "2" : "1";
   zachSrodroczneElement.nextElementSibling.colSpan = "1";
-  propZachRoczneElement.colSpan = indexy["proponowaneII"] != -1 ? "3" : "2";
-  zachRoczneElement.colSpan = indexy["proponowaneR"] != -1 ? "3" : "2";
+  propZachRoczneElement.colSpan = indices["proponowaneII"] != -1 ? "3" : "2";
+  zachRoczneElement.colSpan = indices["proponowaneR"] != -1 ? "3" : "2";
 }
 
 // Schowanie paska z zachowaniem i wywołanie funkcji dodającej jeśli znajdujemy się na poprawnej stronie
@@ -193,130 +495,6 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
   librusPro_insertZachowanie();
 }
 
-
-// ----------------------------------------------- ŚREDNIE -----------------------------------------------
-
-// Liczenie średniej arytmetycznej np. do proponowanych
-function liczSrednia(elements) {
-  if (elements.length < 1)
-    return nieMaSredniej;
-
-  let suma = 0;
-  elements.forEach(e => {
-    if (e.innerText.length == 1) suma += +e.innerText;
-    else if (e.innerText[1] == "+") suma += +e.innerText[0] + 0.5;
-    else if (e.innerText[1] == "-") suma += +e.innerText[0] - 0.25;
-    else suma += +e.innerText[0];
-  });
-
-  return (Math.round( suma / elements.length  * 100 + Number.EPSILON ) / 100).toFixed(2);
-}
-
-// Liczenie średniej ważonej, zwracając uwagę na parametr Licz do średniej:
-function liczSredniaWazona(elements) {
-  if (elements.length < 1)
-    return nieMaSredniej;
-
-  let suma = 0;
-  let wagi = 0;
-  elements.forEach(e => {
-    if (/[0-6][+-]?/.test(e.innerText)) {
-      let regexp = /<br>Licz do średniej: (.){3}<br>/gi;
-      let liczDoSredniej = e.title.match(regexp)[0];
-      liczDoSredniej = liczDoSredniej.replace("<br>Licz do średniej: ", "").replace("<br>", "");
-      if (liczDoSredniej == "nie") return;
-
-      regexp = /<br>Waga: .{1}<br>/;
-      let waga = e.title.match(regexp)[0];
-      waga = waga.replace("<br>Waga: ", "").replace("<br>", "");
-      wagi += +waga;
-
-      // if (waga >= 2) e.parentElement.style.setProperty("border", "1px solid black", "important");
-      // if (waga == 1) e.parentElement.style.setProperty("background", "white", "important");
-      // if (waga == 2) e.parentElement.style.setProperty("background", "yellow", "important");
-      // if (waga == 3) e.parentElement.style.setProperty("background", "#00ab00", "important");
-      // if (waga == 4) e.parentElement.style.setProperty("background", "#ff3434", "important");
-      // // if (waga == 4) e.style.setProperty("color", "#ffffff", "important");
-      // if (waga >= 5) e.parentElement.style.setProperty("background", "#1f1f1f", "important");
-      // if (waga >= 5) e.style.setProperty("color", "#ffffff", "important");
-      
-      if (e.innerText.length == 1) suma += (+e.innerText) * waga;
-      else if (e.innerText[1] == "+") suma += (+e.innerText[0] + 0.5) * waga;
-      else if (e.innerText[1] == "-") suma += (+e.innerText[0] - 0.25) * waga;
-    }
-  });
-
-  if (suma <= 0) return nieMaSredniej;
-  return (Math.round( suma / wagi  * 100 + Number.EPSILON ) / 100).toFixed(2);
-}
-
-const nieMaSredniej = "-";
-
-function librusPro_insertSrednie() {
-  const wierszOceny = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(1)");
-  if (wierszOceny == null) return;
-
-  // Tworzenie wiersza ze średnimi
-  const srednieTr = wierszOceny.cloneNode(true);
-
-  const ocenyI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:not(.bolded) > td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`);
-  const proponowaneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["proponowaneI"] + offsetCSS}) > span > a`);
-  const srodroczneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["srodroczneI"] + offsetCSS}) > span > a`);
-
-  const ocenyII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["ocenyII"] + offsetCSS}) span.grade-box > a`);
-  const proponowaneII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["proponowaneII"] + offsetCSS}) > span > a`);
-  const srodroczneII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["srodroczneII"] + offsetCSS}) span.grade-box > a`);
-
-  const ocenyR = [...ocenyI, ...ocenyII];
-  const proponowaneR = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["proponowaneR"] + offsetCSS}) > span > a`);
-  const roczne = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr > td:nth-child(${indexy["roczne"] + offsetCSS}) > span > a`);
-
-  // Wstawienie średnich w wiersz tabeli
-  srednieTr.children[0].innerText = "";
-  srednieTr.children[1].innerText = "Średnia";
-  srednieTr.children[indexy["ocenyI"] + offsetJS].innerText = "";
-  srednieTr.children[indexy["sredniaI"] + offsetJS].innerText = liczSredniaWazona(ocenyI);
-
-  if (indexy["proponowaneI"] > 0)
-  srednieTr.children[indexy["proponowaneI"] + offsetJS].innerText = liczSrednia(proponowaneI);
-
-  srednieTr.children[indexy["srodroczneI"] + offsetJS].innerText = liczSrednia(srodroczneI);
-  srednieTr.children[indexy["ocenyII"] + offsetJS].innerText = "";
-  srednieTr.children[indexy["sredniaII"] + offsetJS].innerText = liczSredniaWazona(ocenyII);
-
-  if (indexy["proponowaneII"] > 0)
-  srednieTr.children[indexy["proponowaneII"] + offsetJS].innerText = liczSrednia(proponowaneII);
-
-  srednieTr.children[indexy["srodroczneII"] + offsetJS].innerText = liczSrednia(srodroczneII);
-  srednieTr.children[indexy["sredniaR"] + offsetJS].innerText = liczSredniaWazona(ocenyR);
-
-  if (indexy["proponowaneR"] > 0)
-  srednieTr.children[indexy["proponowaneR"] + offsetJS].innerText = liczSrednia(proponowaneR);
-
-  srednieTr.children[indexy["roczne"] + offsetJS].innerText = liczSrednia(roczne);
-  srednieTr.classList.add("librusPro_average");
-
-  document.querySelector("#body > form:nth-child(5) > div > div > table > tbody").appendChild(srednieTr);
-  
-  // Wyświetlanie średnich dla poszczególnych przedmiotów
-  // I sem
-  document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indexy["sredniaI"] + offsetCSS})`).forEach(e => {
-    e.innerText = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`)) + (debug ? (" (" + e.innerText + ")") : "");
-    e.classList.add("right");
-  });
-  // II sem
-  document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indexy["sredniaII"] + offsetCSS})`).forEach(e => {
-    e.innerText = liczSredniaWazona(e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyII"] + offsetCSS}) span.grade-box > a`)) + (debug ? (" (" + e.innerText + ")") : "")
-  });
-  // Roczna
-  document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${indexy["sredniaR"] + offsetCSS})`).forEach(e => {
-    e.innerText = liczSredniaWazona([...e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyI"] + offsetCSS}) span.grade-box > a`), ...e.parentElement.querySelectorAll(`td:nth-child(${indexy["ocenyII"] + offsetCSS}) span.grade-box > a`)]) + (debug ? (" (" + e.innerText + ")") : "")
-  });
-}
-
-if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
-  librusPro_insertSrednie();
-}
 
 
 // ---------------------------------------------- WIZUALNE ----------------------------------------------
@@ -362,6 +540,13 @@ function librusPro_adjustNavbar() {
   });
   planLekcji.appendChild(planLekcjiElement);
   navBarElement.parentElement.appendChild(planLekcji);
+
+  document.querySelectorAll("#main-menu > ul > li > a").forEach((e) => {
+    if (e.innerText == "Ankiety") e.parentElement.style.display = "none";
+    if (e.innerText == "Pomoc") e.parentElement.style.display = "none";
+    if (e.innerText == "Książki") e.parentElement.style.display = "none";
+    if (e.innerText == "Organizacja") e.parentElement.children[1].children[0].style.display = "none";
+  })
 }
 
 librusPro_adjustNavbar();
@@ -369,41 +554,40 @@ librusPro_adjustNavbar();
 // Wyświetlanie numeru z dziennika obok szczęśliwego + informacja gdy nim jest Twój
 function librusPro_adjustHeader() {
   const numerek = document.querySelector("#user-section > span.luckyNumber");
+  const numerekDisabled = document.querySelector("#user-section > a > span.luckyNumber");
+
+  let yourNumber = document.createElement("SPAN");
+  yourNumber.innerText = "Twój numerek w dzienniku: ";
+  const number = document.createElement("B");
+  number.style.color = "#eeeeee";
+  yourNumber.appendChild(number);
+
   if (numerek != null) {
-    let nr;
-    browserAPI.storage.sync.get(["nr"], function (r) {
-      nr = r["nr"];
-      if (nr != undefined){
-        let twojNumer = document.createElement("SPAN");
-        twojNumer.innerText = "Twój numerek w dzienniku: ";
-        const numer = document.createElement("B");
-        numer.innerText = nr;
-        numer.style.color = "#eeeeee";
-        twojNumer.appendChild(numer);
-        
-        if (document.querySelector("#user-section > span.luckyNumber > b").innerText == nr) {
+    browserAPI.storage.sync.get(["dane"], function (t) {
+      let dane = t["dane"];
+      if (dane != undefined) {
+        number.innerText = dane.nr;
+        if (document.querySelector("#user-section > span.luckyNumber > b").innerText == dane.nr) {
           const gratulacje = document.createElement("SPAN");
           gratulacje.style.color = "lime";
           gratulacje.style.marginLeft = "5px";
           gratulacje.innerText = "GRATULACJE!";
-          twojNumer.appendChild(gratulacje);
+          yourNumber.appendChild(gratulacje);
         }
 
-        numerek.parentElement.insertBefore(twojNumer, numerek.nextSibling);
+        numerek.parentElement.insertBefore(yourNumber, numerek.nextSibling);
       } else {
-        const klasaRegex = /<th class="big">Klasa <\/th>\n                <td>\n                (.*)\n                <\/td>/;
-        const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
-
-        const xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4 && this.status == 200) {
-            browserAPI.storage.sync.set({ ["klasa"]: this.responseText.match(klasaRegex)[1] });
-            browserAPI.storage.sync.set({ ["nr"]: this.responseText.match(nrRegex)[1] });
-            window.location.reload();
-          }
-        };
-        xhttp.open("GET", "https://synergia.librus.pl/informacja", true);
-        xhttp.send();
+        updateDetails(dane, window.location.href);
+      }
+    });
+  } else if (numerekDisabled != null) {
+    browserAPI.storage.sync.get(["dane"], function (t) {
+      let dane = t["dane"];
+      if (dane != undefined) {
+        number.innerText = dane.nr;
+        numerekDisabled.parentElement.parentElement.insertBefore(yourNumber, numerekDisabled.parentElement.nextSibling);
+      } else {
+        updateDetails(dane, window.location.href);
       }
     });
   }

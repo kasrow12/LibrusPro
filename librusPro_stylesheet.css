@@ -30,6 +30,7 @@ body {
 	background: var(--darkbackground) !important;
 }
 img {
+	-webkit-filter: brightness(0.7) contrast(1.2);
 	filter: brightness(0.7) contrast(1.2);
 	border: 0;
 }
@@ -40,12 +41,14 @@ img {
 	color: #444444 !important;
 }
 [id^="przedmioty"] {
+	-webkit-filter: brightness(1) !important;
 	filter: brightness(1) !important;
 }
 #user-section {
 	color: #949494 !important;
 }
 #top-banner {
+	-webkit-filter: brightness(0.8) contrast(0.7) !important;
 	filter: brightness(0.8) contrast(0.7) !important;
 }
 #body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(4n + 1) > td,
@@ -110,9 +113,7 @@ table.decorated tbody tr.line1:not(.detail-grades) td {
 #user-section {
 	color: #949494 !important;
 }
-#top-banner {
-	filter: brightness(0.8) contrast(0.7);
-}
+
 /* #body > form:nth-child(5) > div > h2 {
 	background: #272727 !important;
 } */
@@ -181,6 +182,7 @@ table.decorated tr.bolded td {
 	height: 20px;
 }
 .detail-grades {
+	-webkit-filter: brightness(0.8) !important;
 	filter: brightness(0.8) !important;
 }
 .detail-grades > td {
@@ -194,19 +196,24 @@ table.decorated tr.bolded td {
 	filter: invert(1);
 } */
 img[src="/images/naglowek_uczen.png"] {
+	-webkit-filter: invert(1);
 	filter: invert(1);
 }
 img[src="/images/usun_kosz.png"] {
+	-webkit-filter: brightness(1) contrast(1);
 	filter: brightness(1) contrast(1);
 }
 #gradeAverangeGraph > a > img {
+	-webkit-filter: brightness(0.7) contrast(1.2);
 	filter: brightness(0.7) contrast(1.2);
 }
 #gradeAverangeGraph {
+	-webkit-filter: brightness(0.8);
 	filter: brightness(0.8);
 }
 #user-section > img,
 #user-section > b > img {
+	-webkit-filter: invert(1);
 	filter: invert(1);
 }
 .ui-tooltip {
@@ -227,10 +234,12 @@ table.decorated thead tr td:last-child {
 }
 .container-background {
 	border: 1px #000000 solid !important;
+	-webkit-box-shadow: none !important;
 	box-shadow: none !important;
 	background: var(--lightbackground) !important;
 }
 .grade-box {
+	-webkit-filter: brightness(0.7);
 	filter: brightness(0.7);
 }
 select {
@@ -249,7 +258,7 @@ select:not([name="rgbKoloru"]) > option {
 	color: #adadad !important;
 }
 
-#body
+/* #body
 	> form:nth-child(5)
 	> div
 	> div
@@ -264,7 +273,7 @@ select:not([name="rgbKoloru"]) > option {
 	> tbody
 	> .line1:nth-child(n + 1):not(.bolded) {
 	display: none;
-}
+} */
 
 /* #body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5) {
 	width: 10px;
@@ -295,6 +304,7 @@ select:not([name="rgbKoloru"]) > option {
 	color: #ffffff;
 }
 .box {
+	-webkit-filter: brightness(0.6);
 	filter: brightness(0.6);
 	border-color: #555555 !important;
 }
@@ -321,12 +331,15 @@ select:not([name="rgbKoloru"]) > option {
 #AbsencesArchiveGraphDiv,
 #GradeArchiveGraphDiv,
 #GradeAverangeGraphDiv {
+	-webkit-filter: brightness(0.8);
 	filter: brightness(0.8);
 }
 #AbsenceGraphDiv {
+	-webkit-filter: brightness(0.7);
 	filter: brightness(0.7);
 }
 #absenceGraph > img {
+	-webkit-filter: brightness(0.6) contrast(1.2);
 	filter: brightness(0.6) contrast(1.2);
 }
 text {
@@ -362,6 +375,7 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 	background: #323232 !important;
 }
 .kalendarz-dzien {
+	-webkit-filter: brightness(0.7) contrast(1.3);
 	filter: brightness(0.7) contrast(1.3);
 }
 .date-pick,
@@ -385,6 +399,7 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 	background: #393939 !important;
 }
 #scheduleForm > div > div > table > tbody > tr > td[style^="background-color:"] {
+	-webkit-filter: brightness(0.7);
 	filter: brightness(0.7);
 }
 .kalendarz-numer-dnia {
@@ -392,7 +407,6 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 }
 
 /* ogloszenia */
-
 #adresaci > table tr > td,
 #adresaci > table > tbody > tr:nth-child(2n + 1) > td,
 #body > div > div > table > tbody > tr:nth-child(2n + 1) > th,
@@ -413,24 +427,12 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 	background: #323232 !important;
 }
 
-#main-menu > ul > li:nth-child(2),
-#main-menu > ul > li:nth-child(4),
-#main-menu > ul > li:nth-child(5),
-#main-menu > ul > li:nth-child(7) > ul > li:nth-child(1),
+/* widok alternatywny */
 #graphic-menu > ul > li:nth-child(1) {
 	display: none;
 }
 
 /* wiadomości */
-/* .tree-first-branch {
-	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko4_dark.png") !important;
-}
-.tree-next-branch {
-	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko1_dark.png") !important;
-}
-.tree-last-branch {
-	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/drzewko2_dark.png") !important;
-} */
 #formWiadomosci
 	> div
 	> div
@@ -492,9 +494,11 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 	color: #b9b9b9;
 }
 img[src="/images/usun_z_kosza.png"] {
+	-webkit-filter: brightness(0.8) contrast(1);
 	filter: brightness(0.8) contrast(1);
 }
 img[src="/assets/img/attachment.png"] {
+	-webkit-filter: brightness(0.8) contrast(0.8);
 	filter: brightness(0.8) contrast(0.8);
 }
 #formWiadomosci
@@ -556,6 +560,7 @@ div.warning-content > p {
 	color: #bbbbbb !important;
 }
 .warning-title {
+	-webkit-filter: brightness(0.8) contrast(1.2);
 	filter: brightness(0.8) contrast(1.2);
 }
 #formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table:nth-child(4) > tbody > tr > td,
@@ -623,10 +628,6 @@ td.today {
 	height: 20px;
 }
 
-/*   WAGOWE KOLORKI
-.grade-box {
-	background-color: white !important;
-} */
 #formWiadomosci > div > div > table.decorated.filters.center.small > tfoot > tr > td,
 #formFiltrZadania > table > tfoot > tr > td,
 #formPrzegladanieRealizacji > table > tfoot > tr > td,
@@ -642,14 +643,12 @@ td.today {
 span.warning-title {
 	color: white;
 }
-
 table.decorated tfoot tr th,
 /* table.decorated tbody tr.line0 th, */ table.decorated tbody tr th,
 table.decorated tfoot tr td,
 /* table.decorated tbody tr.line0 td, */ table.decorated tbody tr td {
 	border-top: 1px solid #000000 !important;
 }
-
 #body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td:nth-child(6) {
 	border-left: none;
 }

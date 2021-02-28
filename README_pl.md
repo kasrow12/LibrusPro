@@ -40,10 +40,15 @@ Niektóre szkoły wyłączają możliwość wyświetlania średniej ocen dla ich
 ## • Ukrywanie przedmiotów bez ocen
 Po co w ogóle mają się wyświetlać, skoro przez cały rok nie dostajesz z nich żadnych ocen?
 
+## • Wersja depresyjna
+Stonowane kolory ocen i wydarzeń w terminarzu, gdy czujesz się nie najlepiej. Wersja możliwa do włączenia w opcjach rozszerzenia.
+
 ## • Poprawki wizualne
 - wyświetlanie proponowanego zachowania w tabeli głównej,
+- możliwość wyłączenia wyświetlania jedynek,
 - usunięcie zbędnych przycisków z paska nawigacyjnego (Ankiety, Biblioteka),
-- dodanie w zamian przycisku Plan lekcji,
+- usunięcie przycisku Wersja Alternatywna, kto normalny z tego korzysta...,
+- dodanie w zamian przycisku Plan lekcji, który otwiera go w nowej karcie, a nie oknie,
 - dodanie opisów wydarzeń w terminarzu bezpośrednio na nich, bez konieczności najeżdżania, aby móc je przeczytać,
 - dopisanie Twojego numerka z dziennika obok "Szczęśliwego Numerka" oraz infomarcja, gdy będzie nim Twój!
 
