@@ -337,6 +337,7 @@ function librusPro_hideOnes() {
       e.parentElement.parentElement.appendChild(el);
       el.children[0].innerText = "2";
       el.children[0].title = "";
+      el.children[0].style.cursor = "progress";
       const nieJedynki = document.querySelectorAll(`td.center:nth-child(${Array.from(e.parentNode.parentNode.parentNode.children).indexOf(e.parentNode.parentNode) + 1}) > .grade-box > a:not(#ocenaTest)`);
       if (nieJedynki.length != 0) {
         let color;
@@ -419,6 +420,14 @@ if (document.querySelector(".tree-first-branch") != null) {
   document.querySelectorAll(".tree-last-branch").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko2_dark.png'); + ")";});
 }
 
+if (document.querySelector('img[src="/images/strzalka_prawo.gif"]') != null) {
+  document.querySelectorAll('img[src="/images/strzalka_prawo.gif"]').forEach(e => {
+    e.src = browserAPI.runtime.getURL('img/strzalka_prawo.png');});
+}
+if (document.querySelector('img[src="/images/strzalka_lewo.gif"]') != null) {
+  document.querySelectorAll('img[src="/images/strzalka_lewo.gif"]').forEach(e => {
+    e.src = browserAPI.runtime.getURL('img/strzalka_lewo.png');});
+}
 
 
 // szósteczki
@@ -597,7 +606,7 @@ function librusPro_adjustHeader() {
   }
   const uczen = document.querySelector("#user-section > b > img");
   if (uczen != null) {
-    uczen.title += "<br><b style='color: #a96fe3'>Dzięki za korzystanie z rozszerzenia LibrusPro!</b>"
+    uczen.title += "<br><b style='color: #a96fe3'>Dzięki za korzystanie z rozszerzenia LibrusPro!</b><br><b style='color: #ff7ca0'><i>Jedz Buraczki!</i></b>"
   }
 }
 
@@ -622,7 +631,7 @@ function librusPro_insertFooter() {
         filter: brightness(0.7) contrast(1.1);">
     </div>
     <div style="margin-left: 5px; vertical-align: top; display: inline-flex;">
-      <div style="color: rgb(153, 153, 153); ">
+      <div style="color: rgb(153, 153, 153); cursor: vertical-text;">
         <div>LibrusPro © 2021 Maks Kowalski</div>
         <div><a href="https://github.com/kasrow12/LibrusPro" target="_blank" style="color: rgb(58, 90, 171); cursor: pointer;">https://github.com/kasrow12/LibrusPro</a></div>
       </div>
