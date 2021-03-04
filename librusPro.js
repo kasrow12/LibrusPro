@@ -117,7 +117,7 @@ function liczSrednia(elements, background, plusValue, minusValue, depressionMode
   elements.forEach(e => {
     if (e.innerText.length == 1) suma += +e.innerText;
     else if (e.innerText[1] == "+") suma += +e.innerText[0] + +plusValue;
-    else if (e.innerText[1] == "-") suma += +e.innerText[0] - -minusValue;
+    else if (e.innerText[1] == "-") suma += +e.innerText[0] - +minusValue;
     else suma += +e.innerText[0];
 
     if (depressionMode) {
@@ -158,7 +158,7 @@ function liczSredniaWazona(elements, depressionMode = false, plusValue, minusVal
       
       if (e.innerText.length == 1) sum += (+e.innerText) * weight;
       else if (e.innerText[1] == "+") sum += (+e.innerText[0] + +plusValue) * weight;
-      else if (e.innerText[1] == "-") sum += (+e.innerText[0] - -minusValue) * weight;
+      else if (e.innerText[1] == "-") sum += (+e.innerText[0] - +minusValue) * weight;
       
       if (depressionMode) {
         if (weight == 1) e.parentElement.style.background = "#777777";
@@ -422,11 +422,15 @@ if (document.querySelector(".tree-first-branch") != null) {
 
 if (document.querySelector('img[src="/images/strzalka_prawo.gif"]') != null) {
   document.querySelectorAll('img[src="/images/strzalka_prawo.gif"]').forEach(e => {
-    e.src = browserAPI.runtime.getURL('img/strzalka_prawo.png');});
+    e.src = browserAPI.runtime.getURL('img/strzalka_prawo.png');
+    e.style.filter = "none";
+  });
 }
 if (document.querySelector('img[src="/images/strzalka_lewo.gif"]') != null) {
   document.querySelectorAll('img[src="/images/strzalka_lewo.gif"]').forEach(e => {
-    e.src = browserAPI.runtime.getURL('img/strzalka_lewo.png');});
+    e.src = browserAPI.runtime.getURL('img/strzalka_lewo.png');
+    e.style.filter = "none";
+  });
 }
 
 
