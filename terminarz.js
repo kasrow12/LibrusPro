@@ -33,7 +33,6 @@
   }
 */
 
-
 // Klasa do wklejania do każdego własnego wydarzenia np. XD LO
 let currentClass;
 browserAPI.storage.sync.get(["dane"], function (t) {
@@ -45,13 +44,10 @@ browserAPI.storage.sync.get(["dane"], function (t) {
   }
 });
 
+// Automatyczne odświeżanie (z pominięciem "Potwiedź ponowne przesłanie formularza")
 browserAPI.storage.onChanged.addListener(function(changes, namespace) {
-  // window.location.reload();
-
   window.location.replace(window.location.href);
-
 });
-
 
 // ---------------------- ISEMPTY FUNCTION --------------------------
 function isEmpty(obj) { 
@@ -78,8 +74,8 @@ overlay.classList = "librusPro_body";
 overlay.innerHTML = `
     <style> @media screen and (max-height: 680px) { .librusPro_pageBody { overflow: hidden !important; } .librusPro_body { overflow-y: scroll; } }
     body {overflow: visible;}
-    @-webkit-keyframes zabawa {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
-    @keyframes zabawa {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
+    @-webkit-keyframes blinking {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
+    @keyframes blinking {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
     .librusPro_container {border: 1px solid black; width: 20vw; max-width: 270px; min-width: 270px; margin: 8vh auto 0 auto; background: #323232; padding: 10px 20px 7px 20px; border-radius: 5px; -webkit-box-shadow: 2px 3px 5px #000000; box-shadow: 2px 3px 5px #000000}
     .librusPro_text {text-shadow: 1px 1px 3px #390a3c;font-size: 19px; color: #dddddd; text-align:center; margin: 10px 0 5px 0}
     .librusPro_date {text-shadow: 1px 1px 3px #111111;font-size: 15px; color: #dddddd; text-align:center; padding-bottom: 10px; border-bottom: 1px solid #adadad; width: 90%; margin: 0 auto}
@@ -236,10 +232,11 @@ overlay.innerHTML = `
         </div>
         <div class="librusPro_button librusPro_button-add" id="librusPro_add">Dodaj</div>
         <div class="librusPro_button librusPro_button-close" id="librusPro_close">Zamknij</div>
-        <div class="librusPro_footer">LibrusPro © 2021</div>
+        <div class="librusPro_footer">LibrusPro © <span id="librusPro_currentYear"></span></div>
     </div>
 `;
 document.body.appendChild(overlay);
+document.getElementById("librusPro_currentYear").innerText = new Date().getFullYear();
 
 // ----------------------------------------------------
 const pageScript = document.createElement("script");
@@ -427,8 +424,7 @@ let setOpacity = false;
 if (year < date.getFullYear()) setOpacity = true;
 else if (monthId <= date.getMonth() && year == date.getFullYear()) setOpacity = true;
 
-for (let i = 0; i < days.length; i++) {
-  const day = days[i];
+for (const day of days) {
   const key = `${year}-${(monthId + 1) < 10 ? "0" + (monthId + 1) : monthId + 1}-${day.innerText < 10 ? "0" + day.innerText : day.innerText}`;
   day.style.width = "initial";
   day.style.float = "right";
@@ -450,6 +446,7 @@ for (let i = 0; i < days.length; i++) {
   }
   if (setOpacity) {
     day.parentElement.style.opacity = "0.5";
+    day.parentElement.classList.add("past");
   }
 
   const clear = document.createElement("span");
@@ -459,6 +456,24 @@ for (let i = 0; i < days.length; i++) {
 
   createCell(day, key);
 }
+
+// Wersja depresyjna terminarza
+browserAPI.storage.sync.get(["options"], function (t) {
+  let options = t["options"];
+  if (options != null) {
+    if (options.depressionMode) {
+      const calendarDays = document.getElementsByClassName("kalendarz-dzien");
+      for (const e of calendarDays) {
+        if (e.classList.contains("past")) {
+          e.style.filter = "grayscale(100%) brightness(0.5)";
+        } else {
+          e.style.filter = "grayscale(100%) brightness(0.6) contrast(1.2)";
+          e.style.opacity = "0.9";
+        }
+      }
+    }
+  }
+});
 
 // -------------------- CREATE CELL ASYNC FUNCTION  ----------------
 function createCell(cellDay, cellKey) {
@@ -487,7 +502,7 @@ function createCell(cellDay, cellKey) {
       cell.style.color = event.color;
       cell.style.overflowWrap = "break-word";
       cell.style.wordWrap = "break-word";
-      cell.style.animation = "zabawa 4s infinite ease-in-out";
+      cell.style.animation = "blinking 4s infinite ease-in-out";
       cell.style.wordBreak = "break-word";
       cell.classList.add("no-border-left", "no-border-right");
 
@@ -548,7 +563,6 @@ function createCell(cellDay, cellKey) {
       cell.innerText = temp;
 
       if (event.url != "" && event.url !== undefined) {
-        // temp += `\n<img src="${info.url}" style="width: 100%; filter: drop-shadow(3px 3px 2px #000000); border-radius: 5px; margin: 5px 0">`;
         const image = document.createElement("IMG");
         image.src = event.url;
         image.style.width = "80%";
@@ -741,17 +755,3 @@ function addDescriptionToCell(cell) {
     }
   }
 }
-
-// Wersja depresyjna terminarza
-browserAPI.storage.sync.get(["options"], function (t) {
-  let options = t["options"];
-  if (options != null) {
-    if (options.depressionMode) {
-      document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td, #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > th").forEach(e => {
-        e.style.filter = "grayscale(70%) brightness(0.6)";
-        e.style.opacity = "0.9";
-        e.style.animation = "";
-      })
-    }
-  }
-});

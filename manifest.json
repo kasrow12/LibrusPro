@@ -1,7 +1,7 @@
 {
 	"name": "LibrusPro - rozszerzenie do Librusa",
-	"version": "1.0.3",
-	"description": "Ulepsz Librusa już dziś! Czy marzyłeś(-aś) może kiedyś o ciemnym motywie do Librusa, własnym terminarzu i liczeniu średnich?",
+	"version": "1.1.0",
+	"description": "Ulepsz Librusa już dziś! Marzyłeś(-aś) może kiedyś o ciemnym motywie do Librusa, własnym terminarzu i liczeniu średnich?",
 	"manifest_version": 2,
 	"permissions": [ "storage", "https://synergia.librus.pl/*" ],
 

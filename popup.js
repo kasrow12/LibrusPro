@@ -1,5 +1,8 @@
+// LibrusPro
+// Browser Extension
+// Author: Maks Kowalski
+// Contact: kasrow12 (at) gmail.com
 /*
-
 key: 'options'
 value: {
   hideSubjects: true,
@@ -8,32 +11,19 @@ value: {
   plusValue: 0.5,
   minusValue: 0.25,
 }
-
 */
 
-// let clearButtonInUse = false;
-// const clearButton = document.getElementById("clearButton");
-// clearButton.addEventListener("click", () => {
-//   if (!clearButtonInUse) {
-//     clearButton.classList.add("onclic");
-//     clearButtonInUse = true;
-//     setTimeout(validate2, 250);
-//   }
-// })
-// function validate2() {
-//   setTimeout(function() {
-//     clearButton.classList.remove("onclic");
-//     clearButton.classList.add( "validate" );
-//     setTimeout(callback2, 450);
-
-//   }, 1050 );
-// }
-// function callback2() {
-//   setTimeout(function() {
-//     clearButton.classList.remove( "validate" );
-//     clearButtonInUse = false;
-//     }, 1250 );
-//   }
+const DANE_DEFAULT = {
+  nr: null,
+  currentClass: null,
+};
+const OPTIONS_DEFAULT = {
+  hideSubjects: true,
+  depressionMode: false,
+  hideOnes: false,
+  plusValue: 0.5,
+  minusValue: 0.25,
+};
 
 let browserAPI;
 if (typeof chrome != null) {
@@ -46,16 +36,9 @@ function clear() {
   if (confirm('Na pewno?'))
   browserAPI.storage.sync.clear();
 }
-// document.getElementById('clear').addEventListener('click', clear);
 
 function restoreDefaults() {
-  browserAPI.storage.sync.set({ ["options"]: {
-    hideSubjects: true,
-    depressionMode: false,
-    hideOnes: false,
-    plusValue: 0.5,
-    minusValue: 0.25,
-  } });
+  browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
   document.getElementById('hideSubjects').checked = true;
   document.getElementById('depressionMode').checked = false;
   document.getElementById('hideOnes').checked = false;
@@ -76,7 +59,6 @@ browserAPI.storage.sync.get(["options"], function (t) {
   document.getElementById('plusValue').value = options.plusValue;
   document.getElementById('minusValue').value = options.minusValue;
 });
-
 
 const resetButton = document.getElementById("resetButton");
 let resetButtonInUse = false;
@@ -139,7 +121,6 @@ function updateOptions() {
 }
 document.getElementById('form').onsubmit = updateOptions;
 
-
 // Update details
 browserAPI.storage.sync.get(["dane"], function (t) {
   const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
@@ -161,15 +142,11 @@ browserAPI.storage.sync.get(["dane"], function (t) {
           }
 
           if (t["dane"] == null || nr != t["dane"].nr || klasa != t["dane"].currentClass) {
-            let temp = {
-              nr: null,
-              currentClass: null,
-            }
+            let temp = DANE_DEFAULT;
             if (klasa != null) temp.currentClass = klasa;
             if (nr != null) temp.nr = nr;
             browserAPI.storage.sync.set({ ["dane"]: temp });
           }
-
         }
       };
       xhttpKlasa.open("GET", "https://synergia.librus.pl/przegladaj_oceny/uczen", true);
