@@ -40,20 +40,27 @@ if (typeof chrome != null) {
   browserAPI = browser;
 }
 
+browserAPI.storage.onChanged.addListener((changes, namespace) => {
+  for (let key in changes) {
+    if (key === "options") {
+      window.location.replace(window.location.href);
+    }
+  }
+});
+
 // Aktualizacja numerku i klasy
 function updateDetails(dane, href) {
   const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
   const xhttpNr = new XMLHttpRequest();
-  xhttpNr.onreadystatechange = () => {
+  xhttpNr.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       let nr = this.responseText.match(nrRegex);
       if (nr != null) {
         nr = nr[1];
       }
-
       const klasaRegex = /<b>Klasa: <\/b>(.*)&nbsp;<\/p>/;
       const xhttpKlasa = new XMLHttpRequest();
-      xhttpKlasa.onreadystatechange = () => {
+      xhttpKlasa.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
           let klasa = this.responseText.match(klasaRegex);
           if (klasa != null) {
@@ -83,7 +90,7 @@ function updateDetails(dane, href) {
 // Co to po komu ta strona startowa?
 if (window.location.href == "https://synergia.librus.pl/uczen/index" || window.location.href == "https://synergia.librus.pl/rodzic/index") {
   // Przekierowanie i aktualizacja danych (nr i klasa)
-  browserAPI.storage.sync.get(["dane"], (t) => {
+  browserAPI.storage.sync.get(["dane"], function (t) {
     let dane = t["dane"];
     updateDetails(dane, "https://synergia.librus.pl/przegladaj_oceny/uczen");
   });
@@ -210,14 +217,32 @@ function getWeightedAverage(elements, plusValue, minusValue, depressionMode = fa
 }
 
 function getYearAverage(semI, semII) {
+  if (semI.weights == 0 && semII.weights == 0) return NO_DATA;
   return (Math.round( (semI.sum + semII.sum) / (semI.weights + semII.weights)  * 100 + Number.EPSILON ) / 100).toFixed(2);
 }
 
+function insertNoGrades() {
+  const noNewGrades = document.createElement("TR");
+  noNewGrades.classList = "bolded line1";
+  noNewGrades.innerHTML = `<td colspan="64" style="text-align: center;">Brak ocen 😎</td>`;
+  const ref = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody");
+  if (ref != null) {
+    ref.insertBefore(noNewGrades, ref.firstElementChild);
+  }
+}
+
 function handleGrades(options) {
-  if (document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(1)") == null) return;
+  if (document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(1):not([name=przedmioty_all])") == null) {
+    insertNoGrades();
+    return;
+  }
 
   // Tworzenie wiersza ze średnimi
   const srednieTr = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(1)").cloneNode(true);
+  if (srednieTr.classList.contains("bolded")) {
+    insertNoGrades();
+    return;
+  }
 
   const ocenyI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:not(.bolded) > td:nth-child(${INDICES["ocenyI"] + OFFSET_CSS}) span.grade-box > a`);
   const proponowaneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:not(#tabSource) > tbody > tr:not(.bolded) > td:nth-child(${INDICES["proponowaneI"] + OFFSET_CSS}) > span > a`);
@@ -363,17 +388,23 @@ function finalizeDarkTheme() {
   if (document.querySelectorAll("table.decorated.filters td, table.decorated.filters th") != null) {
     document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach(e => {e.style.setProperty("border-color", "#000000", "important");});
   }
-
+  
   if (document.querySelectorAll("table.decorated thead td.spacing, table.decorated thead th.spacing") != null) {
     document.querySelectorAll("table.decorated thead td.spacing, table.decorated thead th.spacing").forEach(e => {e.style.setProperty("border-left", "1px solid #000000", "important");});
+  }
+
+  if (document.querySelector('img[src="/images/pomoc_ciemna.png"]') != null) {
+    document.querySelectorAll('img[src="/images/pomoc_ciemna.png"]').forEach(e => {
+      e.src = browserAPI.runtime.getURL('img/pomoc_ciemna.png');
+      e.style.filter = "none";
+    });
   }
 }
 
 function hideSubjects() {
   document.querySelectorAll("tr[name=przedmioty_all]").forEach((e) => {
     const el = e.previousElementSibling;
-    if (el.children[INDICES["ocenyI"] + OFFSET_JS].textContent == "Brak ocen" && el.children[INDICES["ocenyII"] + OFFSET_JS].textContent == "Brak ocen")
-    {
+    if (el != null && el.children[INDICES["ocenyI"] + OFFSET_JS].textContent == "Brak ocen" && el.children[INDICES["ocenyII"] + OFFSET_JS].textContent == "Brak ocen") {
       el.remove();
       e.remove();
     }
@@ -436,16 +467,8 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
     odOstLogowania = true;
   }
 
-  browserAPI.storage.onChanged.addListener((changes, namespace) => {
-    for (let key in changes) {
-      if (key === "options") {
-        window.location.replace(window.location.href);
-      }
-    }
-  });
-
   // Ukrywanie przedmiotów bez ocen
-  browserAPI.storage.sync.get(["options"], (t) => {
+  browserAPI.storage.sync.get(["options"], function(t) {
     options = t["options"];
     if (options == null) {
       browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
@@ -552,7 +575,7 @@ function adjustNavbar() {
   const planLekcjiElement = document.createElement("A");
   planLekcjiElement.innerText = "Plan lekcji";
   planLekcjiElement.style.cursor = "pointer";
-  planLekcjiElement.addEventListener("mouseup", () => {
+  planLekcjiElement.addEventListener("mouseup", function() {
     window.open("https://synergia.librus.pl/przegladaj_plan_lekcji");
   });
   planLekcji.appendChild(planLekcjiElement);
@@ -596,7 +619,7 @@ function adjustHeader() {
       }
     });
   } else if (numerekDisabled != null) {
-    browserAPI.storage.sync.get(["dane"], (t) => {
+    browserAPI.storage.sync.get(["dane"], function(t) {
       let dane = t["dane"];
       if (dane != undefined) {
         number.innerText = dane.nr;
@@ -608,7 +631,7 @@ function adjustHeader() {
   }
   const hakerzy = document.querySelector("#user-section > img");
   if (hakerzy != null) {
-    hakerzy.title += "<br><b style='color: #ee9999'>HAKERZY ATAKUJĄ!</b>"
+    hakerzy.title += "<br><b style='color: #ee9999'>❗❗ HAKERZY ATAKUJĄ! ❗❗</b>"
   }
   const uczen = document.querySelector("#user-section > b > img");
   if (uczen != null) {

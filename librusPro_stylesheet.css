@@ -110,9 +110,6 @@ table.decorated tbody tr.line1:not(.detail-grades) td {
 #top-banner-container {
 	background: #272727 !important;
 }
-#user-section {
-	color: #949494 !important;
-}
 
 /* #body > form:nth-child(5) > div > h2 {
 	background: #272727 !important;
@@ -211,8 +208,7 @@ img[src="/images/usun_kosz.png"] {
 	-webkit-filter: brightness(0.8);
 	filter: brightness(0.8);
 }
-#user-section > img,
-#user-section > b > img {
+#user-section > img {
 	-webkit-filter: invert(1);
 	filter: invert(1);
 }
