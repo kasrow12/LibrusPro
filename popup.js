@@ -6,6 +6,7 @@
 key: 'options'
 value: {
   hideSubjects: true,
+  calculateAverages: true,
   depressionMode: false,
   hideOnes: false,
   plusValue: 0.5,
@@ -19,6 +20,7 @@ const DANE_DEFAULT = {
 };
 const OPTIONS_DEFAULT = {
   hideSubjects: true,
+  calculateAverages: true,
   depressionMode: false,
   hideOnes: false,
   plusValue: 0.5,
@@ -39,7 +41,9 @@ function clear() {
 
 function restoreDefaults() {
   browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
+  browserAPI.storage.sync.remove(["aprilfools"]);
   document.getElementById('hideSubjects').checked = true;
+  document.getElementById('calculateAverages').checked = true;
   document.getElementById('depressionMode').checked = false;
   document.getElementById('hideOnes').checked = false;
   document.getElementById('plusValue').value = 0.5;
@@ -52,8 +56,16 @@ browserAPI.storage.sync.get(["options"], function (t) {
   if (options == null) {
     restoreDefaults();
     return;
+  } else {
+    for (let p in OPTIONS_DEFAULT) {
+      if (!options.hasOwnProperty(p)) {
+        restoreDefaults();
+        return;
+      }
+    }
   }
   document.getElementById('hideSubjects').checked = options.hideSubjects;
+  document.getElementById('calculateAverages').checked = options.calculateAverages;
   document.getElementById('depressionMode').checked = options.depressionMode;
   document.getElementById('hideOnes').checked = options.hideOnes;
   document.getElementById('plusValue').value = options.plusValue;
@@ -95,6 +107,7 @@ function validate() {
     saveButton.classList.add("validate");
     browserAPI.storage.sync.set({ ["options"]: {
         hideSubjects: document.getElementById('hideSubjects').checked,
+        calculateAverages: document.getElementById('calculateAverages').checked,
         depressionMode: document.getElementById('depressionMode').checked,
         hideOnes: document.getElementById('hideOnes').checked,
         plusValue: document.getElementById('plusValue').value,

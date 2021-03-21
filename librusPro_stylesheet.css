@@ -519,6 +519,8 @@ img[src="/assets/img/attachment.png"] {
 #body > div > div > form > table > tbody > tr:nth-child(2n + 1) > th,
 #body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:nth-child(2n + 1) > td,
 #body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:nth-child(2n + 1) > th,
+#zmienEmailDialog > div.warning-content > form > table > tbody td,
+#zmienEmailDialog > div.warning-content > form > table > tbody th,
 #formDanePoprzednieLata > div > div > table > tbody > tr:nth-child(2n + 1) > th,
 #formDanePoprzednieLata > div > div > table > tbody > tr:nth-child(2n + 1) > td {
 	background: #343434 !important;
@@ -538,6 +540,8 @@ img[src="/assets/img/attachment.png"] {
 #body > div > div > form > table > tbody > tr:hover > th,
 #body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:hover > td,
 #body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:hover > th,
+#zmienEmailDialog > div.warning-content > form > table > tbody > tr:hover > td,
+#zmienEmailDialog > div.warning-content > form > table > tbody > tr:hover > th,
 #formDanePoprzednieLata > div > div > table > tbody > tr:hover > th,
 #formDanePoprzednieLata > div > div > table > tbody > tr:hover > td {
 	background: #323232 !important;
@@ -594,6 +598,7 @@ div.warning-content > p {
 #formDanePoprzednieLata > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p,
 #body > div > div > div > table > tbody > tr > td > table > tbody > tr > td,
 #formWiadomosci > div > div > div > div > p,
+#body > div > div > table > thead > tr > td > a,
 td > table > tbody > tr.line1.bolded > td {
 	color: #bbbbbb !important;
 }

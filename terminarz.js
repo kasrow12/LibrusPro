@@ -108,8 +108,8 @@ overlay.innerHTML = `
     .librusPro_radioContainer .librusPro_darkDot::after {background: #222222}
     .librusPro_removeButton {display: none; position: absolute; top: 3px; right: 5px; color: #ffffff; font-weight: bold; cursor: pointer; text-shadow: 1px 1px 2px #333333;}
     .librusPro_editButton {display: none; position: absolute; top: 1px; right: 20px; color: #ffffff; font-weight: bold; cursor: pointer; text-shadow: 1px 1px 2px #333333; }
-    th:hover > .librusPro_removeButton {display: block;}
-    th:hover > .librusPro_editButton {display: block;}
+    .librusPro_custom:hover > .librusPro_removeButton {display: block;}
+    .librusPro_custom:hover > .librusPro_editButton {display: block;}
     textarea {resize: none; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 17px; font-size: 13px; scrollbar-color: dark;}
     #librusPro_lesson, #librusPro_subject, #librusPro_imageUrl, #librusPro_type {font-size: 13px !important;}
     #librusPro_datePicker {background: #454545; color: #dddddd; padding: 2px 8px; outline: none; -webkit-box-shadow: 1px 1px 3px #111111; box-shadow: 1px 1px 3px #111111; border-radius: 5px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px;}
@@ -492,10 +492,11 @@ function createCell(cellDay, cellKey) {
     const table = document.createElement("table");
     table.style.marginTop = "0px";
 
+    const uczen = document.querySelector("#user-section > b").innerText.split("(")[0];
+
     for (let i = 0; i < events.length; i++) {
       const row = table.insertRow();
-      // 'th' dlatego, aby był title przeglądarkowy, bo Librus ma z***any system custom title :)
-      const cell = document.createElement("th");
+      const cell = document.createElement("td");
       row.appendChild(cell);
       const event = events[i];
       cell.style.background = event.background;
@@ -504,9 +505,9 @@ function createCell(cellDay, cellKey) {
       cell.style.wordWrap = "break-word";
       cell.style.animation = "blinking 4s infinite ease-in-out";
       cell.style.wordBreak = "break-word";
-      cell.classList.add("no-border-left", "no-border-right");
+      cell.classList.add("no-border-left", "no-border-right", "librusPro_custom");
 
-      cell.title = "";
+      cell.title = "Uczeń: " + uczen + "<br />";
 
       let temp = "";
       // Nr lekcji
@@ -533,9 +534,6 @@ function createCell(cellDay, cellKey) {
 
         temp += (event.type == "") ?  "\n" : ", ";
 
-        cell.title += `${event.subject}` + ((event.type == "") ?  "\n" : `, ${event.type}\n`);
-      } else {        
-        cell.title += ((event.type == "") ?  "" : `${event.type}\n`);
       }
 
       // Typ
@@ -574,9 +572,9 @@ function createCell(cellDay, cellKey) {
       }
 
       
-      if (event.description != "") cell.title += "Opis: " + event.description + "\n";
+      if (event.description != "") cell.title += "Opis: " + event.description + "<br />";
       cell.title += "Data dodania: " + event.dateAdded;
-      if (event.dateModified != "") cell.title += "\nData ostatniej modyfikacji: " + event.dateModified ;
+      if (event.dateModified != "") cell.title += "<br />Data ostatniej modyfikacji: " + event.dateModified ;
 
       const removeButton = document.createElement("a");
       removeButton.innerText = "⨉";
@@ -601,7 +599,20 @@ function createCell(cellDay, cellKey) {
         this.style.color = `${event.color}`;
       };
 
-      
+      const injectedCode = `$('.librusPro_custom').tooltip({
+        track: true,
+        show: {
+          delay: 200,
+          duration: 200
+        },
+        hide: {
+          delay: 100,
+          duration: 200
+        }
+      });`;
+      const script = document.createElement('script');
+      script.appendChild(document.createTextNode(injectedCode));
+      (document.body || document.head || document.documentElement).appendChild(script);
     }
   });
 }
