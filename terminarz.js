@@ -475,7 +475,7 @@ browserAPI.storage.sync.get(["options"], function (t) {
   }
 });
 
-// -------------------- CREATE CELL ASYNC FUNCTION  ----------------
+// -------------------- CREATE CELL FUNCTION  ----------------
 function createCell(cellDay, cellKey) {
   browserAPI.storage.sync.get([cellKey], function (result) {
     const events = result[cellKey];
@@ -509,56 +509,67 @@ function createCell(cellDay, cellKey) {
 
       cell.title = "Uczeń: " + uczen + "<br />";
 
-      let temp = "";
+      let temp = [];
       // Nr lekcji
       if (event.lesson != "") {
         if (event.lesson.length > 30) {
-          temp += `Nr lekcji: ${event.lesson.slice(0, 30)}[...]\n`;
+          temp.push(`Nr lekcji: ${event.lesson.slice(0, 30)} [...]`);
         } else {
-          temp += `Nr lekcji: ${event.lesson}\n`;
+          temp.push(`Nr lekcji: ${event.lesson}`);
         }
       }
 
       // Godzina
       if (event.time != "") {
-        temp += `Godz: ${event.time}\n`;
+        temp.push(`Godz: ${event.time}`);
       }
 
+      let pp = false;
       // Przedmiot
       if (event.subject != "") {
         if (event.subject.length > 30) {
-          temp += `${event.subject.slice(0, 30)}[...]`;
+          temp.push(`${event.subject.slice(0, 30)} [...]`);
         } else {
-          temp += `${event.subject}`;
+          temp.push(`${event.subject}`);
         }
 
-        temp += (event.type == "") ?  "\n" : ", ";
-
+        if (event.type != "") {
+          temp[temp.length -1] += ", ";
+        }
+        pp = true;
       }
 
       // Typ
       if (event.type != "") {
         if (event.type.length > 30) {
-          temp += `${event.type.slice(0, 30)}[...]\n`;
+          if (!pp) {
+            temp.push(`${event.type.slice(0, 30)} [...]`);
+          } else {
+            temp[temp.length -1] += `${event.type.slice(0, 30)} [...]`;
+          }
         } else {
-          temp += `${event.type}\n`;
+          if (!pp) {
+            temp.push(`${event.type}`);
+          } else {
+            temp[temp.length -1] += `${event.type}`;
+          }
         }
       }
 
       // Klasa
-      if (currentClass != undefined) {
-        temp += currentClass;
+      if (currentClass != undefined && temp == "" && event.description == "") {
+        temp.push(currentClass);
       }
 
       // Opis
       if (event.description != "") {
         if (event.description.length > 200) {
-          temp += `\nOpis: ${event.description.replaceAll("<br />", "\n").slice(0, 250)}` + "\n[...]";
+          temp.push(`Opis: ${event.description.replaceAll("<br />", "\n").slice(0, 250)}` + "\n[...]");
         } else {
-          temp += `\nOpis: ${event.description.replaceAll("<br />", "\n")}`;
+          temp.push(`Opis: ${event.description.replaceAll("<br />", "\n")}`);
         }
       }
-      cell.innerText = temp;
+      cell.innerText = temp.join("\n");
 
       if (event.url != "" && event.url !== undefined) {
         const image = document.createElement("IMG");
@@ -740,29 +751,43 @@ function editCustomCell(targetKey, editIndex) {
   }
 }
 
-// ------------------- ADD DESCRIPTIONS TO ALL CELLS AND CHANGE "INNE" COLOR ---------------
-const tdArray = document.getElementsByTagName("td");
-for (let i = 0; i < tdArray.length; i++) {
-  if (tdArray[i].title != null) {
-    addDescriptionToCell(tdArray[i]);
+// ------------------- ADD DESCRIPTIONS TO ALL CELLS, REMOVE CLASS FOOTER AND CHANGE "INNE" COLOR ---------------
 
-    // Zmiana koloru "Inne", bo jest brzydki lol
-    if (tdArray[i].style.backgroundColor == "rgb(189, 183, 107)")
-      tdArray[i].style.backgroundColor = "#e0dd6b";
-  }
-}
-function addDescriptionToCell(cell) {
-  const cellTitle = cell.title;
-  const regex = /Opis: (.+?)<br \/>Data/g;
-  const res = cellTitle.match(regex);
-  if (res != null) {
-    const out = res[0].replace("<br />Data", "");
+function adjustCellContent(cell) {
+  const classRegex = /^[0-9\[](.+?)$/gm;
+  [...cell.childNodes].forEach(e => {
+    if (e.nodeValue != null && e.nodeValue.match(classRegex)) {
+      e.previousSibling?.remove();
+      e.remove();
+    }
+  });
+  const descriptionRegex = /Opis: (.+?)Data/g;
+  const descriptionResult = cell.title.match(descriptionRegex);
+  if (descriptionResult != null) {
+    const out = descriptionResult[0].replace("<br>Data", "").replace("<br />Data", "");
     // Opis z title na wierzch, ucięcie zbyt długich.
+    const d = document.createElement("SPAN");
     if (out.length > 200) {
-      cell.innerText += "\n" + out.slice(0, 250).replaceAll("<br />", "\n") + "\n[...]";
+      d.innerText += "\n" + out.slice(0, 250).replaceAll("<br />", "\n").replaceAll("<br>", "\n") + "\n[...]";
     }
     else {
-      cell.innerText += "\n" + out.replaceAll("<br />", "\n");
+      d.innerText += "\n" + out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
+    }
+    if (cell.querySelector(`a[href^="https://liblink.pl/"] > span.right`) != null) {
+      cell.insertBefore(d, cell.querySelector(`a[href^="https://liblink.pl/"] > span.right`).parentElement);
+    } else {
+      cell.appendChild(d);
     }
   }
 }
+
+document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td").forEach(e => {
+  if (e.title != null) {
+    adjustCellContent(e);
+
+    // Zmiana koloru "Inne", bo jest brzydki lol
+    if (e.style.backgroundColor == "rgb(189, 183, 107)") {
+      e.style.backgroundColor = "#e0dd6b";
+    }
+  }
+});

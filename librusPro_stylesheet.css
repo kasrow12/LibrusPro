@@ -141,7 +141,7 @@ table.decorated tbody tr.line1:not(.detail-grades) td {
 	> td:nth-child(1) {
 	color: #dcdcdc !important;
 }
-.legend ul li span {
+.legend ul li span:not([style*="wykres_zadania"]) {
 	background: #323232 !important;
 }
 /* span.fold-start {
@@ -405,21 +405,21 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 /* ogloszenia */
 #adresaci > table tr > td,
 #adresaci > table > tbody > tr:nth-child(2n + 1) > td,
-#body > div > div > table > tbody > tr:nth-child(2n + 1) > th,
-#body > div > div > table > tbody > tr:nth-child(2n + 1) > td {
+#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_newHomework) > th,
+#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_newHomework) > td {
 	background: #343434 !important;
 	color: #b9b9b9;
 }
 
 #adresaci > table > tbody > tr:nth-child(2n) > td,
-#body > div > div > table > tbody > tr:nth-child(2n) > th,
-#body > div > div > table > tbody > tr:nth-child(2n) > td {
+#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_newHomework) > th,
+#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_newHomework) > td {
 	color: #b9b9b9;
 	background: #393939 !important;
 }
 #adresaci > table > tbody > tr:hover > td,
-#body > div > div > table > tbody > tr:hover > th,
-#body > div > div > table > tbody > tr:hover > td {
+#body > div > div > table > tbody > tr:hover:not(.librusPro_newHomework) > th,
+#body > div > div > table > tbody > tr:hover:not(.librusPro_newHomework) > td {
 	background: #323232 !important;
 }
 
@@ -652,4 +652,36 @@ table.decorated tfoot tr td,
 }
 #body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td:nth-child(6) {
 	border-left: none;
+}
+.librusPro_newHomework.line0 td {
+	background: #3a4655 !important;
+	color: #dddddd;
+}
+.librusPro_newHomework.line1 td {
+	background: #374250 !important;
+	color: #dddddd;
+}
+.librusPro_newHomework:hover td {
+	background: #313b47 !important;
+}
+[style^="height: 25px"] {
+	border-color: #00000000 !important;
+	vertical-align: middle;
+	text-align: right;
+}
+
+[style*="/images/wykres_zadania/data.png)"] {
+	background: none !important;
+	color: #cccccc !important;
+}
+[style*="/images/wykres_zadania/data2.png)"] {
+	background: none !important;
+	color: #88c7ad;
+}
+[style*="/images/wykres_zadania/1.png)"] {
+	background: #464646 !important;
+}
+[style*="wykres_zadania"] {
+	background-repeat: repeat-x;
+	filter: brightness(0.8);
 }

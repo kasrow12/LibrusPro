@@ -3,6 +3,7 @@
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
 
+
 const DEBUG = false;
 const NO_DATA = "-";
 const DANE_DEFAULT = {
@@ -688,8 +689,6 @@ adjustNavbar();
 adjustHeader();
 insertFooter();
 
-// ---------------------------------------- KUNIEC ----------------------------------------
-
 // KEKW
 function aprilfools() {
   if (document.getElementById("icon-oceny") == null) return;
@@ -768,7 +767,26 @@ function aprilfools() {
   if (document.getElementById("matma") != null) document.getElementById("matma").addEventListener('click', function() {
     browserAPI.storage.sync.set({ ["aprilfools"]: false });
   });
-  if (document.getElementById("matma") != null) document.getElementById("polski").addEventListener('click', function() {
+  if (document.getElementById("polski") != null) document.getElementById("polski").addEventListener('click', function() {
     browserAPI.storage.sync.set({ ["aprilfools"]: false });
+  });
+}
+
+// Prace domowe
+if (window.location.href == "https://synergia.librus.pl/moje_zadania") {
+  document.querySelectorAll('tr[id^="homework_"] > td.bold:first-child').forEach(e => {
+    e.parentElement.classList.add("librusPro_newHomework")
+  });
+
+  document.querySelectorAll('[style="padding:5px"]').forEach(e => {
+    const s = document.createElement("SPAN");
+    s.innerText = "(" + e.innerText + ")";
+    s.style.fontWeight = "bold";
+    s.style.paddingLeft= "5px";
+    e.previousElementSibling.appendChild(s);
+    e.remove();
+  });
+  document.querySelectorAll("#body > div > div > table > thead > tr > td:nth-child(5), #body > div > div > table > thead > tr > td:nth-child(6)").forEach(e => {
+    e.colSpan = 1;
   });
 }
