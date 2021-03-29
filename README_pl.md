@@ -3,19 +3,19 @@
   <a href="https://github.com/kasrow12/LibrusPro">
     <img src="img/icon.png" alt="Logo" width="30%" height="30%">
   </a>
-  <h1 align="center">LibrusPro</h1>
-  <h4 align="center">Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, wyświetlające średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz kilka drobnych usprawnień jego funkcjonalności i wyglądu.</h4>
+  <h1 align="center">📚 LibrusPro 🎉</h1>
+  <h4 align="center">💠 Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, wyświetlające średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz kilka drobnych usprawnień jego funkcjonalności i wyglądu. 💠</h4>
 </p>
 
-# Obecnie dostępne dla:
-## • Google Chrome: <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Kliknij tutaj</a>
-## • Firefoxa: <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Kliknij tutaj</a>
-## • Microsoft Edge (XD): <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Kliknij tutaj</a>
+# ⏩ Obecnie dostępne dla:
+## 🖥 Google Chrome: <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Kliknij tutaj</a>
+## 🦊 Firefoxa: <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Kliknij tutaj</a>
+## 🌍 Microsoft Edge (XD): <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Kliknij tutaj</a>
 
 
-# Funkcje
+# 🛠 Funkcje
 
-## • Ciemny motyw
+## ⭐️ • Ciemny motyw
 Librus be like:
 
 ![Light theme meme](docs/lightThemeMeme.jpg?raw=true)
@@ -58,7 +58,7 @@ Stonowane kolory ocen i wydarzeń w terminarzu, gdy czujesz się nie najlepiej. 
   - usunięcie zbędnych przycisków z paska nawigacyjnego => Ankiety, Biblioteka,
   - dodanie w zamian przycisku Plan lekcji, który także otwiera go w nowej karcie, a nie oknie.
 
-# Licencja
+# 🧷 Licencja
 Ten projekt jest licencjonowany zgodnie z warunkami licencji MIT. Zobacz plik [LICENSE](LICENSE.md), aby zapoznać się z prawami i ograniczeniami tej licencji.
 
 <i>LibrusPro © 2021 Maks Kowalski</i>
