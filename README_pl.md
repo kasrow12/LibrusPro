@@ -4,7 +4,7 @@
     <img src="img/icon.png" alt="Logo" width="30%" height="30%">
   </a>
   <h1 align="center">LibrusPro</h1>
-  <h4 align="center">Rozszerzenie dla przeglądarek do Librusa wprowadzające ciemny motyw, wyświetlające średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz kilka drobnych usprawnień jego funkcjonalności i wyglądu.</h4>
+  <h4 align="center">Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, wyświetlające średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz kilka drobnych usprawnień jego funkcjonalności i wyglądu.</h4>
 </p>
 
 # Obecnie dostępne dla:
@@ -20,7 +20,7 @@ Librus be like:
 
 ![Light theme meme](docs/lightThemeMeme.jpg?raw=true)
 
-Nie jesteś sam(a), na szczęście to już nie jest problem :)
+Nie jesteś sam(a), na szczęście to już nie jest problem. W końcu Librus nie boli w oczy :)
 <details>
   <summary>Tutaj znajdziesz kilka zrzutów ekranu:</summary>
 
@@ -31,26 +31,32 @@ Nie jesteś sam(a), na szczęście to już nie jest problem :)
 ![Ciemny motyw 5](docs/librusPro_naglowek.png?raw=true)
 </details>
 
-## • Własne wydarzenia w terminarzu
-Chcesz dodać własne wydarzenie do swojego terminarza? Z tym rozszerzeniem jest to wreszcie możliwe!
+## ⭐️ • Własne wydarzenia w terminarzu
+Chcesz dodać własne wydarzenie do swojego terminarza? Planowane kartkówki, odpowiedzi ustne, a może prace domowe, o których nie chcesz zapomnieć? Z tym rozszerzeniem jest to wreszcie możliwe!
 
-## • Obliczanie średniej ocen
+## ⭐️ • Obliczanie średniej ocen
 Niektóre szkoły wyłączają możliwość wyświetlania średniej ocen dla ich uczniów i rodziców. Na szczęście Twój komputer potrafi dodawać, mnożyć i dzielić, więc sobie sam poradzi :) W tabeli znajdziesz odpowiednio średnią z semestru, z ocen proponowanych, ze śródrocznych, a także ze wszystkich ocen cząstkowych (średnia roczna).
 
-## • Ukrywanie przedmiotów bez ocen
-Po co w ogóle mają się wyświetlać, skoro przez cały rok nie dostajesz z nich żadnych ocen?
+## ⭐️ • Ukrywanie przedmiotów bez ocen
+Po co w ogóle mają się wyświetlać, skoro przez cały rok nie dostaniesz z nich ani jednej oceny?
 
-## • Wersja depresyjna
+## ⭐️ • Wyświetlanie numerka z dziennika
+Nie możesz nigdy zapamiętać, który masz numerek w dzienniku? Od teraz będzie zawsze widniał na górze strony obok "Szczęśliwego Numerka", abyś go już nigdy nie zapomniał(a).
+
+## ⭐️ • Opisy zdarzeń w terminarzu
+Po co najeżdżać na każdą rzecz w terminarzu, aby przeczytać jej opis. Od teraz znajdziesz je bezpośrednio na nich, bez konieczności najeżdżania! Wygoda ponad wszystko.
+
+## ⭐️ • Wersja depresyjna
 Stonowane kolory ocen i wydarzeń w terminarzu, gdy czujesz się nie najlepiej. Wersja możliwa do włączenia w opcjach rozszerzenia.
 
-## • Poprawki wizualne
-- wyświetlanie proponowanego zachowania w tabeli głównej,
-- możliwość wyłączenia wyświetlania jedynek,
-- usunięcie zbędnych przycisków z paska nawigacyjnego (Ankiety, Biblioteka),
-- usunięcie przycisku Wersja Alternatywna, kto normalny z tego korzysta...,
-- dodanie w zamian przycisku Plan lekcji, który otwiera go w nowej karcie, a nie oknie,
-- dodanie opisów wydarzeń w terminarzu bezpośrednio na nich, bez konieczności najeżdżania, aby móc je przeczytać,
-- dopisanie Twojego numerka z dziennika obok "Szczęśliwego Numerka" oraz infomarcja, gdy będzie nim Twój!
+## ⭐️ • Poprawki wizualne
+  - możliwość wyłączenia wyświetlania jedynek w menu rozszerzenia,
+  - informacja, gdy będziesz miał(a) "Szczęśliwy Numerek",
+  - wyświetlanie proponowanego zachowania w tabeli głównej,
+  - usunięcie przycisku Wersja Alternatywna, kto normalny z tego korzysta...,
+  - usunięcie przycisku Bezpieczny Uczeń w szkołach, w których jest on włączony,
+  - usunięcie zbędnych przycisków z paska nawigacyjnego => Ankiety, Biblioteka,
+  - dodanie w zamian przycisku Plan lekcji, który także otwiera go w nowej karcie, a nie oknie.
 
 # Licencja
 Ten projekt jest licencjonowany zgodnie z warunkami licencji MIT. Zobacz plik [LICENSE](LICENSE.md), aby zapoznać się z prawami i ograniczeniami tej licencji.
