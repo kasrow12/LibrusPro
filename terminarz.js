@@ -457,24 +457,6 @@ for (const day of days) {
   createCell(day, key);
 }
 
-// Wersja depresyjna terminarza
-browserAPI.storage.sync.get(["options"], function (t) {
-  let options = t["options"];
-  if (options != null) {
-    if (options.depressionMode) {
-      const calendarDays = document.getElementsByClassName("kalendarz-dzien");
-      for (const e of calendarDays) {
-        if (e.classList.contains("past")) {
-          e.style.filter = "grayscale(100%) brightness(0.5)";
-        } else {
-          e.style.filter = "grayscale(100%) brightness(0.6) contrast(1.2)";
-          e.style.opacity = "0.9";
-        }
-      }
-    }
-  }
-});
-
 // -------------------- CREATE CELL FUNCTION  ----------------
 function createCell(cellDay, cellKey) {
   browserAPI.storage.sync.get([cellKey], function (result) {
@@ -753,41 +735,65 @@ function editCustomCell(targetKey, editIndex) {
 
 // ------------------- ADD DESCRIPTIONS TO ALL CELLS, REMOVE CLASS FOOTER AND CHANGE "INNE" COLOR ---------------
 
-function adjustCellContent(cell) {
-  const classRegex = /^[0-9\[](.+?)$/gm;
-  [...cell.childNodes].forEach(e => {
-    if (e.nodeValue != null && e.nodeValue.match(classRegex)) {
-      e.previousSibling?.remove();
-      e.remove();
-    }
-  });
-  const descriptionRegex = /Opis: (.+?)Data/g;
-  const descriptionResult = cell.title.match(descriptionRegex);
-  if (descriptionResult != null) {
-    const out = descriptionResult[0].replace("<br>Data", "").replace("<br />Data", "");
-    // Opis z title na wierzch, ucięcie zbyt długich.
-    const d = document.createElement("SPAN");
-    if (out.length > 200) {
-      d.innerText += "\n" + out.slice(0, 250).replaceAll("<br />", "\n").replaceAll("<br>", "\n") + "\n[...]";
-    }
-    else {
-      d.innerText += "\n" + out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
-    }
-    if (cell.querySelector(`a[href^="https://liblink.pl/"] > span.right`) != null) {
-      cell.insertBefore(d, cell.querySelector(`a[href^="https://liblink.pl/"] > span.right`).parentElement);
-    } else {
-      cell.appendChild(d);
+function adjustCellContent(cell, options) {
+  if (options.removeClasses) {
+    const classRegex = /^[0-9\[\]](.+?)$/gm;
+    [...cell.childNodes].forEach(e => {
+      if (e.nodeValue != null && e.nodeValue.match(classRegex)) {
+        e.previousSibling?.remove();
+        e.remove();
+      }
+    });
+  }
+  if (options.addDescriptions) {
+    const descriptionRegex = /Opis: (.+?)Data/g;
+    const descriptionResult = cell.title.match(descriptionRegex);
+    if (descriptionResult != null) {
+      const out = descriptionResult[0].replace("<br>Data", "").replace("<br />Data", "");
+      // Opis z title na wierzch, ucięcie zbyt długich.
+      const d = document.createElement("SPAN");
+      if (out.length > 200) {
+        d.innerText += "\n" + out.slice(0, 250).replaceAll("<br />", "\n").replaceAll("<br>", "\n") + "\n[...]";
+      }
+      else {
+        d.innerText += "\n" + out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
+      }
+      if (cell.querySelector(`a[href^="https://liblink.pl/"] > span.right`) != null) {
+        cell.insertBefore(d, cell.querySelector(`a[href^="https://liblink.pl/"] > span.right`).parentElement);
+      } else {
+        cell.appendChild(d);
+      }
     }
   }
 }
 
-document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td").forEach(e => {
-  if (e.title != null) {
-    adjustCellContent(e);
-
-    // Zmiana koloru "Inne", bo jest brzydki lol
-    if (e.style.backgroundColor == "rgb(189, 183, 107)") {
-      e.style.backgroundColor = "#e0dd6b";
+browserAPI.storage.sync.get(["options"], function (t) {
+  let options = t["options"];
+  if (options != null) {
+    // Wersja depresyjna terminarza
+    if (options.depressionMode) {
+      const calendarDays = document.getElementsByClassName("kalendarz-dzien");
+      for (const e of calendarDays) {
+        if (e.classList.contains("past")) {
+          e.style.filter = "grayscale(100%) brightness(0.5)";
+        } else {
+          e.style.filter = "grayscale(100%) brightness(0.6) contrast(1.2)";
+          e.style.opacity = "0.9";
+        }
+      }
     }
   }
+
+  document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td").forEach(e => {
+    if (e.title != null && !e.classList.contains("librusPro_custom")) {
+      adjustCellContent(e, options);
+
+      // Zmiana koloru "Inne", bo jest brzydki lol
+      if (e.style.backgroundColor == "rgb(189, 183, 107)") {
+        e.style.backgroundColor = "#e0dd6b";
+      }
+    }
+  });
+
+
 });

@@ -22,6 +22,10 @@ const OPTIONS_DEFAULT = {
   hideSubjects: true,
   calculateAverages: true,
   depressionMode: false,
+  modernizeSchedule: true,
+  removeClasses: true,
+  addDescriptions: true,
+  darkTheme: true,
   hideOnes: false,
   plusValue: 0.5,
   minusValue: 0.25,
@@ -45,6 +49,10 @@ function restoreDefaults() {
   document.getElementById('hideSubjects').checked = true;
   document.getElementById('calculateAverages').checked = true;
   document.getElementById('depressionMode').checked = false;
+  document.getElementById('modernizeSchedule').checked = true;
+  document.getElementById('removeClasses').checked = true;
+  document.getElementById('addDescriptions').checked = true;
+  document.getElementById('darkTheme').checked = true;
   document.getElementById('hideOnes').checked = false;
   document.getElementById('plusValue').value = 0.5;
   document.getElementById('minusValue').value = 0.25;
@@ -67,6 +75,10 @@ browserAPI.storage.sync.get(["options"], function (t) {
   document.getElementById('hideSubjects').checked = options.hideSubjects;
   document.getElementById('calculateAverages').checked = options.calculateAverages;
   document.getElementById('depressionMode').checked = options.depressionMode;
+  document.getElementById('modernizeSchedule').checked = options.modernizeSchedule;
+  document.getElementById('removeClasses').checked = options.removeClasses;
+  document.getElementById('addDescriptions').checked = options.addDescriptions;
+  document.getElementById('darkTheme').checked = options.darkTheme;
   document.getElementById('hideOnes').checked = options.hideOnes;
   document.getElementById('plusValue').value = options.plusValue;
   document.getElementById('minusValue').value = options.minusValue;
@@ -109,6 +121,10 @@ function validate() {
         hideSubjects: document.getElementById('hideSubjects').checked,
         calculateAverages: document.getElementById('calculateAverages').checked,
         depressionMode: document.getElementById('depressionMode').checked,
+        modernizeSchedule: document.getElementById('modernizeSchedule').checked,
+        removeClasses: document.getElementById('removeClasses').checked,
+        addDescriptions: document.getElementById('addDescriptions').checked,
+        darkTheme: document.getElementById('darkTheme').checked,
         hideOnes: document.getElementById('hideOnes').checked,
         plusValue: document.getElementById('plusValue').value,
         minusValue: document.getElementById('minusValue').value,
