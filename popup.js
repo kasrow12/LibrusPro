@@ -27,6 +27,7 @@ const OPTIONS_DEFAULT = {
   addDescriptions: true,
   darkTheme: true,
   hideOnes: false,
+  countZeros: true,
   plusValue: 0.5,
   minusValue: 0.25,
 };
@@ -54,6 +55,7 @@ function restoreDefaults() {
   document.getElementById('addDescriptions').checked = true;
   document.getElementById('darkTheme').checked = true;
   document.getElementById('hideOnes').checked = false;
+  document.getElementById('countZeros').checked = true;
   document.getElementById('plusValue').value = 0.5;
   document.getElementById('minusValue').value = 0.25;
 }
@@ -80,6 +82,7 @@ browserAPI.storage.sync.get(["options"], function (t) {
   document.getElementById('addDescriptions').checked = options.addDescriptions;
   document.getElementById('darkTheme').checked = options.darkTheme;
   document.getElementById('hideOnes').checked = options.hideOnes;
+  document.getElementById('countZeros').checked = options.countZeros;
   document.getElementById('plusValue').value = options.plusValue;
   document.getElementById('minusValue').value = options.minusValue;
 });
@@ -126,6 +129,7 @@ function validate() {
         addDescriptions: document.getElementById('addDescriptions').checked,
         darkTheme: document.getElementById('darkTheme').checked,
         hideOnes: document.getElementById('hideOnes').checked,
+        countZeros: document.getElementById('countZeros').checked,
         plusValue: document.getElementById('plusValue').value,
         minusValue: document.getElementById('minusValue').value,
       }

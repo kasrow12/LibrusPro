@@ -25,6 +25,7 @@ const OPTIONS_DEFAULT = {
   addDescriptions: true,
   darkTheme: true,
   hideOnes: false,
+  countZeros: true,
   plusValue: 0.5,
   minusValue: 0.25,
 };
@@ -192,7 +193,7 @@ function getWeightedAverage(elements, options) {
         return;
       }
 
-      regexp = /<br>Waga: [0-9]+?<br>/;
+      regexp = /<br>Waga: \d+?<br>/;
       let weight;
       if (e.title.match(regexp) != null) {
         weight = e.title.match(regexp)[0];
@@ -478,47 +479,57 @@ function hideOnes() {
 let odOstLogowania = false;
 
 finalizeDarkTheme();
+adjustNavbar();
+insertFooter();
 
 if (document.querySelector("#body > form:nth-child(5) > div > h2") != null && document.querySelector("#body > form:nth-child(5) > div > h2").innerHTML.includes("-")) {
   odOstLogowania = true;
 }
 
-browserAPI.storage.sync.get(["aprilfools"], function(t) {
-  if (t["aprilfools"] != null) return;
-  const d = new Date();
-  if (d.getMonth() == 3 && d.getDate() == 1) aprilfools();
-});
+browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function(t) {
+  if (t["aprilfools"] == undefined) {
+    const d = new Date();
+    if (d.getMonth() == 3 && d.getDate() == 1) aprilfools();
+  }
 
-// Jeśli w widoku ocen
-if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
-
-  // Walidacja opcji
-  browserAPI.storage.sync.get(["options"], function(t) {
-    options = t["options"];
-    if (options == null) {
-      browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
-      return;
-    } else {
-      for (let p in OPTIONS_DEFAULT) {
-        if (!options.hasOwnProperty(p)) {
-          browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
-          alert("Zaktualizowano wtyczkę LibrusPro. Twoje ustawienia zostały przywrócone do domyślnych.");
-          return;
-        }
+  options = t["options"];
+  if (options == null) {
+    browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
+    return;
+  } else {
+    for (let p in OPTIONS_DEFAULT) {
+      if (!options.hasOwnProperty(p)) {
+        browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
+        alert("Zaktualizowano wtyczkę LibrusPro. Twoje ustawienia zostały przywrócone do domyślnych.");
+        return;
       }
     }
+  }
+
+  // Jeśli w widoku ocen
+  if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
     // Ukrywanie przedmiotów bez ocen
     if (options.hideSubjects) {
       hideSubjects();
     }
+
+    // Ukrywanie jedynek
     if (options.hideOnes) {
       hideOnes();
     }
 
-    // Wstawianie średnich i dostosowanie kolorów
+    // Wstawianie średnich i dostosowanie kolorów w wersji depresyjnej
     handleGrades(options);
-  });
-}
+  }
+
+  let dane = t["dane"];
+  if (dane != undefined) {
+    adjustHeader(dane);
+  } else {
+    updateDetails(dane, "https://synergia.librus.pl/przegladaj_oceny/uczen");
+  }
+
+});
 
 // --------------------------------------------------------------------------------------------
 
@@ -624,7 +635,7 @@ function adjustNavbar() {
 }
 
 // Wyświetlanie numeru z dziennika obok szczęśliwego + informacja gdy nim jest Twój
-function adjustHeader() {
+function adjustHeader(dane) {
   const numerek = document.querySelector("#user-section > span.luckyNumber");
   const numerekDisabled = document.querySelector("#user-section > a > span.luckyNumber");
 
@@ -634,38 +645,31 @@ function adjustHeader() {
   number.style.color = "#eeeeee";
   yourNumber.appendChild(number);
 
-  browserAPI.storage.sync.get(["dane"], function(t) {
-    let dane = t["dane"];
-    if (dane != undefined) {
-      if (numerek != null) {
-        number.innerText = dane.nr;
-        if (document.querySelector("#user-section > span.luckyNumber > b").innerText == dane.nr) {
-          const gratulacje = document.createElement("SPAN");
-          gratulacje.style.color = "lime";
-          gratulacje.style.marginLeft = "5px";
-          gratulacje.innerText = "GRATULACJE!";
-          yourNumber.appendChild(gratulacje);
-        }
-
-        numerek.parentElement.insertBefore(yourNumber, numerek.nextSibling);
-      } else if (numerekDisabled != null) {
-        number.innerText = dane.nr;
-        numerekDisabled.parentElement.parentElement.insertBefore(yourNumber, numerekDisabled.parentElement.nextSibling);
-      }
-    } else {
-      updateDetails(dane, window.location.href);
+  if (numerek != null) {
+    number.innerText = dane.nr;
+    if (document.querySelector("#user-section > span.luckyNumber > b").innerText == dane.nr) {
+      const gratulacje = document.createElement("SPAN");
+      gratulacje.style.color = "lime";
+      gratulacje.style.marginLeft = "5px";
+      gratulacje.innerText = "GRATULACJE!";
+      yourNumber.appendChild(gratulacje);
     }
-  });
-
+    numerek.parentElement.insertBefore(yourNumber, numerek.nextSibling);
+  } else if (numerekDisabled != null) {
+    number.innerText = dane.nr;
+    numerekDisabled.parentElement.parentElement.insertBefore(yourNumber, numerekDisabled.parentElement.nextSibling);
+  }
 
   const hakerzy = document.querySelector("#user-section > img");
   if (hakerzy != null) {
     hakerzy.title += "<br><b style='color: #ee9999'>❗❗ HAKERZY ATAKUJĄ! ❗❗</b>"
   }
+
   const uczen = document.querySelector("#user-section > b > img");
   if (uczen != null) {
     uczen.title = "<b style='color: #a96fe3'>Dzięki za korzystanie z rozszerzenia LibrusPro!</b><br><b style='color: #ffd128'>Jeżeli Ci się spodobało, nie zapomnij zostawić<br>5 gwiazdek w sklepie oraz polecić znajomym!</b><br><b style='color: #ff7ca0'><i>Jedz Buraczki!</i></b>"
   }
+
   const bezpiecznyUczen = document.querySelector("a[title=\"Bezpieczny Uczeń\"]");
   if (bezpiecznyUczen != null) {
     bezpiecznyUczen.parentElement.remove();
@@ -679,28 +683,17 @@ function insertFooter() {
   footer.innerHTML = `
   <div id="footer"><hr>
   <span id="bottom-logo"></span>
-  <div style="
-  display: inline-flex;
-  height: 27px;
-  width: 27px;
-  background: url(&quot;` + browserAPI.runtime.getURL('img/icon.png') + `&quot;);
-  background-size: cover;
-  filter: brightness(0.7) contrast(1.1);">
+  <div class="librusPro_footer-img" style="
+  background: url(&quot;` + browserAPI.runtime.getURL('img/icon.png') + `&quot;);">
   </div>
   <div style="margin-left: 5px; vertical-align: top; display: inline-flex;">
   <div style="color: rgb(153, 153, 153); cursor: vertical-text;">
   <div>LibrusPro © ` + new Date().getFullYear() + ` Maks Kowalski</div>
-  <div><a href="https://github.com/kasrow12/LibrusPro" target="_blank" style="color: rgb(58, 90, 171); cursor: pointer;">https://github.com/kasrow12/LibrusPro</a></div>
+  <div><a href="https://discord.gg/e9EkVEvsDr" target="_blank" class="librusPro_footer-link">Oficjalny Discord!</a></div>
   </div>
   </div>
   </div>`
 }
-
-// ---------------------------------------- LEEEEET'S GOOOOO! ----------------------------------------
-
-adjustNavbar();
-adjustHeader();
-insertFooter();
 
 // KEKW
 function aprilfools() {

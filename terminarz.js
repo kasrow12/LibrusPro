@@ -155,7 +155,7 @@ overlay.innerHTML = `
             <label class="librusPro_title" for="librusPro_imageUrl">URL obrazka:</label>
             <input placeholder="https://www.google.com/logo.png" type="text" id="librusPro_imageUrl" class="librusPro_input">
         </div>
-        <div class="librusPro_colorContainer">
+        <div class="librusPro_colorContainer kalendarz-dzien">
             <label class="librusPro_radioContainer">
                 <input type="radio" id="librusPro_firstRadio" name="librusPro_color" value="#ff0000|#ffffff">
                 <span class="librusPro_radioSpan" style="background: #ff0000"></span>
@@ -733,11 +733,12 @@ function editCustomCell(targetKey, editIndex) {
   }
 }
 
-// ------------------- ADD DESCRIPTIONS TO ALL CELLS, REMOVE CLASS FOOTER AND CHANGE "INNE" COLOR ---------------
+// ------------------- MODERNIZE EVENTS, ADD DESCRIPTIONS, REMOVE CLASSES ---------------
 
 function adjustCellContent(cell, options) {
+  // Usuwanie klasy
   if (options.removeClasses) {
-    const classRegex = /^[0-9\[\]](.+?)$/gm;
+    const classRegex = /^(([0-9\[\]](.+?))|([A-Za-z]{1,2}\d(.*?)))$/gm;
     [...cell.childNodes].forEach(e => {
       if (e.nodeValue != null && e.nodeValue.match(classRegex)) {
         e.previousSibling?.remove();
@@ -745,6 +746,61 @@ function adjustCellContent(cell, options) {
       }
     });
   }
+
+  if (options.modernizeSchedule) {
+    // Typ (np. sprawdzian)
+    [...cell.childNodes].forEach(e => {
+      if (e.nodeValue != null && e.nodeValue[0] == ",") {
+        const s = document.createElement("SPAN");
+        s.innerText = e.nodeValue.slice(2);
+        s.style.textDecoration = "underline";
+        s.style.fontSize = "13px";
+        s.classList.add("typ");
+        const u = cell.querySelector(`a[href^="https://liblink.pl/"]:last-child`);
+        if (u != null) {
+          s.innerText = "\n" + s.innerText;
+        } else {
+          if (e.nextSibling != null && e.nextSibling.nodeName == "BR") e.nextSibling.remove();
+          s.style.display = "block";
+          s.style.marginBottom = "3px";
+        }
+        e.after(s);
+        e.remove();
+      }
+    });
+
+    // Modernizacja odwołań
+    const odwolaneRegex = /Odwołane zajęcia(\n.*) na lekcji nr: (\d+) \((.*)\)$/;
+    const odwolaneResult = cell.innerText.match(odwolaneRegex);
+    if (cell.innerText != null && odwolaneResult != null) {
+      cell.innerText = "Odwołane zajęcia na lekcji nr: " + odwolaneResult[2];
+      const p = document.createElement("SPAN");
+      p.style.fontWeight = "bold";
+      p.style.fontSize = "13px";
+      p.innerText = "\n" + odwolaneResult[3];
+      cell.appendChild(p);
+    }
+
+    // Odchudzenie nieobecności nauczycieli
+    const t = cell.innerText.includes("\nNauczyciel:");
+    if (t) {
+      console.log(cell);
+      cell.innerText = cell.innerText.replace("\nNauczyciel:", "");
+    }
+
+    // Pogrubienie przedmiotu
+    document.querySelectorAll(".przedmiot").forEach(e => {
+      e.style.fontWeight = "bold";
+      e.style.fontSize = "13px";
+    });
+
+    // Zwiększenie paddingu
+    document.querySelectorAll(".kalendarz-dzien td").forEach(e => {
+      e.style.padding = "6px 9px";
+    });
+  }
+
+  // Dodawanie opisów
   if (options.addDescriptions) {
     const descriptionRegex = /Opis: (.+?)Data/g;
     const descriptionResult = cell.title.match(descriptionRegex);
@@ -753,14 +809,18 @@ function adjustCellContent(cell, options) {
       // Opis z title na wierzch, ucięcie zbyt długich.
       const d = document.createElement("SPAN");
       if (out.length > 200) {
-        d.innerText += "\n" + out.slice(0, 250).replaceAll("<br />", "\n").replaceAll("<br>", "\n") + "\n[...]";
+        d.innerText += out.slice(0, 250).replaceAll("<br />", "\n").replaceAll("<br>", "\n") + "\n[...]";
       }
       else {
-        d.innerText += "\n" + out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
+        d.innerText += out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
       }
-      if (cell.querySelector(`a[href^="https://liblink.pl/"] > span.right`) != null) {
-        cell.insertBefore(d, cell.querySelector(`a[href^="https://liblink.pl/"] > span.right`).parentElement);
+      d.innerText = d.innerText.replace("¸", "\n");
+      const u = cell.querySelector(`a[href^="https://liblink.pl/"]:last-child`);
+      if (u != null) {
+        if (u.previousSibling.nodeType != 1) d.innerText = "\n" + d.innerText;
+        cell.insertBefore(d, u);
       } else {
+        d.style.display = "block";
         cell.appendChild(d);
       }
     }
@@ -787,13 +847,7 @@ browserAPI.storage.sync.get(["options"], function (t) {
   document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td").forEach(e => {
     if (e.title != null && !e.classList.contains("librusPro_custom")) {
       adjustCellContent(e, options);
-
-      // Zmiana koloru "Inne", bo jest brzydki lol
-      if (e.style.backgroundColor == "rgb(189, 183, 107)") {
-        e.style.backgroundColor = "#e0dd6b";
-      }
     }
   });
-
 
 });
