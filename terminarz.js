@@ -33,7 +33,7 @@
   }
 */
 
-// Klasa do wklejania do każdego własnego wydarzenia np. XD LO
+// Klasa do wklejania do własnych wydarzeń np. XD LO
 let currentClass;
 browserAPI.storage.sync.get(["dane"], function (t) {
   dane = t["dane"];
@@ -44,7 +44,7 @@ browserAPI.storage.sync.get(["dane"], function (t) {
   }
 });
 
-// Automatyczne odświeżanie (z pominięciem "Potwiedź ponowne przesłanie formularza")
+// Automatyczne odświeżanie po zmianach (z pominięciem "Potwiedź ponowne przesłanie formularza")
 browserAPI.storage.onChanged.addListener(function(changes, namespace) {
   window.location.replace(window.location.href);
 });
@@ -424,41 +424,46 @@ let setOpacity = false;
 if (year < date.getFullYear()) setOpacity = true;
 else if (monthId <= date.getMonth() && year == date.getFullYear()) setOpacity = true;
 
-for (const day of days) {
-  const key = `${year}-${(monthId + 1) < 10 ? "0" + (monthId + 1) : monthId + 1}-${day.innerText < 10 ? "0" + day.innerText : day.innerText}`;
-  day.style.width = "initial";
-  day.style.float = "right";
-  day.style.marginBottom = "10px";
+browserAPI.storage.sync.get(["options"], function (t) {
+  let options = t["options"];
+  if (options != null) {
+    for (const day of days) {
+      const key = `${year}-${(monthId + 1) < 10 ? "0" + (monthId + 1) : monthId + 1}-${day.innerText < 10 ? "0" + day.innerText : day.innerText}`;
+      day.style.width = "initial";
+      day.style.float = "right";
+      day.style.marginBottom = "10px";
 
-  const addButton = document.createElement("a");
-  addButton.innerText = "[+]"; 
-  addButton.style.display = "inline-block";
-  addButton.style.float = "left";
-  addButton.style.marginTop = "5px";
-  addButton.style.color = "#bbbbbb";
-  addButton.style.fontWeight = "bold";
-  addButton.style.cursor = "pointer";
-  addListenerToAddButton(addButton, key);
-  day.parentElement.insertBefore(addButton, day);
+      const addButton = document.createElement("a");
+      addButton.innerText = "[+]"; 
+      addButton.style.display = "inline-block";
+      addButton.style.float = "left";
+      addButton.style.marginTop = "5px";
+      addButton.style.color = "#bbbbbb";
+      addButton.style.fontWeight = "bold";
+      addButton.style.cursor = "pointer";
+      addListenerToAddButton(addButton, key);
+      day.parentElement.insertBefore(addButton, day);
 
-  if (day.parentElement.parentElement.classList.contains("today")) {
-    setOpacity = false;
+      if (day.parentElement.parentElement.classList.contains("today")) {
+        setOpacity = false;
+      }
+      if (setOpacity) {
+        day.parentElement.style.opacity = "0.5";
+        day.parentElement.classList.add("past");
+      }
+
+      const clear = document.createElement("span");
+      clear.style.clear = "both";
+      clear.style.display = "none";
+      day.parentElement.appendChild(clear);
+
+      createCell(day, key, options);
+    }
   }
-  if (setOpacity) {
-    day.parentElement.style.opacity = "0.5";
-    day.parentElement.classList.add("past");
-  }
-
-  const clear = document.createElement("span");
-  clear.style.clear = "both";
-  clear.style.display = "none";
-  day.parentElement.appendChild(clear);
-
-  createCell(day, key);
-}
+});
 
 // -------------------- CREATE CELL FUNCTION  ----------------
-function createCell(cellDay, cellKey) {
+function createCell(cellDay, cellKey, options) {
   browserAPI.storage.sync.get([cellKey], function (result) {
     const events = result[cellKey];
     if (events == null) {
@@ -506,57 +511,114 @@ function createCell(cellDay, cellKey) {
         temp.push(`Godz: ${event.time}`);
       }
 
-      let pp = false;
-      // Przedmiot
-      if (event.subject != "") {
-        if (event.subject.length > 30) {
-          temp.push(`${event.subject.slice(0, 30)} [...]`);
-        } else {
-          temp.push(`${event.subject}`);
+      
+      if (options.modernizeSchedule) {
+        cell.innerText = temp.join("\n");
+
+        // Przedmiot
+        if (event.subject != "") {
+          const s = document.createElement("SPAN");
+          if (event.subject.length > 30) {
+            s.innerText = event.subject.slice(0, 30) + ' [...]';
+          } else {
+            s.innerText = event.subject;
+          }
+          s.style.fontWeight = "bold";
+          s.style.fontSize = "13px";
+          s.style.display = "block";
+          cell.appendChild(s);
         }
 
+        // Typ
         if (event.type != "") {
-          temp[temp.length -1] += ", ";
-        }
-        pp = true;
-      }
-
-      // Typ
-      if (event.type != "") {
-        if (event.type.length > 30) {
-          if (!pp) {
-            temp.push(`${event.type.slice(0, 30)} [...]`);
+          const s = document.createElement("SPAN");
+          if (event.type.length > 30) {
+            s.innerText = event.type.slice(0, 30) + '[...]';
           } else {
-            temp[temp.length -1] += `${event.type.slice(0, 30)} [...]`;
+            s.innerText = event.type;
           }
-        } else {
-          if (!pp) {
-            temp.push(`${event.type}`);
+          s.style.textDecoration = "underline";
+          s.style.fontSize = "13px";
+          s.style.display = "block";
+          s.style.marginBottom = "3px";
+          cell.appendChild(s);
+        }
+
+        // Klasa
+        if (currentClass != undefined && (((cell.innerText == "" && (event.description == "" || !options.addDescriptions)) && event.url == "") || !options.removeClasses)) {
+          const s = document.createElement("SPAN");
+          s.innerText = currentClass;
+          s.style.display = "block";
+          cell.appendChild(s);
+        }
+
+        // Opis
+        if (event.description != "" && options.addDescriptions) {
+          const s = document.createElement("SPAN");
+          if (event.description.length > 200) {
+            s.innerText = `Opis: ${event.description.replaceAll("<br />", "\n").slice(0, 250)}\n[...]`;
           } else {
-            temp[temp.length -1] += `${event.type}`;
+            s.innerText = `Opis: ${event.description.replaceAll("<br />", "\n")}`;
+          }
+          s.style.display = "block";
+          cell.appendChild(s);
+        }
+
+        cell.style.padding = "6px 9px";
+
+      } else {
+        let pp = false;
+        // Przedmiot
+        if (event.subject != "") {
+          if (event.subject.length > 30) {
+            temp.push(`${event.subject.slice(0, 30)} [...]`);
+          } else {
+            temp.push(`${event.subject}`);
+          }
+
+          if (event.type != "") {
+            temp[temp.length -1] += ", ";
+          }
+          pp = true;
+        }
+
+        // Typ
+        if (event.type != "") {
+          if (event.type.length > 30) {
+            if (!pp) {
+              temp.push(`${event.type.slice(0, 30)} [...]`);
+            } else {
+              temp[temp.length -1] += `${event.type.slice(0, 30)} [...]`;
+            }
+          } else {
+            if (!pp) {
+              temp.push(`${event.type}`);
+            } else {
+              temp[temp.length -1] += `${event.type}`;
+            }
           }
         }
-      }
 
-      // Klasa
-      if (currentClass != undefined && temp == "" && event.description == "") {
-        temp.push(currentClass);
-      }
-
-      // Opis
-      if (event.description != "") {
-        if (event.description.length > 200) {
-          temp.push(`Opis: ${event.description.replaceAll("<br />", "\n").slice(0, 250)}` + "\n[...]");
-        } else {
-          temp.push(`Opis: ${event.description.replaceAll("<br />", "\n")}`);
+        // Klasa
+        if (currentClass != undefined && ((temp == "" && event.description == "") || !options.removeClasses)) {
+          temp.push(currentClass);
         }
+
+        // Opis
+        if (event.description != "" && options.addDescriptions) {
+          if (event.description.length > 200) {
+            temp.push(`Opis: ${event.description.replaceAll("<br />", "\n").slice(0, 250)}` + "\n[...]");
+          } else {
+            temp.push(`Opis: ${event.description.replaceAll("<br />", "\n")}`);
+          }
+        }
+        cell.innerText = temp.join("\n");
       }
-      cell.innerText = temp.join("\n");
 
       if (event.url != "" && event.url !== undefined) {
         const image = document.createElement("IMG");
         image.src = event.url;
-        image.style.width = "80%";
+        image.style.width = "85%";
         image.style.display = "block";
         image.style.margin = "5px auto";
         image.style.filter = "drop-shadow(2px 2px 1px #333333)";
@@ -781,10 +843,25 @@ function adjustCellContent(cell, options) {
       cell.appendChild(p);
     }
 
+    // Modernizacja zastępstw/przesunięć
+    const zastepstwaRegex = /(Zastępstwo|Przesunięcie) z (.*) na lekcji nr: (\d+) \((.*)\)$/;
+    const zastepstwaResult = cell.innerText.match(zastepstwaRegex);
+    if (cell.innerText != null && zastepstwaResult != null) {
+      cell.innerText = zastepstwaResult[1] + " na lekcji nr: " + zastepstwaResult[3];
+      const p = document.createElement("SPAN");
+      p.style.fontWeight = "bold";
+      p.style.fontSize = "13px";
+      p.innerText = "\n" + zastepstwaResult[4];
+      cell.appendChild(p);
+      const x = document.createElement("SPAN");
+      x.innerText = `\n(${zastepstwaResult[2]})`;
+      x.style.fontStyle = "italic";
+      cell.appendChild(x);
+    }
+
     // Odchudzenie nieobecności nauczycieli
     const t = cell.innerText.includes("\nNauczyciel:");
     if (t) {
-      console.log(cell);
       cell.innerText = cell.innerText.replace("\nNauczyciel:", "");
     }
 
@@ -792,6 +869,11 @@ function adjustCellContent(cell, options) {
     document.querySelectorAll(".przedmiot").forEach(e => {
       e.style.fontWeight = "bold";
       e.style.fontSize = "13px";
+    });
+
+    // Usuwanie linków ze starych lekcji online
+    document.querySelectorAll('.past a[href^="https://liblink.pl/"]').forEach(e => {
+      e.remove();
     });
 
     // Zwiększenie paddingu
@@ -805,16 +887,16 @@ function adjustCellContent(cell, options) {
     const descriptionRegex = /Opis: (.+?)Data/g;
     const descriptionResult = cell.title.match(descriptionRegex);
     if (descriptionResult != null) {
-      const out = descriptionResult[0].replace("<br>Data", "").replace("<br />Data", "");
+      let out = descriptionResult[0].replace("<br>Data", "").replace("<br />Data", "");
       // Opis z title na wierzch, ucięcie zbyt długich.
       const d = document.createElement("SPAN");
       if (out.length > 200) {
-        d.innerText += out.slice(0, 250).replaceAll("<br />", "\n").replaceAll("<br>", "\n") + "\n[...]";
+        out = out.slice(0, 250).replaceAll("<br />", "\n").replaceAll("<br>", "\n") + "\n[...]";
       }
       else {
-        d.innerText += out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
+        out = out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
       }
-      d.innerText = d.innerText.replace("¸", "\n");
+      d.innerText = out;
       const u = cell.querySelector(`a[href^="https://liblink.pl/"]:last-child`);
       if (u != null) {
         if (u.previousSibling.nodeType != 1) d.innerText = "\n" + d.innerText;

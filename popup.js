@@ -2,6 +2,7 @@
 // Browser Extension
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
+
 /*
 key: 'options'
 value: {

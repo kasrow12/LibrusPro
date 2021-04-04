@@ -3,12 +3,7 @@
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
 
-// Rework terminarza
-// Light theme
-// Przełączniki:
-// opis, klasa, nauczyciel
-
-
+// TO DO v2.0: Light theme (bleh)
 
 const DEBUG = false;
 const NO_DATA = "-";
@@ -157,14 +152,17 @@ function getAverage(elements, background, options) {
 
   let sum = 0;
   elements.forEach(e => {
+    if (options.depressionMode) {
+      e.parentElement.style.background = background;
+    }
+
+    if (!options.countZeros && e.innerText[0] == "0") return;
+
     if (e.innerText.length == 1) sum += +e.innerText;
     else if (e.innerText[1] == "+") sum += +e.innerText[0] + +options.plusValue;
     else if (e.innerText[1] == "-") sum += +e.innerText[0] - +options.minusValue;
     else sum += +e.innerText[0];
 
-    if (options.depressionMode) {
-      e.parentElement.style.background = background;
-    }
   });
 
   return (Math.round( sum / elements.length  * 100 + Number.EPSILON ) / 100).toFixed(2);
@@ -186,7 +184,7 @@ function getWeightedAverage(elements, options) {
       let regexp = /<br>Licz do średniej: (.){3}<br>/gi;
       let liczDoSredniej = (e.title.match(regexp) != null) ? e.title.match(regexp)[0] : "nie";
       liczDoSredniej = liczDoSredniej.replace("<br>Licz do średniej: ", "").replace("<br>", "");
-      if (liczDoSredniej == "nie") {
+      if (liczDoSredniej == "nie" || (!options.countZeros && e.innerText[0] == "0")) {
         if (options.depressionMode) {
           e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
         }
@@ -500,7 +498,7 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function(t) {
     for (let p in OPTIONS_DEFAULT) {
       if (!options.hasOwnProperty(p)) {
         browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
-        alert("Zaktualizowano wtyczkę LibrusPro. Twoje ustawienia zostały przywrócone do domyślnych.");
+        alert("Zaktualizowano wtyczkę LibrusPro do wersji " + browserAPI.runtime.getManifest().version + "! Twoje ustawienia zostały przywrócone do domyślnych.");
         return;
       }
     }
@@ -595,13 +593,14 @@ function insertProposedBehavior() {
 if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
   if (odOstLogowania) {
     // Ukryj całkowicie zachowanie
-    document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr.bolded").style.display = "none";
+    document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded").style.display = "none";
   }
   else {
     // Zwiń zachowanie
-    const injectedCode = 'showHide.ShowHide("zachowanie")';
+    let injectedCode = 'showHide.ShowHide("zachowanie")';
+    if (document.getElementById("przedmioty_OP_zachowanie_node") != null) injectedCode += ',showHideOP.ShowHide("zachowanie");';
     const script = document.createElement('script');
-    script.appendChild(document.createTextNode('('+ injectedCode +');'));
+    script.appendChild(document.createTextNode(injectedCode));
     (document.body || document.head || document.documentElement).appendChild(script);
 
     // Dodaj proponowane
@@ -730,7 +729,7 @@ function aprilfools() {
       const el = e.parentElement.children[pp];
       if (el.innerText == "Brak ocen") el.innerText = "";
       el.appendChild(n);
-      document.getElementById("polski").title = `Kategoria: Kartkówka niezapowiedziana<br>Data: 2021-04-01 (czw.)<br>Nauczyciel: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br>Licz do średniej: tak<br>Waga: 3<br>Dodał: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br/><br/>Komentarz: Prima Aprilis<br/><span style="color: #777777; padding-left: 5px; font-style: italic">Kliknij mnie, aby ukryć.</span>`;
+      document.getElementById("polski").title = `Kategoria: Kartkówka niezapowiedziana<br>Data: 2022-04-01 (pt.)<br>Nauczyciel: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br>Licz do średniej: tak<br>Waga: 3<br>Dodał: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br/><br/>Komentarz: Prima Aprilis<br/><span style="color: #777777; padding-left: 5px; font-style: italic">Kliknij mnie, aby ukryć.</span>`;
       const injectedCode = `$('#polski').tooltip({
         track: true,
         show: {
@@ -753,7 +752,7 @@ function aprilfools() {
       const el = e.parentElement.children[pp];
       if (el.innerText == "Brak ocen") el.innerText = "";
       el.appendChild(n);
-      document.getElementById("matma").title = `Kategoria: Praca klasowa<br>Data: 2021-04-01 (czw.)<br>Nauczyciel: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br>Licz do średniej: tak<br>Waga: 5<br>Dodał: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br/><br/>Komentarz: Prima Aprilis<br/><span style="color: #777777; padding-left: 5px; font-style: italic">Kliknij mnie, aby ukryć.</span>`;
+      document.getElementById("matma").title = `Kategoria: Praca klasowa<br>Data: 2022-04-01 (pt.)<br>Nauczyciel: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br>Licz do średniej: tak<br>Waga: 5<br>Dodał: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br/><br/>Komentarz: Prima Aprilis<br/><span style="color: #777777; padding-left: 5px; font-style: italic">Kliknij mnie, aby ukryć.</span>`;
       const injectedCode = `$('#matma').tooltip({
         track: true,
         show: {
