@@ -38,7 +38,7 @@ body
 .quote {
 	font-size: 17px;
 	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-	margin: 10px 0 20px 0;
+	margin: 10px 0 10px 0;
 	color: #cccccc;
 	font-style: italic;
 }
@@ -58,7 +58,7 @@ input[type="number"] {
 	justify-content: space-between;
 	align-items: center;
 	color: #aaaaaa;
-	margin-bottom: 9px;
+	margin-bottom: 5px;
 	font-size: 14px;
 }
 .footer {
@@ -70,11 +70,10 @@ input[type="number"] {
 	color: #a7a7a7;
 	font-size: 13px;
 }
-.github-link
-{
-	color: #4c7d9e;
+.discord-link {
+	color: #7289DA;
 }
-.github-link:hover {
+.discord-link:hover {
 	color: #ffffff;
 	transition: color 0.3s;
 }
@@ -82,7 +81,7 @@ input[type="number"] {
 	color: #888888;
 }
 .buttons-container {
-	margin-top: 20px;
+	margin-top: 10px;
 	display: flex;
 	justify-content: space-between;
 }
@@ -215,6 +214,19 @@ to {
 .tgl-light:checked + .tgl-btn {
 	background: #338f4b;
 }
+.options-section {
+	color: #8e607c;
+	padding: 4px 0 5px 0;
+	font-size: 15px;
+	font-weight: bold;
+}
+.tgl + .tgl-btn.disabled {
+	background: #444444;
+	cursor: not-allowed;
+}
+.tgl-light + .tgl-btn.disabled:after {
+	background: #8b8b8b;
+}
 </style>
 </head>
 <body>
@@ -224,32 +236,70 @@ to {
 	</div>
 	<div class="quote">Ulepsz Librusa już dziś!</div>
 	<form id="form">
+		<div class="options-section">Ogólne</div>
 		<div>
 			<label class="option-container">
-				Ukryj przedmioty
+				Wersja depresyjna
+				<input class="tgl tgl-light" id="depressionMode" type="checkbox"/>
+				<label class="tgl-btn" for="depressionMode"></label>
+			</label>
+		</div>
+		<div>
+			<label class="option-container">
+				Ciemny motyw<span style="font-style: italic; font-size: 12px;">(wkrótce)</span>
+				<input class="tgl tgl-light" id="darkTheme" type="checkbox" disabled checked="true"/>
+				<label class="tgl-btn disabled" for="darkTheme"></label>
+			</label>
+		</div>
+		<div class="options-section">Terminarz</div>
+		<div>
+			<label class="option-container">
+				Dodawanie opisów
+				<input class="tgl tgl-light" id="addDescriptions" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="addDescriptions"></label>
+			</label>
+		</div>
+		<div>
+			<label class="option-container">
+				Usuwanie klasy
+				<input class="tgl tgl-light" id="removeClasses" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="removeClasses"></label>
+			</label>
+		</div>
+		<div>
+			<label class="option-container">
+				Modernizacja kafelków
+				<input class="tgl tgl-light" id="modernizeSchedule" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="modernizeSchedule"></label>
+			</label>
+		</div>
+		<div class="options-section">Oceny</div>
+		<div>
+			<label class="option-container">
+				Ukrywanie przedmiotów
 				<input class="tgl tgl-light" id="hideSubjects" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="hideSubjects"></label>
 			</label>
 		</div>
 		<div>
 			<label class="option-container">
-				Licz średnie
+				Liczenie średnich
 				<input class="tgl tgl-light" id="calculateAverages" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="calculateAverages"></label>
 			</label>
 		</div>
 		<div>
 			<label class="option-container">
-				Ukryj jedynki
+				Ukrywanie jedynek
 				<input class="tgl tgl-light" id="hideOnes" type="checkbox"/>
 				<label class="tgl-btn" for="hideOnes"></label>
 			</label>
 		</div>
 		<div>
 			<label class="option-container">
-				Wersja depresyjna
-				<input class="tgl tgl-light" id="depressionMode" type="checkbox"/>
-				<label class="tgl-btn" for="depressionMode"></label>
+				Zera do średniej
+				<input class="tgl tgl-light" id="countZeros" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="countZeros"></label>
 			</label>
 		</div>
 		<div>
@@ -275,7 +325,7 @@ to {
 	</form>
 </div>
 <div class="footer">
-	<a class="github-link" target="_blank" href="https://github.com/kasrow12/LibrusPro">Github</a>
+	<a class="discord-link" target="_blank" href="https://discord.gg/e9EkVEvsDr">Discord</a>
 	<div class="copyright">© <span id="copyright-year"></span></div>
 	<div class="version">v<span id="ver"></span></div>
 </div>
