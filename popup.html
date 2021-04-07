@@ -18,22 +18,22 @@ body
 	justify-content: center;
 }
 .logo {
-	width: 75px;
-	height: 75px;
+	width: 65px;
+	height: 65px;
 	margin-right: 10px;
 } 
 .title
 {
 	font-family: "Comic Sans MS", "Comic Sans", cursive;
-	font-size: 25px;
+	font-size: 23px;
 	padding: 0px 10px;
 	color: #aa5180;
 }
 .sub-title
 {
-	font-size: 15px;
+	font-size: 14px;
 	padding: 0px 5px;
-	color: #2b4f7c;
+	color: #4a709e;
 }
 .quote {
 	font-size: 17px;
@@ -236,7 +236,14 @@ to {
 	</div>
 	<div class="quote">Ulepsz Librusa już dziś!</div>
 	<form id="form">
-		<div class="options-section">Ogólne</div>
+		<div class="options-section">Ogólne 🌙</div>
+		<div>
+			<label class="option-container">
+				Ciemny motyw
+				<input class="tgl tgl-light" id="darkTheme" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="darkTheme"></label>
+			</label>
+		</div>
 		<div>
 			<label class="option-container">
 				Wersja depresyjna
@@ -244,14 +251,7 @@ to {
 				<label class="tgl-btn" for="depressionMode"></label>
 			</label>
 		</div>
-		<div>
-			<label class="option-container">
-				Ciemny motyw<span style="font-style: italic; font-size: 12px;">(wkrótce)</span>
-				<input class="tgl tgl-light" id="darkTheme" type="checkbox" disabled checked="true"/>
-				<label class="tgl-btn disabled" for="darkTheme"></label>
-			</label>
-		</div>
-		<div class="options-section">Terminarz</div>
+		<div class="options-section">Terminarz 📆</div>
 		<div>
 			<label class="option-container">
 				Dodawanie opisów
@@ -273,7 +273,7 @@ to {
 				<label class="tgl-btn" for="modernizeSchedule"></label>
 			</label>
 		</div>
-		<div class="options-section">Oceny</div>
+		<div class="options-section">Oceny 🎓</div>
 		<div>
 			<label class="option-container">
 				Ukrywanie przedmiotów
@@ -290,16 +290,16 @@ to {
 		</div>
 		<div>
 			<label class="option-container">
-				Ukrywanie jedynek
-				<input class="tgl tgl-light" id="hideOnes" type="checkbox"/>
-				<label class="tgl-btn" for="hideOnes"></label>
+				Zera do średniej
+				<input class="tgl tgl-light" id="countZeros" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="countZeros"></label>
 			</label>
 		</div>
 		<div>
 			<label class="option-container">
-				Zera do średniej
-				<input class="tgl tgl-light" id="countZeros" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="countZeros"></label>
+				Ukrywanie jedynek
+				<input class="tgl tgl-light" id="hideOnes" type="checkbox"/>
+				<label class="tgl-btn" for="hideOnes"></label>
 			</label>
 		</div>
 		<div>

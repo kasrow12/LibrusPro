@@ -896,12 +896,12 @@ function adjustCellContent(cell, options) {
       else {
         out = out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
       }
-      d.innerText = out;
       const u = cell.querySelector(`a[href^="https://liblink.pl/"]:last-child`);
       if (u != null) {
-        if (u.previousSibling.nodeType != 1) d.innerText = "\n" + d.innerText;
+        d.innerText = "\n" + out;
         cell.insertBefore(d, u);
       } else {
+        d.innerText = out;
         d.style.display = "block";
         cell.appendChild(d);
       }
