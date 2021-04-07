@@ -48,6 +48,9 @@ if (typeof chrome != null) {
   browserAPI = browser;
 }
 
+console.log("%cDzięki za korzystanie z rozszerzenia LibrusPro!", "color:#ba88b6;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
+console.log(" %cOficjalny Discord: https://discord.gg/e9EkVEvsDr", "color:#90e9f0;");
+
 browserAPI.storage.onChanged.addListener((changes, namespace) => {
   for (let key in changes) {
     if (key === "options") {
@@ -476,7 +479,6 @@ function hideOnes() {
 // Od ostatniego logowania/w tym tygodniu
 let odOstLogowania = false;
 
-finalizeDarkTheme();
 adjustNavbar();
 insertFooter();
 
@@ -502,6 +504,10 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function(t) {
         return;
       }
     }
+  }
+
+  if (options.darkTheme) {
+    finalizeDarkTheme();
   }
 
   // Jeśli w widoku ocen
@@ -641,15 +647,14 @@ function adjustHeader(dane) {
   let yourNumber = document.createElement("SPAN");
   yourNumber.innerText = "Twój numerek w dzienniku: ";
   const number = document.createElement("B");
-  number.style.color = "#eeeeee";
+  number.classList.add("librusPro_yourNumber");
   yourNumber.appendChild(number);
 
   if (numerek != null) {
     number.innerText = dane.nr;
     if (document.querySelector("#user-section > span.luckyNumber > b").innerText == dane.nr) {
       const gratulacje = document.createElement("SPAN");
-      gratulacje.style.color = "lime";
-      gratulacje.style.marginLeft = "5px";
+      gratulacje.classList.add("librusPro_congratulations")
       gratulacje.innerText = "GRATULACJE!";
       yourNumber.appendChild(gratulacje);
     }
@@ -680,17 +685,14 @@ function insertFooter() {
   const footer = document.querySelector("#footer");
   if (footer == null) return;
   footer.innerHTML = `
-  <div id="footer"><hr>
+  <hr>
   <span id="bottom-logo"></span>
-  <div class="librusPro_footer-img" style="
-  background: url(&quot;` + browserAPI.runtime.getURL('img/icon.png') + `&quot;);">
-  </div>
-  <div style="margin-left: 5px; vertical-align: top; display: inline-flex;">
-  <div style="color: rgb(153, 153, 153); cursor: vertical-text;">
-  <div>LibrusPro © ` + new Date().getFullYear() + ` Maks Kowalski</div>
-  <div><a href="https://discord.gg/e9EkVEvsDr" target="_blank" class="librusPro_footer-link">Oficjalny Discord!</a></div>
-  </div>
-  </div>
+  <div class="librusPro_icon" style="background: url(&quot;` + browserAPI.runtime.getURL('img/icon.png') + `&quot;);"></div>
+  <div class="librusPro_footer">
+    <div class="librusPro_copyright">
+      <div>LibrusPro © ` + new Date().getFullYear() + ` Maks Kowalski</div>
+      <a href="https://discord.gg/e9EkVEvsDr" target="_blank" class="librusPro_link">Oficjalny Discord!</a>
+    </div>
   </div>`
 }
 
