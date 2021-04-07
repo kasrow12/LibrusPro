@@ -76,17 +76,17 @@ overlay.innerHTML = `
     body {overflow: visible;}
     @-webkit-keyframes blinking {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
     @keyframes blinking {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
-    .librusPro_container {border: 1px solid black; width: 20vw; max-width: 270px; min-width: 270px; margin: 8vh auto 0 auto; background: #323232; padding: 10px 20px 7px 20px; border-radius: 5px; -webkit-box-shadow: 2px 3px 5px #000000; box-shadow: 2px 3px 5px #000000}
-    .librusPro_text {text-shadow: 1px 1px 3px #390a3c;font-size: 19px; color: #dddddd; text-align:center; margin: 10px 0 5px 0}
-    .librusPro_date {text-shadow: 1px 1px 3px #111111;font-size: 15px; color: #dddddd; text-align:center; padding-bottom: 10px; border-bottom: 1px solid #adadad; width: 90%; margin: 0 auto}
+    .librusPro_container {border: 1px solid black; width: 20vw; max-width: 270px; min-width: 270px; margin: 8vh auto 0 auto; padding: 10px 20px 7px 20px; border-radius: 5px; -webkit-box-shadow: 2px 3px 5px #000000; box-shadow: 2px 3px 5px #000000}
+    .librusPro_text {font-size: 19px; text-align: center; margin: 10px 0 5px 0}
+    .librusPro_date {text-shadow: 1px 1px 3px #111111; font-size: 15px; text-align: center; padding-bottom: 10px; border-bottom: 1px solid #adadad; width: 90%; margin: 0 auto}
     .librusPro_field {width: 90%; margin: 0 auto}
     .librusPro_twoFieldContainer {width: 90%; margin: 0 auto; display: -webkit-box; display: -ms-flexbox; display: flex; }
-    .librusPro_title {display: block; font-size: 12px; margin: 10px 0 3px 10px; color: #dddddd}
-    .librusPro_input {-webkit-box-shadow: 1px 1px 3px #000000;box-shadow: 1px 1px 3px #000000;width: 100% !important; margin: 0 !important; background: #454545; color: #dddddd; padding: 3px 10px !important; height: initial !important; border: 1px solid #222222 !important;}
+    .librusPro_title {display: block; font-size: 12px; margin: 10px 0 3px 10px;}
+    .librusPro_input {-webkit-box-shadow: 1px 1px 3px #000000;box-shadow: 1px 1px 3px #000000;width: 100% !important; margin: 0 !important; padding: 3px 10px !important; height: initial !important; border: 1px solid #222222 !important;}
     .librusPro_input:focus {border: 1px solid #666666 !important}
-    .librusPro_inputTime {max-width: 90px; height: 25px !important; border-radius: 5px; background: #454545 !important;}
+    .librusPro_inputTime {max-width: 90px; height: 25px !important; border-radius: 5px;}
     .librusPro_inputTime:focus {outline: none}
-    .librusPro_select {-webkit-box-shadow: 1px 1px 3px #111111;box-shadow: 1px 1px 3px #111111;background: #ffffff; margin: 0 !important; width: 100%; padding: 7px 7px; height: initial; border: 1px solid #222222 !important; font-size: 13px;}
+    .librusPro_select {-webkit-box-shadow: 1px 1px 3px #111111;box-shadow: 1px 1px 3px #111111; background: #ffffff; margin: 0 !important; width: 100%; padding: 7px 7px; height: initial; border: 1px solid #222222 !important; font-size: 13px;}
     .librusPro_select:focus {border: 1px solid #666666 !important; }
     .librusPro_button {text-align: center; color: #333333; width: 70%; margin: 15px auto 0 auto; padding: 7px; border-radius: 5px; -webkit-transition: background 0.2s; -o-transition: background 0.2s; transition: background 0.2s; cursor: pointer; color: #eeeeee; -webkit-filter: brightness(0.9); filter: brightness(0.9);}
     .librusPro_button-add {background: #429148}
@@ -112,9 +112,9 @@ overlay.innerHTML = `
     .librusPro_custom:hover > .librusPro_editButton {display: block;}
     textarea {resize: none; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 17px; font-size: 13px; scrollbar-color: dark;}
     #librusPro_lesson, #librusPro_subject, #librusPro_imageUrl, #librusPro_type {font-size: 13px !important;}
-    #librusPro_datePicker {background: #454545; color: #dddddd; padding: 2px 8px; outline: none; -webkit-box-shadow: 1px 1px 3px #111111; box-shadow: 1px 1px 3px #111111; border-radius: 5px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px;}
+    #librusPro_datePicker {padding: 2px 8px; outline: none; border-radius: 5px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px;}
     #librusPro_datePicker:focus {border: 1px solid #666666 !important}
-    .librusPro_footer {font-size: 11px; text-align: center; margin-top: 17px; color: #626262}
+    .librusPro_bottomText {font-size: 11px; text-align: center; margin-top: 17px; color: #626262}
     </style>
     <div class="librusPro_container">
         <div class="librusPro_text" id="librusPro_header">Dodaj zdarzenie</div>
@@ -127,7 +127,7 @@ overlay.innerHTML = `
             </div>
             <div class="librusPro_twoField" id="twoField2" >
                 <label class="librusPro_title" style="margin-top: 5px;" for="librusPro_time">Godzina:</label>
-                <input type="time" id="librusPro_time" class="librusPro_input librusPro_inputTime" style="color: #f5f5f5 !important">
+                <input type="time" id="librusPro_time" class="librusPro_input librusPro_inputTime">
             </div> 
         </div>
         <div class="librusPro_field">
@@ -232,7 +232,7 @@ overlay.innerHTML = `
         </div>
         <div class="librusPro_button librusPro_button-add" id="librusPro_add">Dodaj</div>
         <div class="librusPro_button librusPro_button-close" id="librusPro_close">Zamknij</div>
-        <div class="librusPro_footer">LibrusPro © <span id="librusPro_currentYear"></span></div>
+        <div class="librusPro_bottomText">LibrusPro © <span id="librusPro_currentYear"></span></div>
     </div>
 `;
 document.body.appendChild(overlay);

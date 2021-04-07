@@ -20,10 +20,6 @@ body {
 #page {
 	background: var(--lightbackground) !important;
 }
-#przedmioty_zachowanie,
-#przedmioty_OP_zachowanie {
-	display: none;
-}
 #header {
 	background: var(--darkbackground) !important;
 }
@@ -129,7 +125,6 @@ table.decorated tbody tr.line1:not(.detail-grades) td {
 #user-section > span.luckyNumber {
 	background-color: #310926 !important;
 	color: #dddddd;
-	margin-right: 8px;
 }
 #main-menu > ul > li > a,
 #body
@@ -181,8 +176,6 @@ table.decorated tfoot td {
 }
 table.decorated tr.bolded td {
 	background: #3c3c3c !important;
-	font-weight: bold;
-	height: 20px;
 }
 .detail-grades {
 	-webkit-filter: brightness(0.8) !important;
@@ -222,12 +215,10 @@ img[src="/images/usun_kosz.png"] {
 	background: #474747 !important;
 	color: #dbdbdb !important;
 	border: #000000 1px solid !important;
-	font-size: 12px;
 }
 hr {
 	background-color: #131313 !important;
 }
-
 table.decorated tfoot tr td:last-child:not(.no-border-right) {
 	border-right: 1px #000000 solid !important;
 }
@@ -282,16 +273,6 @@ select:not([name="rgbKoloru"]) > option {
 	padding: 2px 5px;
 	white-space: nowrap;
 } */
-
-#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5) {
-	width: 50px !important;
-	padding: 2px 10px !important;
-	white-space: nowrap !important;
-}
-
-.container.static.welcome-page.student {
-	display: none !important;
-}
 
 /* frekwencja */
 .inside {
@@ -429,12 +410,6 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 #body > div > div > table > tbody > tr:hover:not(.librusPro_newHomework):not(.librusPro_doneHomework) > td {
 	background: #323232 !important;
 }
-
-/* widok alternatywny */
-#graphic-menu > ul > li:nth-child(1) {
-	display: none;
-}
-
 /* wiadomości */
 #formWiadomosci
 	> div
@@ -630,12 +605,6 @@ td.today {
 	background: #323232 !important;
 }
 
-.librusPro_average > td {
-	font-weight: bold;
-	font-size: 14px;
-	height: 20px;
-}
-
 #formWiadomosci > div > div > table.decorated.filters.center.small > tfoot > tr > td,
 #formFiltrZadania > table > tfoot > tr > td,
 #formPrzegladanieRealizacji > table > tfoot > tr > td,
@@ -656,9 +625,6 @@ table.decorated tfoot tr th,
 table.decorated tfoot tr td,
 /* table.decorated tbody tr.line0 td, */ table.decorated tbody tr td {
 	border-top: 1px solid #000000 !important;
-}
-#body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td:nth-child(6) {
-	border-left: none;
 }
 .librusPro_newHomework.line0 td {
 	background: #3a4655 !important;
@@ -681,11 +647,6 @@ table.decorated tfoot tr td,
 }
 .librusPro_doneHomework:hover td {
 	background: #334332 !important;
-}
-td[style^="height: 25px"] {
-	border-color: #00000000 !important;
-	vertical-align: middle;
-	text-align: right;
 }
 #body > div > div > div > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td,
 [style*="/images/wykres_zadania/data.png)"] {
@@ -741,27 +702,46 @@ img[src*="refresh_icon"] {
 	background: #ae3737 !important;
 	color: #ffffff !important;
 }
-.kalendarz-dzien td {
-	border-left: none !important;
-	border-right: none !important;
-}
-.librusPro_footer-img {
-	display: inline-flex;
-	height: 27px;
-	width: 27px;
-	background-size: cover !important;
-	filter: brightness(0.7) contrast(1.1);
-}
-.librusPro_footer-link {
-	cursor: pointer;
-	margin-right: 20px;
-	display: inline-block;
-	color: #7289da;
-}
-.librusPro_footer-link:hover {
-	text-decoration: underline;
-	color: #9eb0f1;
-}
 .plan-lekcji-info {
 	filter: brightness(0.7);
+}
+.librusPro_icon {
+	filter: brightness(0.7) contrast(1.1);
+}
+.librusPro_congratulations {
+	color: lime;
+}
+.librusPro_yourNumber {
+	color: #eeeeee;
+}
+.librusPro_container {
+	background: #323232;
+}
+.librusPro_inputTime {
+	background: #454545 !important;
+}
+#librusPro_datePicker {
+	background: #454545;
+	color: #dddddd;
+	-webkit-box-shadow: 1px 1px 3px #111111;
+	box-shadow: 1px 1px 3px #111111;
+}
+.librusPro_input {
+	background: #454545;
+	color: #dddddd;
+}
+.librusPro_text {
+	color: #dddddd;
+}
+.librusPro_title {
+	color: #dddddd;
+}
+.librusPro_date {
+	color: #dddddd;
+}
+#librusPro_time {
+	color: #f5f5f5 !important;
+}
+.librusPro_text {
+	text-shadow: 1px 1px 3px #390a3c;
 }

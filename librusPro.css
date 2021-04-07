@@ -1,0 +1,77 @@
+/* LibrusPro
+Browser Extension
+Author: Maks Kowalski
+Contact: kasrow12 (at) gmail.com
+*/
+
+#przedmioty_zachowanie,
+#przedmioty_OP_zachowanie {
+	display: none;
+}
+#user-section > span.luckyNumber {
+	margin-right: 8px;
+}
+table.decorated tr.bolded td {
+	font-weight: bold;
+	height: 20px;
+}
+.container.static.welcome-page {
+	display: none !important;
+}
+#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5) {
+	width: 50px !important;
+	padding: 2px 10px !important;
+	white-space: nowrap !important;
+}
+#graphic-menu > ul > li:nth-child(1) {
+	display: none;
+}
+.librusPro_average > td {
+	font-weight: bold;
+	font-size: 14px;
+	height: 20px;
+}
+td[style^="height: 25px"] {
+	border-color: #00000000 !important;
+	vertical-align: middle;
+	text-align: right;
+}
+.kalendarz-dzien td {
+	border-left: none !important;
+	border-right: none !important;
+}
+.librusPro_container {
+	background: #f1f1f1;
+}
+.librusPro_icon {
+	display: inline-flex;
+	height: 27px;
+	width: 27px;
+	background-size: cover !important;
+}
+.librusPro_link {
+	cursor: pointer;
+	margin-right: 20px;
+	display: inline-block;
+	color: #7289da;
+}
+.librusPro_link:hover {
+	text-decoration: underline;
+	color: #9eb0f1;
+}
+.librusPro_copyright {
+	color: rgb(153, 153, 153);
+	cursor: vertical-text;
+}
+.librusPro_footer {
+	margin-left: 5px;
+	vertical-align: top;
+	display: inline-flex;
+}
+.librusPro_congratulations {
+	margin-left: 5px;
+	color: #d0f;
+}
+.librusPro_yourNumber {
+	color: #000000;
+}
