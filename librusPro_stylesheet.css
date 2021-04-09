@@ -393,21 +393,21 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 /* ogloszenia */
 #adresaci > table tr > td,
 #adresaci > table > tbody > tr:nth-child(2n + 1) > td,
-#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_newHomework):not(.librusPro_doneHomework) > th,
-#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_newHomework):not(.librusPro_doneHomework) > td {
+#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_new):not(.librusPro_doneHomework) > th,
+#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_new):not(.librusPro_doneHomework) > td {
 	background: #343434 !important;
 	color: #b9b9b9;
 }
 
 #adresaci > table > tbody > tr:nth-child(2n) > td,
-#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_newHomework):not(.librusPro_doneHomework) > th,
-#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_newHomework):not(.librusPro_doneHomework) > td {
+#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_new):not(.librusPro_doneHomework) > th,
+#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_new):not(.librusPro_doneHomework) > td {
 	color: #b9b9b9;
 	background: #393939 !important;
 }
 #adresaci > table > tbody > tr:hover > td,
-#body > div > div > table > tbody > tr:hover:not(.librusPro_newHomework):not(.librusPro_doneHomework) > th,
-#body > div > div > table > tbody > tr:hover:not(.librusPro_newHomework):not(.librusPro_doneHomework) > td {
+#body > div > div > table > tbody > tr:hover:not(.librusPro_new):not(.librusPro_doneHomework) > th,
+#body > div > div > table > tbody > tr:hover:not(.librusPro_new):not(.librusPro_doneHomework) > td {
 	background: #323232 !important;
 }
 /* wiadomości */
@@ -626,15 +626,15 @@ table.decorated tfoot tr td,
 /* table.decorated tbody tr.line0 td, */ table.decorated tbody tr td {
 	border-top: 1px solid #000000 !important;
 }
-.librusPro_newHomework.line0 td {
+.librusPro_new.line0 td {
 	background: #3a4655 !important;
 	color: #dddddd;
 }
-.librusPro_newHomework.line1 td {
+.librusPro_new.line1 td {
 	background: #404d5e !important;
 	color: #dddddd;
 }
-.librusPro_newHomework:hover td {
+.librusPro_new:hover td {
 	background: #384350 !important;
 }
 .librusPro_doneHomework.line0 td {
@@ -744,4 +744,45 @@ img[src*="refresh_icon"] {
 }
 .librusPro_text {
 	text-shadow: 1px 1px 3px #390a3c;
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr:nth-child(2n).librusPro_new
+	> td {
+	background: #3a4655 !important;
+	color: #dddddd;
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr:nth-child(2n + 1).librusPro_new
+	> td {
+	background: #404d5e !important;
+	color: #dddddd;
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr.librusPro_new:hover
+	> td {
+	background: #384350 !important;
 }

@@ -416,6 +416,10 @@ function finalizeDarkTheme() {
       e.style.filter = "none";
     });
   }
+
+  document.querySelectorAll('#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > tbody > tr > td[style="font-weight: bold;"]:nth-child(3)').forEach(e => {
+    e.parentElement.classList.add("librusPro_new");
+  });
 }
 
 function hideSubjects() {
@@ -782,7 +786,7 @@ function aprilfools() {
 // Prace domowe
 if (window.location.href == "https://synergia.librus.pl/moje_zadania") {
   document.querySelectorAll('tr[id^="homework_"] > td.bold:first-child').forEach(e => {
-    e.parentElement.classList.add("librusPro_newHomework");
+    e.parentElement.classList.add("librusPro_new");
   });
 
   document.querySelectorAll('img[src*="aktywne.png"]').forEach(e => {
