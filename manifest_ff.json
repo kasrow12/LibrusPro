@@ -27,11 +27,6 @@
 			"matches": [ "https://synergia.librus.pl/*" ],
 			"css": [ "librusPro.css" ],
 			"run_at": "document_start"
-		},
-		{
-			"matches": [ "https://synergia.librus.pl/terminarz" ],
-			"js": [ "terminarz.js" ],
-			"all_frames": true
 		}
 	],
 	"web_accessible_resources": [ "img/*" ],
