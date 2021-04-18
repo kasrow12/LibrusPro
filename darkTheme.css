@@ -20,10 +20,6 @@ body {
 #page {
 	background: var(--lightbackground) !important;
 }
-#przedmioty_zachowanie,
-#przedmioty_OP_zachowanie {
-	display: none;
-}
 #header {
 	background: var(--darkbackground) !important;
 }
@@ -85,41 +81,21 @@ img {
 #przedmioty_OP_zachowanie > td:nth-child(2) > table > tbody > tr:hover > td {
 	background: #323232 !important;
 }
-/* #body > form:nth-child(5) > div > div > h3,
-#gradeAverangeGraph > h3 {
-	color: #bbbbbb !important;
-} */
 [name="przedmioty_all"] > td {
 	background: var(--lightbackground) !important;
 }
-/*[name="przedmioty_all"] > td > table > tbody > tr > td {
-background: ${darkbackground};
-}*/
-/* [id="^przedmioty"] > td > table > thead > tr > td {
-	border-left: 1px solid #000000 !important;
-} */
 #body > form:nth-child(5) > div > div > table > tbody > tr.line0 > td {
 	color: #bbbbbb !important;
 }
 #body > form:nth-child(5) > div > div > table > tbody > tr.line1 > td {
 	color: #bbbbbb !important;
 }
-/* table.decorated tbody tr.line0:not(.detail-grades) td {
-	color: #bbbbbb !important;
-}
-table.decorated tbody tr.line1:not(.detail-grades) td {
-	color: #bbbbbb !important;
-} */
 #header {
 	background: #272727 !important;
 }
 #top-banner-container {
 	background: #272727 !important;
 }
-
-/* #body > form:nth-child(5) > div > h2 {
-	background: #272727 !important;
-} */
 #body > form:nth-child(5) > div > div {
 	background: #323232 !important;
 }
@@ -129,7 +105,6 @@ table.decorated tbody tr.line1:not(.detail-grades) td {
 #user-section > span.luckyNumber {
 	background-color: #310926 !important;
 	color: #dddddd;
-	margin-right: 8px;
 }
 #main-menu > ul > li > a,
 #body
@@ -150,15 +125,6 @@ table.decorated tbody tr.line1:not(.detail-grades) td {
 .legend ul li span:not([style*="wykres_zadania"]) {
 	background: #323232 !important;
 }
-/* span.fold-start {
-	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/fold_dark.png") !important;
-}
-span.fold-end {
-	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/foldEnd_dark.png") !important;
-}
-span.fold-end-scroll {
-	background-image: url("chrome-extension://ikhhfpmejcmlmjmdmeglekodopohmdlh/img/foldEndScroll_dark.png") !important;
-} */
 span.fold-start,
 span.fold-end {
 	color: #cccccc !important;
@@ -171,7 +137,6 @@ table.decorated thead td {
 }
 table.decorated thead td.colspan span {
 	background: var(--accent) !important;
-	/* background: #262626 !important; */
 }
 table.decorated thead td {
 	color: #bbbbbb !important;
@@ -181,8 +146,6 @@ table.decorated tfoot td {
 }
 table.decorated tr.bolded td {
 	background: #3c3c3c !important;
-	font-weight: bold;
-	height: 20px;
 }
 .detail-grades {
 	-webkit-filter: brightness(0.8) !important;
@@ -192,12 +155,8 @@ table.decorated tr.bolded td {
 	color: #000000 !important;
 }
 [id^="przedmioty"] > td > table > tbody > tr:last-child > td {
-	/* [id="^przedmioty"] > td > table > tbody > tr:last-child > td { */
 	background: var(--lightbackground) !important;
 }
-/* #body > form:nth-child(5) > div > div > div.container-icon > table > tbody > tr > td:nth-child(1) > img {
-	filter: invert(1);
-} */
 img[src="/images/naglowek_uczen.png"] {
 	-webkit-filter: invert(1);
 	filter: invert(1);
@@ -222,12 +181,10 @@ img[src="/images/usun_kosz.png"] {
 	background: #474747 !important;
 	color: #dbdbdb !important;
 	border: #000000 1px solid !important;
-	font-size: 12px;
 }
 hr {
 	background-color: #131313 !important;
 }
-
 table.decorated tfoot tr td:last-child:not(.no-border-right) {
 	border-right: 1px #000000 solid !important;
 }
@@ -259,40 +216,6 @@ select:not([name="rgbKoloru"]) > option {
 .legend {
 	color: #adadad !important;
 }
-
-/* #body
-	> form:nth-child(5)
-	> div
-	> div
-	> table:not(#tabSource):not(.middle):not(.medium)
-	> tbody
-	> .line0:nth-child(2n + 1):not(.bolded),
-#body
-	> form:nth-child(5)
-	> div
-	> div
-	> table:not(#tabSource):not(.middle):not(.medium)
-	> tbody
-	> .line1:nth-child(n + 1):not(.bolded) {
-	display: none;
-} */
-
-/* #body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5) {
-	width: 10px;
-	padding: 2px 5px;
-	white-space: nowrap;
-} */
-
-#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5) {
-	width: 50px !important;
-	padding: 2px 10px !important;
-	white-space: nowrap !important;
-}
-
-.container.static.welcome-page.student {
-	display: none !important;
-}
-
 /* frekwencja */
 .inside {
 	background: var(--accent) !important;
@@ -318,7 +241,6 @@ select:not([name="rgbKoloru"]) > option {
 	background: var(--lightbackground);
 	color: #949494;
 }
-
 #absence_form > div > div > table.center.big.decorated > tbody > tr:nth-child(2n + 1) > td {
 	background: #343434 !important;
 	color: #949494;
@@ -350,10 +272,6 @@ text {
 div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-child(12) text {
 	fill: #333333 !important;
 }
-
-/* #GradeArchiveGraphDiv > div:nth-child(1) > svg > g:nth-child(12) > g > text,
-#AbsencesArchiveGraphDiv > div:nth-child(1) > svg > g:nth-child(12) > g > text,
-#GradeAverangeGraphDiv > div:nth-child(1) > svg > g:nth-child(12) > g > text, */
 #AbsenceGraphDiv > div:nth-child(1) > svg > g:nth-child(12) > g > text {
 	fill: #000000 !important;
 }
@@ -361,13 +279,11 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 	fill: var(--darkbackground) !important;
 	stroke: var(--darkbackground) !important;
 }
-
 /* terminarz */
 #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr:nth-child(2n + 1) > td:not(.today) {
 	background: #343434 !important;
 	color: #949494;
 }
-
 #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr:nth-child(2n) > td:not(.today) {
 	color: #949494;
 	background: #393939 !important;
@@ -408,33 +324,25 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 .kalendarz-numer-dnia {
 	color: #cfcfcf;
 }
-
 /* ogloszenia */
 #adresaci > table tr > td,
 #adresaci > table > tbody > tr:nth-child(2n + 1) > td,
-#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_newHomework):not(.librusPro_doneHomework) > th,
-#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_newHomework):not(.librusPro_doneHomework) > td {
+#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_new):not(.librusPro_doneHomework) > th,
+#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_new):not(.librusPro_doneHomework) > td {
 	background: #343434 !important;
 	color: #b9b9b9;
 }
-
 #adresaci > table > tbody > tr:nth-child(2n) > td,
-#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_newHomework):not(.librusPro_doneHomework) > th,
-#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_newHomework):not(.librusPro_doneHomework) > td {
+#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_new):not(.librusPro_doneHomework) > th,
+#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_new):not(.librusPro_doneHomework) > td {
 	color: #b9b9b9;
 	background: #393939 !important;
 }
 #adresaci > table > tbody > tr:hover > td,
-#body > div > div > table > tbody > tr:hover:not(.librusPro_newHomework):not(.librusPro_doneHomework) > th,
-#body > div > div > table > tbody > tr:hover:not(.librusPro_newHomework):not(.librusPro_doneHomework) > td {
+#body > div > div > table > tbody > tr:hover:not(.librusPro_new):not(.librusPro_doneHomework) > th,
+#body > div > div > table > tbody > tr:hover:not(.librusPro_new):not(.librusPro_doneHomework) > td {
 	background: #323232 !important;
 }
-
-/* widok alternatywny */
-#graphic-menu > ul > li:nth-child(1) {
-	display: none;
-}
-
 /* wiadomości */
 #formWiadomosci
 	> div
@@ -615,7 +523,6 @@ input[type="password"],
 	background: #454545 !important;
 	color: #dddddd !important;
 }
-
 /* plan lekcji */
 #body > div > div > form > table > tbody > tr > th,
 #body > div > div > form > table > tbody > tr > td {
@@ -629,13 +536,6 @@ td.today {
 #body > div > div > form > table > tbody > tr:hover > td {
 	background: #323232 !important;
 }
-
-.librusPro_average > td {
-	font-weight: bold;
-	font-size: 14px;
-	height: 20px;
-}
-
 #formWiadomosci > div > div > table.decorated.filters.center.small > tfoot > tr > td,
 #formFiltrZadania > table > tfoot > tr > td,
 #formPrzegladanieRealizacji > table > tfoot > tr > td,
@@ -657,18 +557,15 @@ table.decorated tfoot tr td,
 /* table.decorated tbody tr.line0 td, */ table.decorated tbody tr td {
 	border-top: 1px solid #000000 !important;
 }
-#body > form:nth-child(5) > div > div > table > thead > tr:nth-child(2) > td:nth-child(6) {
-	border-left: none;
-}
-.librusPro_newHomework.line0 td {
+.librusPro_new.line0 td {
 	background: #3a4655 !important;
 	color: #dddddd;
 }
-.librusPro_newHomework.line1 td {
+.librusPro_new.line1 td {
 	background: #404d5e !important;
 	color: #dddddd;
 }
-.librusPro_newHomework:hover td {
+.librusPro_new:hover td {
 	background: #384350 !important;
 }
 .librusPro_doneHomework.line0 td {
@@ -681,11 +578,6 @@ table.decorated tfoot tr td,
 }
 .librusPro_doneHomework:hover td {
 	background: #334332 !important;
-}
-td[style^="height: 25px"] {
-	border-color: #00000000 !important;
-	vertical-align: middle;
-	text-align: right;
 }
 #body > div > div > div > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td,
 [style*="/images/wykres_zadania/data.png)"] {
@@ -741,27 +633,87 @@ img[src*="refresh_icon"] {
 	background: #ae3737 !important;
 	color: #ffffff !important;
 }
-.kalendarz-dzien td {
-	border-left: none !important;
-	border-right: none !important;
-}
-.librusPro_footer-img {
-	display: inline-flex;
-	height: 27px;
-	width: 27px;
-	background-size: cover !important;
-	filter: brightness(0.7) contrast(1.1);
-}
-.librusPro_footer-link {
-	cursor: pointer;
-	margin-right: 20px;
-	display: inline-block;
-	color: #7289da;
-}
-.librusPro_footer-link:hover {
-	text-decoration: underline;
-	color: #9eb0f1;
-}
 .plan-lekcji-info {
 	filter: brightness(0.7);
+}
+.librusPro_icon {
+	filter: brightness(0.7) contrast(1.1);
+}
+.librusPro_congratulations {
+	color: lime;
+}
+.librusPro_yourNumber {
+	color: #eeeeee;
+}
+.librusPro_container {
+	background: #323232;
+}
+.librusPro_inputTime {
+	background: #454545 !important;
+}
+#librusPro_datePicker {
+	background: #454545;
+	color: #dddddd;
+	-webkit-box-shadow: 1px 1px 3px #111111;
+	box-shadow: 1px 1px 3px #111111;
+}
+.librusPro_input {
+	background: #454545;
+	color: #dddddd;
+}
+.librusPro_text {
+	color: #dddddd;
+}
+.librusPro_title {
+	color: #dddddd;
+}
+.librusPro_date {
+	color: #dddddd;
+}
+#librusPro_time {
+	color: #f5f5f5 !important;
+}
+.librusPro_text {
+	text-shadow: 1px 1px 3px #390a3c;
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr:nth-child(2n).librusPro_new
+	> td {
+	background: #3a4655 !important;
+	color: #dddddd;
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr:nth-child(2n + 1).librusPro_new
+	> td {
+	background: #404d5e !important;
+	color: #dddddd;
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr.librusPro_new:hover
+	> td {
+	background: #384350 !important;
 }
