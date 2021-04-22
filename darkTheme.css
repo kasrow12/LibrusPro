@@ -154,9 +154,6 @@ table.decorated tr.bolded td {
 .detail-grades > td {
 	color: #000000 !important;
 }
-[id^="przedmioty"] > td > table > tbody > tr:last-child > td {
-	background: var(--lightbackground) !important;
-}
 img[src="/images/naglowek_uczen.png"] {
 	-webkit-filter: invert(1);
 	filter: invert(1);
