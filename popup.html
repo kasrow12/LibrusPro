@@ -7,13 +7,13 @@ body
 {
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 	text-align: center;
-	padding: 5px 30px 0 30px;
+	padding: 5px 25px 0 25px;
 	background: #363636;
 	min-width: 220px;
 }
 .logo-container {
 	display: flex;
-	margin: 10px 0 5px 0;
+	margin: 5px 0 5px 0;
 	align-items: center;
 	justify-content: center;
 }
@@ -38,7 +38,7 @@ body
 .quote {
 	font-size: 17px;
 	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-	margin: 10px 0 10px 0;
+	margin: 10px 0 5px 0;
 	color: #cccccc;
 	font-style: italic;
 }
@@ -65,7 +65,7 @@ input[type="number"] {
 	position: relative;
 	display: flex;
 	justify-content: space-between;
-	padding: 15px 10px 0 10px;
+	padding: 7px 10px 0 10px;
 	bottom: 0;
 	color: #a7a7a7;
 	font-size: 13px;
@@ -216,7 +216,7 @@ to {
 }
 .options-section {
 	color: #8e607c;
-	padding: 4px 0 5px 0;
+	padding: 2px 0;
 	font-size: 15px;
 	font-weight: bold;
 }
@@ -300,6 +300,13 @@ to {
 				Ukrywanie jedynek
 				<input class="tgl tgl-light" id="hideOnes" type="checkbox"/>
 				<label class="tgl-btn" for="hideOnes"></label>
+			</label>
+		</div>
+		<div>
+			<label class="option-container">
+				<div>Wymuś liczenie<div class="description">(Licz do średniej: nie)</div></div>
+				<input class="tgl tgl-light" id="countToAverage" type="checkbox"/>
+				<label class="tgl-btn" for="countToAverage"></label>
 			</label>
 		</div>
 		<div>

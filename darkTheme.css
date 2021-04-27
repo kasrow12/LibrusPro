@@ -608,6 +608,11 @@ table.decorated tfoot tr td,
 img[src*="refresh_icon"] {
 	filter: invert(1.0) brightness(0.7);
 }
+img[src*="pomoc_ciemna"] {
+	filter: invert(1.0) brightness(0.7);
+	margin: 0 auto;
+	text-align: center;
+}
 /*[style*="#FF0000"] {
     background-color: #000000 !important;
 }*/

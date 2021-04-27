@@ -19,6 +19,7 @@ const OPTIONS_DEFAULT = {
   darkTheme: true,
   hideOnes: false,
   countZeros: true,
+  countToAverage: false,
   plusValue: 0.5,
   minusValue: 0.25,
 };
@@ -194,40 +195,43 @@ function getWeightedAverage(elements, options) {
   let weights = 0;
   elements.forEach(e => {
     if (/[0-6][+-]?/.test(e.innerText)) {
-      let regexp = /<br>Licz do średniej: (.){3}<br>/gi;
-      let liczDoSredniej = (e.title.match(regexp) != null) ? e.title.match(regexp)[0] : "nie";
-      liczDoSredniej = liczDoSredniej.replace("<br>Licz do średniej: ", "").replace("<br>", "");
-      if (liczDoSredniej == "nie" || (!options.countZeros && e.innerText[0] == "0")) {
+      let regexp = /<br>Licz do średniej: (tak|nie)<br>/;
+      let liczDoSredniej = (e.title.match(regexp) != null) ? e.title.match(regexp)[1] : "nie";
+      if ((liczDoSredniej == "nie" && !options.countToAverage) || (!options.countZeros && e.innerText[0] == "0")) {
         if (options.depressionMode) {
           e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
         }
         return;
       }
-
-      regexp = /<br>Waga: \d+?<br>/;
+      
       let weight;
-      if (e.title.match(regexp) != null) {
-        weight = e.title.match(regexp)[0];
+      if (liczDoSredniej == "nie" && options.countToAverage) {
+        weight = 1;
+        weights += +weight;
       } else {
-        if (options.depressionMode) {
-          e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
+        regexp = /<br>Waga: (\d+?)<br>/;
+        if (e.title.match(regexp) != null) {
+          weight = e.title.match(regexp)[1];
+        } else {
+          if (options.depressionMode) {
+            e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
+          }
+          return;
         }
-        return;
+        weights += +weight;
+
+        if (options.depressionMode) {
+          if (weight == 1) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight1;
+          else if (weight == 2) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight2;
+          else if (weight == 3) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight3, e.parentElement.style.filter = "brightness(0.8)";
+          else if (weight == 4) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight4;
+          else if (weight >= 5) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight5;
+        }
       }
-      weight = weight.replace("<br>Waga: ", "").replace("<br>", "");
-      weights += +weight;
 
       if (e.innerText.length == 1) sum += (+e.innerText) * weight;
       else if (e.innerText[1] == "+") sum += (+e.innerText[0] + +options.plusValue) * weight;
       else if (e.innerText[1] == "-") sum += (+e.innerText[0] - +options.minusValue) * weight;
-
-      if (options.depressionMode) {
-        if (weight == 1) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight1;
-        else if (weight == 2) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight2;
-        else if (weight == 3) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight3, e.parentElement.style.filter = "brightness(0.8)";
-        else if (weight == 4) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight4;
-        else if (weight >= 5) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight5;
-      }
     }
     else if (options.depressionMode) {
       e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
@@ -343,7 +347,8 @@ function handleGrades(options) {
     // Roczna
     document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaR + OFFSET_CSS})`).forEach(e => {
       const grades = [...e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`), ...e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`)];
-      e.innerText = getWeightedAverage(grades, options).average + (DEBUG ? (" (" + e.innerText + ")") : "");
+      const a = getWeightedAverage(grades, options);
+      e.innerText = a.average + (DEBUG ? (" (" + e.innerText + " " + a.sum + " " + a.weights + ")") : "");
       e.classList.add("right");
     });
   }
@@ -427,9 +432,15 @@ function finalizeDarkTheme() {
     });
   }
 
+  // Podświetlenie nowych wiadomości
   document.querySelectorAll('#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > tbody > tr > td[style="font-weight: bold;"]:nth-child(3)').forEach(e => {
     e.parentElement.classList.add("librusPro_new");
   });
+
+  // "Podgląd średniej ocen został wyłączony przez administratora szkoły."
+  document.querySelectorAll(`.line0 > td > img[src*="pomoc_ciemna"], .line1 > td > img[src*="pomoc_ciemna"]`).forEach(e => {
+    e.parentElement.classList.add("center");
+  })
 }
 
 function hideSubjects() {
@@ -513,8 +524,12 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function(t) {
   } else {
     for (let p in OPTIONS_DEFAULT) {
       if (!options.hasOwnProperty(p)) {
-        browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
-        alert("Zaktualizowano wtyczkę LibrusPro do wersji " + browserAPI.runtime.getManifest().version + "! Twoje ustawienia zostały przywrócone do domyślnych.");
+        let t = OPTIONS_DEFAULT;
+        for (let u in options) {
+          t[u] = options[u];
+        }
+        browserAPI.storage.sync.set({ ["options"]: t });
+        alert("Zaktualizowano wtyczkę LibrusPro do wersji " + browserAPI.runtime.getManifest().version + "! Nie zapomnij polecić znajomym!");
         return;
       }
     }
@@ -949,7 +964,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
                   <option value="Kartkówka">Kartkówka</option>
                   <option value="Praca domowa" style="background-color: #ebebeb; color: #333333">Praca domowa</option>
                   <option value="Odpowiedź ustna">Odpowiedź ustna</option>
-                  <option value="Inny" style="background-color: #ebebeb; color: #333333">Inny</option>
+                  <option value="Inny" style="background-color: #ebebeb; color: #333333">Inny (Jaki?)</option>
               </select>
               <label id="librusPro_typeTitle" class="librusPro_title" style="display: none" for="librusPro_type">Typ:</label>
               <input placeholder="Zaliczenie" type="text" id="librusPro_type" class="librusPro_input" style="display: none; /*margin-top: 15px*/">
@@ -1686,10 +1701,9 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
 
     // Dodawanie opisów
     if (options.addDescriptions) {
-      const descriptionRegex = /Opis: (.+?)Data/g;
-      const descriptionResult = cell.title.match(descriptionRegex);
-      if (descriptionResult != null) {
-        let out = descriptionResult[0].replace("<br>Data", "").replace("<br />Data", "");
+      const descriptionRegex = /Opis: (.+?)(<br>|<br \/>)Data/;
+      let out = (cell.title.match(descriptionRegex) != null) ? "Opis: " + cell.title.match(descriptionRegex)[1] : null;
+      if (out != null) {
         // Opis z title na wierzch, ucięcie zbyt długich.
         const d = document.createElement("SPAN");
         if (out.length > 200) {
