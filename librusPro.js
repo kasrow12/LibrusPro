@@ -109,7 +109,7 @@ if (window.location.href == "https://synergia.librus.pl/uczen/index" || window.l
   });
 } else if (window.location.href == "https://synergia.librus.pl/terminarz") {
   browserAPI.storage.sync.get(["dane"], function (t) {
-    dane = t["dane"];
+    let dane = t["dane"];
     if (dane != null && dane.currentClass != null) {
       currentClass = dane.currentClass;
     } else {
@@ -408,21 +408,21 @@ function finalizeDarkTheme() {
 
   // Losowe bordery w tabelach, bo Librus dał losowo w css je na important... pepoWTF...
   if (document.querySelectorAll(".spacing") != null) {
-    document.querySelectorAll(".spacing").forEach(e => {e.style.setProperty("border-left", "1px #000000 solid", "important");});
+    document.querySelectorAll(".spacing").forEach(e => {e.style.setProperty("border-left", "1px #222222 solid", "important");});
   }
 
   if (document.querySelectorAll("table.decorated table thead th, table.decorated table thead td") != null) {
-    document.querySelectorAll("table.decorated table thead th, table.decorated table thead td").forEach(e => {e.style.setProperty("border-left", "1px #000000 solid", "important");});
+    document.querySelectorAll("table.decorated table thead th, table.decorated table thead td").forEach(e => {e.style.setProperty("border-left", "1px #222222 solid", "important");});
   }
 
   if (window.location.href == "https://synergia.librus.pl/przegladaj_plan_lekcji") {
-    document.querySelectorAll(".border-top").forEach(e => {e.style.setProperty("border-top", "1px #000000 solid", "important"); e.style.setProperty("border-left", "1px #000000 solid", "important");});
-    document.querySelectorAll(".border-right").forEach(e => {e.style.setProperty("border-right", "1px #000000 solid", "important");});
+    document.querySelectorAll(".border-top").forEach(e => {e.style.setProperty("border-top", "1px #222222 solid", "important"); e.style.setProperty("border-left", "1px #222222 solid", "important");});
+    document.querySelectorAll(".border-right").forEach(e => {e.style.setProperty("border-right", "1px #222222 solid", "important");});
     document.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr > td").forEach(e => {e.style.setProperty("border-bottom", "0", "important");});
   }
 
   if (document.querySelectorAll("table.decorated.filters td, table.decorated.filters th") != null) {
-    document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach(e => {e.style.setProperty("border-color", "#000000", "important");});
+    document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach(e => {e.style.setProperty("border-color", "#222222", "important");});
   }
 
   if (document.querySelector('img[src="/images/pomoc_ciemna.png"]') != null) {
@@ -517,7 +517,7 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function(t) {
     if (d.getMonth() == 3 && d.getDate() == 1) aprilfools();
   }
 
-  options = t["options"];
+  let options = t["options"];
   if (options == null) {
     browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
     return;
@@ -1417,7 +1417,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           }
 
           // Klasa
-          if (currentClass != undefined && ((temp == "" && event.description == "") || !options.removeClasses)) {
+          if (currentClass != undefined && ((temp.length == 0 && event.description == "") || !options.removeClasses)) {
             temp.push(currentClass);
           }
 
@@ -1677,8 +1677,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       }
 
       // Odchudzenie nieobecności nauczycieli
-      const t = cell.innerText.includes("\nNauczyciel:");
-      if (t) {
+      if (cell.innerText.includes("\nNauczyciel:")) {
         cell.innerText = cell.innerText.replace("\nNauczyciel:", "");
       }
 

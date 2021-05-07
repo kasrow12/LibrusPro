@@ -14,7 +14,7 @@ body {
 	background: #323232 !important;
 }
 * {
-	border-color: black !important;
+	border-color: #222222 !important;
 	border-width: 1px !important;
 }
 #page {
@@ -177,19 +177,19 @@ img[src="/images/usun_kosz.png"] {
 .ui-tooltip {
 	background: #474747 !important;
 	color: #dbdbdb !important;
-	border: #000000 1px solid !important;
+	border: #222222 1px solid !important;
 }
 hr {
 	background-color: #131313 !important;
 }
 table.decorated tfoot tr td:last-child:not(.no-border-right) {
-	border-right: 1px #000000 solid !important;
+	border-right: 1px #222222 solid !important;
 }
 table.decorated thead tr td:last-child:not(.no-border-right) {
-	border-right: 1px #000000 solid !important;
+	border-right: 1px #222222 solid !important;
 }
 .container-background {
-	border: 1px #000000 solid !important;
+	border: 1px #222222 solid !important;
 	-webkit-box-shadow: none !important;
 	box-shadow: none !important;
 	background: var(--lightbackground) !important;
@@ -201,7 +201,7 @@ table.decorated thead tr td:last-child:not(.no-border-right) {
 select {
 	background-color: #4a4a4a !important;
 	color: #dedede !important;
-	border-color: #000000 !important;
+	border-color: #222222 !important;
 }
 select:not([name="rgbKoloru"]) > option {
 	background-color: #4a4a4a !important;
@@ -552,7 +552,7 @@ table.decorated tfoot tr th,
 /* table.decorated tbody tr.line0 th, */ table.decorated tbody tr th,
 table.decorated tfoot tr td,
 /* table.decorated tbody tr.line0 td, */ table.decorated tbody tr td {
-	border-top: 1px solid #000000 !important;
+	border-top: 1px solid #222222 !important;
 }
 .librusPro_new.line0 td {
 	background: #3a4655 !important;

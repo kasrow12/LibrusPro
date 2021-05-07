@@ -65,7 +65,7 @@ function restoreDefaults() {
 
 // Prepare
 browserAPI.storage.sync.get(["options"], function (t) {
-  options = t["options"];
+  let options = t["options"];
   if (options == null) {
     restoreDefaults();
     return;
