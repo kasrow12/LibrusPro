@@ -719,3 +719,6 @@ img[src*="pomoc_ciemna"] {
 	> td {
 	background: #384350 !important;
 }
+table.decorated {
+	background-color: #222222 !important;
+}

@@ -506,6 +506,7 @@ let odOstLogowania = false;
 
 adjustNavbar();
 insertFooter();
+disableAutoLogout();
 
 if (document.querySelector("#body > form:nth-child(5) > div > h2") != null && document.querySelector("#body > form:nth-child(5) > div > h2").innerHTML.includes("-")) {
   odOstLogowania = true;
@@ -830,6 +831,17 @@ if (window.location.href == "https://synergia.librus.pl/moje_zadania") {
   document.querySelectorAll("#body > div > div > table > thead > tr > td:nth-child(5), #body > div > div > table > thead > tr > td:nth-child(6)").forEach(e => {
     e.colSpan = 1;
   });
+}
+
+function disableAutoLogout() {
+  // Załadowanie strony w tle co 20 minut, aby nie wylogowywało
+  const code = `function refreshLibrus() {
+    fetch('https://synergia.librus.pl/wiadomosci', { cache: 'no-cache', credentials: 'same-origin' });
+  }
+  setInterval(refreshLibrus, 20*10*1000);`;
+  const refreshScript = document.createElement('script');
+  refreshScript.appendChild(document.createTextNode(code));
+  (document.body || document.head || document.documentElement).appendChild(refreshScript);
 }
 
 // Terminarz
@@ -1746,6 +1758,5 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
         adjustCellContent(e, options);
       }
     });
-
   });
 }
