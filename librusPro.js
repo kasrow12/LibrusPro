@@ -838,7 +838,7 @@ function disableAutoLogout() {
   const code = `function refreshLibrus() {
     fetch('https://synergia.librus.pl/wiadomosci', { cache: 'no-cache', credentials: 'same-origin' });
   }
-  setInterval(refreshLibrus, 20*10*1000);`;
+  setInterval(refreshLibrus, 20*60*1000);`;
   const refreshScript = document.createElement('script');
   refreshScript.appendChild(document.createTextNode(code));
   (document.body || document.head || document.documentElement).appendChild(refreshScript);
