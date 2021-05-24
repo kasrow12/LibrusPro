@@ -36,6 +36,9 @@ td[style^="height: 25px"] {
 	vertical-align: middle;
 	text-align: right;
 }
+.grade-box {
+	border-radius: 10%;
+}
 .kalendarz-dzien td {
 	border-left: none !important;
 	border-right: none !important;

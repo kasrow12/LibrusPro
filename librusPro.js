@@ -708,6 +708,35 @@ function adjustHeader(dane) {
   if (bezpiecznyUczen != null) {
     bezpiecznyUczen.parentElement.remove();
   }
+
+  // Title i favicon
+  let tityl = "LibrusPro | ";
+
+  // Ilość nowych rzeczy
+  let num = 0;
+  document.querySelectorAll(".blue").forEach(e => {
+    num += +e.innerText;
+  })
+  if (num > 0) tityl = `(${num}) ${tityl}`;
+  
+  if (location.href.includes("przegladaj_oceny")) tityl += "Oceny";
+  else if (location.href.includes("przegladaj_nb")) tityl += "Frekwencja";
+  else if (location.href.includes("wiadomosci")) tityl += "Wiadomości";
+  else if (location.href.includes("ogloszenia")) tityl += "Ogłoszenia";
+  else if (location.href.includes("terminarz")) tityl += "Terminarz";
+  else if (location.href.includes("moje_zadania")) tityl += "Zadania domowe";
+  else if (location.href.includes("plan_lekcji")) tityl += "Plan lekcji";
+  else tityl += "Synergia";
+  document.title = tityl;
+
+  // Zmiana ikony
+  let link = document.querySelector("link[rel~='icon']");
+  if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.getElementsByTagName('head')[0].appendChild(link);
+  }
+  link.href = browserAPI.runtime.getURL('img/icon.png');
 }
 
 // Copyright
