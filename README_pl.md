@@ -25,11 +25,11 @@ Nie jesteś sam(a), na szczęście to już nie jest problem. W końcu Librus nie
 <details>
   <summary>Tutaj znajdziesz kilka zrzutów ekranu:</summary>
 
-![Ciemny motyw 1](docs/librusPro_oceny.png?raw=true)
-![Ciemny motyw 2](docs/librusPro_frekwencja.png?raw=true)
-![Ciemny motyw 3](docs/librusPro_terminarz.png?raw=true)
-![Ciemny motyw 4](docs/librusPro_wiadomosci.png?raw=true)
-![Ciemny motyw 5](docs/librusPro_naglowek.png?raw=true)
+![Ciemny motyw 1](docs/librusPro_1.png?raw=true)
+![Ciemny motyw 2](docs/librusPro_2.png?raw=true)
+![Ciemny motyw 3](docs/librusPro_3.png?raw=true)
+![Ciemny motyw 4](docs/librusPro_4.png?raw=true)
+![Ciemny motyw 5](docs/librusPro_5.png?raw=true)
 </details>
 
 ## ⭐️ • Własne wydarzenia w terminarzu 📆
@@ -49,6 +49,9 @@ Po co najeżdżać na każdą rzecz w terminarzu, aby przeczytać jej opis? Od t
 
 ## ⭐️ • Wersja depresyjna 🕶
 Stonowane kolory ocen i wydarzeń w terminarzu, gdy czujesz się nie najlepiej. Wersja możliwa do włączenia w opcjach rozszerzenia.
+
+## ⭐️ • Zapobieganie automatycznemu wylogowaniu 🎉
+Dopóki karta z e-dziennikiem będzie otwarta, Twoja sesja nie wygaśnie! Koniec nieprzyjemnych komunikatów "STOP".
 
 ## ⭐️ • Poprawki wizualne 🔨
   - możliwość wyłączenia wyświetlania jedynek w menu rozszerzenia,

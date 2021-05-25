@@ -24,11 +24,11 @@ Fortunately, this is no longer a problem :)
 <details>
   <summary>Here are some screenshots:</summary>
 
-![Dark theme 1](docs/librusPro_oceny.png?raw=true)
-![Dark theme 2](docs/librusPro_frekwencja.png?raw=true)
-![Dark theme 3](docs/librusPro_terminarz.png?raw=true)
-![Dark theme 4](docs/librusPro_wiadomosci.png?raw=true)
-![Dark theme 5](docs/librusPro_naglowek.png?raw=true)
+![Dark theme 1](docs/librusPro_1.png?raw=true)
+![Dark theme 2](docs/librusPro_2.png?raw=true)
+![Dark theme 3](docs/librusPro_3.png?raw=true)
+![Dark theme 4](docs/librusPro_4.png?raw=true)
+![Dark theme 5](docs/librusPro_5.png?raw=true)
 </details>
 
 ## ⭐️ • Custom events in the schedule
