@@ -11,6 +11,7 @@
 ## 🖥 Google Chrome: <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Click here</a>
 ## 🦊 Firefox: <a href="https://addons.mozilla.org/en-US/firefox/addon/libruspro/">Click here</a>
 ## 🌍 Microsoft Edge 😂: <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Click here</a>
+## ⭕ Opera: Firstly install <a href="https://addons.opera.com/en/extensions/details/install-chrome-extensions/">this extension</a>, and then <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">click here</a>.
 
 
 # 🛠 Features

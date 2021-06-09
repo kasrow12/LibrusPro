@@ -32,6 +32,7 @@ const OPTIONS_DEFAULT = {
   countToAverage: false,
   plusValue: 0.5,
   minusValue: 0.25,
+  debug: false,
 };
 
 let browserAPI;
@@ -137,6 +138,7 @@ function validate() {
         countToAverage: document.getElementById('countToAverage').checked,
         plusValue: document.getElementById('plusValue').value,
         minusValue: document.getElementById('minusValue').value,
+        debug: false,
       }
     }, () => {
       setTimeout(callback, 450);
@@ -199,6 +201,20 @@ browserAPI.storage.sync.get(["dane"], function (t) {
 // Extras
 document.getElementById("ver").innerText = browserAPI.runtime.getManifest().version;
 document.getElementById('copyright-year').innerText = new Date().getFullYear();
+
+let counter = 0;
+function debugCounter() {
+  counter++;
+  if (counter >= 7) {
+    browserAPI.storage.sync.get(["options"], function (t) {
+      let temp = t["options"];
+      temp.debug = !temp.debug;
+      browserAPI.storage.sync.set({ ["options"]: temp });
+    });
+    counter = 0;
+  }
+}
+document.getElementById("debugButton").addEventListener("click", debugCounter);
 
 
 // ----------------------------- DEBUG -------------------------

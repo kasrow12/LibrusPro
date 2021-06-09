@@ -3,7 +3,6 @@
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
 
-const DEBUG = false;
 const NO_DATA = "-";
 const DANE_DEFAULT = {
   nr: null,
@@ -22,6 +21,7 @@ const OPTIONS_DEFAULT = {
   countToAverage: false,
   plusValue: 0.5,
   minusValue: 0.25,
+  debug: false,
 };
 const DEPRESSION_MODE_COLORS = {
   proposed: "#aaad84",
@@ -312,17 +312,25 @@ function handleGrades(options) {
 
   if (INDICES.proponowaneI > 0) {
     srednieTr.children[INDICES.proponowaneI + OFFSET_JS].innerText = getAverage(proponowaneI, DEPRESSION_MODE_COLORS.proposed, options);
-    srednieTr.children[INDICES.proponowaneI + OFFSET_JS].classList.add("right");
   }
 
   if (INDICES.proponowaneII > 0) {
     srednieTr.children[INDICES.proponowaneII + OFFSET_JS].innerText = getAverage(proponowaneII, DEPRESSION_MODE_COLORS.proposed, options);
-    srednieTr.children[INDICES.proponowaneII + OFFSET_JS].classList.add("right");
   }
 
   if (INDICES.proponowaneR > 0) {
     srednieTr.children[INDICES.proponowaneR + OFFSET_JS].innerText = getAverage(proponowaneR, DEPRESSION_MODE_COLORS.proposed, options);
-    srednieTr.children[INDICES.proponowaneR + OFFSET_JS].classList.add("right");
+  }
+
+  // Poświetlenie średniej zaliczającej się na czerwony pasek
+  if (!odOstLogowania) {
+    for (const type of ["proponowaneR", "roczne"]) {
+      const node = srednieTr.children[INDICES[type] + OFFSET_JS];
+      if (+node.innerText >= 4.75) {
+        node.style.setProperty("background", "linear-gradient(90deg, #cacaca 50%, #b53232 50%)", "important");
+        node.style.setProperty("color", "#000000", "important");
+      }
+    }
   }
 
   if (options.calculateAverages)
@@ -333,14 +341,16 @@ function handleGrades(options) {
     // I sem
     document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaI + OFFSET_CSS})`).forEach(e => {
       const grades = e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`);
-      e.innerText = getWeightedAverage(grades, options).average + (DEBUG ? (" (" + e.innerText + ")") : "");
+      const a = getWeightedAverage(grades, options);
+      e.innerText = a.average + (options.debug ? (" (" + e.innerText + ") [" + a.sum + ", " + a.weights + "]") : "");
       e.classList.add("right");
     });
 
     // II sem
     document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaII + OFFSET_CSS})`).forEach(e => {
       const grades = e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`);
-      e.innerText = getWeightedAverage(grades, options).average + (DEBUG ? (" (" + e.innerText + ")") : "");
+      const a = getWeightedAverage(grades, options);
+      e.innerText = a.average + (options.debug ? (" (" + e.innerText + ") [" + a.sum + ", " + a.weights + "]") : "");
       e.classList.add("right");
     });
 
@@ -348,7 +358,7 @@ function handleGrades(options) {
     document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaR + OFFSET_CSS})`).forEach(e => {
       const grades = [...e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`), ...e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`)];
       const a = getWeightedAverage(grades, options);
-      e.innerText = a.average + (DEBUG ? (" (" + e.innerText + " " + a.sum + " " + a.weights + ")") : "");
+      e.innerText = a.average + (options.debug ? (" (" + e.innerText + ") [" + a.sum + ", " + a.weights + "]") : "");
       e.classList.add("right");
     });
   }
@@ -446,7 +456,7 @@ function finalizeDarkTheme() {
 function hideSubjects() {
   document.querySelectorAll("tr[name=przedmioty_all]").forEach((e) => {
     const el = e.previousElementSibling;
-    if (el != null && el.children[INDICES.ocenyI + OFFSET_JS].textContent == "Brak ocen" && el.children[INDICES.ocenyII + OFFSET_JS].textContent == "Brak ocen") {
+    if (el != null && !el.classList.contains("bolded") && (el.querySelectorAll(".grade-box") == null || el.querySelectorAll(".grade-box").length < 1)) {
       el.remove();
       e.remove();
     }
@@ -563,6 +573,13 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function(t) {
     updateDetails(dane, "https://synergia.librus.pl/przegladaj_oceny/uczen");
   }
 
+  if (options.debug) {
+    console.log("[LibrusPro] » Debugging enabled.");
+    browserAPI.storage.sync.get(null, function(result) {
+      console.log("[LibrusPro] » Chrome storage data:", result);
+    });
+  }
+
 });
 
 // --------------------------------------------------------------------------------------------
@@ -629,7 +646,12 @@ function insertProposedBehavior() {
 if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
   if (odOstLogowania) {
     // Ukryj całkowicie zachowanie
-    document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded").style.display = "none";
+    const zachowanieTr = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded");
+    let toRemove = true;
+    zachowanieTr.querySelectorAll(".center:not(:first-child)").forEach(e => {
+      if (e.innerText != "-") toRemove = false;
+    })
+    if (toRemove) zachowanieTr.style.display = "none";
   }
   else {
     // Zwiń zachowanie
@@ -714,7 +736,7 @@ function adjustHeader(dane) {
 
   // Ilość nowych rzeczy
   let num = 0;
-  document.querySelectorAll(".blue").forEach(e => {
+  document.querySelectorAll(".button.counter").forEach(e => {
     num += +e.innerText;
   })
   if (num > 0) tityl = `(${num}) ${tityl}`;
@@ -1188,6 +1210,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
     overlayConfirmButton.innerText = "Dodaj";
     overlayConfirmButton.classList.remove("librusPro_button-edit");
     overlayConfirmButton.classList.add("librusPro_button-add");
+    time.value = 0;
     lesson.value = "";
     subject.value = "";
     typeSelect.value = "";

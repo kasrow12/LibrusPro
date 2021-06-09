@@ -12,8 +12,8 @@ if (typeof chrome != null) {
 
 let darkTheme = true;
 
-browserAPI.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
-  if (tab.url != null) {
+browserAPI.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  if (!chrome.runtime.lastError && tab.url != null) {
     if (tab.url.indexOf("https://synergia.librus.pl/") > -1 && darkTheme) {
       browserAPI.tabs.insertCSS({ file:"darkTheme.css", runAt: "document_start" }, () => chrome.runtime.lastError);
     }
@@ -21,8 +21,9 @@ browserAPI.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 });
 
 browserAPI.tabs.onActivated.addListener(function(info) {
+  if(chrome.runtime.lastError) {}
   browserAPI.tabs.get(info.tabId, function(tab) {
-    if (tab.url != null) {
+    if (!chrome.runtime.lastError && tab.url != null) {
       if (tab.url.indexOf("https://synergia.librus.pl/") > -1 && darkTheme) {
         browserAPI.tabs.insertCSS({ file:"darkTheme.css", runAt: "document_start" }, () => chrome.runtime.lastError);
       }
