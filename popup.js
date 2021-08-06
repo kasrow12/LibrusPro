@@ -43,12 +43,13 @@ if (typeof chrome != null) {
 }
 
 function clear() {
-  if (confirm('Na pewno?'))
-  browserAPI.storage.sync.clear();
+  if (confirm('Na pewno?')) browserAPI.storage.sync.clear();
 }
 
 function restoreDefaults() {
-  browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
+  browserAPI.storage.sync.set({
+    ["options"]: OPTIONS_DEFAULT
+  });
   browserAPI.storage.sync.remove(["aprilfools"]);
   document.getElementById('hideSubjects').checked = true;
   document.getElementById('calculateAverages').checked = true;
@@ -94,20 +95,22 @@ browserAPI.storage.sync.get(["options"], function (t) {
 
 const resetButton = document.getElementById("resetButton");
 let resetButtonInUse = false;
+
 function validateReset() {
-  setTimeout(function() {
+  setTimeout(function () {
     resetButton.classList.remove("onclick");
     resetButton.classList.add("validate");
     restoreDefaults();
     setTimeout(callbackReset, 250);
-  }, 100 );
+  }, 100);
 }
+
 function callbackReset() {
   resetButton.classList.remove("validate");
   resetButtonInUse = false;
-  setTimeout(function() {
+  setTimeout(function () {
     window.location.replace(window.location.href);
-  }, 350 );
+  }, 350);
 }
 resetButton.onclick = () => {
   if (!resetButtonInUse) {
@@ -121,11 +124,13 @@ resetButton.onclick = () => {
 // Saving logic
 let saveButtonInUse = false;
 const saveButton = document.getElementById("saveButton");
+
 function validate() {
-  setTimeout(function() {
+  setTimeout(function () {
     saveButton.classList.remove("onclick");
     saveButton.classList.add("validate");
-    browserAPI.storage.sync.set({ ["options"]: {
+    browserAPI.storage.sync.set({
+      ["options"]: {
         hideSubjects: document.getElementById('hideSubjects').checked,
         calculateAverages: document.getElementById('calculateAverages').checked,
         depressionMode: document.getElementById('depressionMode').checked,
@@ -143,14 +148,16 @@ function validate() {
     }, () => {
       setTimeout(callback, 450);
     });
-  }, 300 );
+  }, 300);
 }
+
 function callback() {
-  setTimeout(function() {
+  setTimeout(function () {
     saveButton.classList.remove("validate");
     saveButtonInUse = false;
-  }, 750 );
+  }, 750);
 }
+
 function updateOptions() {
   if (!saveButtonInUse) {
     saveButton.classList.add("onclick");
@@ -165,7 +172,7 @@ document.getElementById('form').onsubmit = updateOptions;
 browserAPI.storage.sync.get(["dane"], function (t) {
   const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
   const xhttpNr = new XMLHttpRequest();
-  xhttpNr.onreadystatechange = function() {
+  xhttpNr.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
       let nr = this.responseText.match(nrRegex);
       if (nr != null) {
@@ -174,7 +181,7 @@ browserAPI.storage.sync.get(["dane"], function (t) {
 
       const klasaRegex = /<b>Klasa: <\/b>(.*)&nbsp;<\/p>/;
       const xhttpKlasa = new XMLHttpRequest();
-      xhttpKlasa.onreadystatechange = function() {
+      xhttpKlasa.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           let klasa = this.responseText.match(klasaRegex);
           if (klasa != null) {
@@ -185,7 +192,9 @@ browserAPI.storage.sync.get(["dane"], function (t) {
             let temp = DANE_DEFAULT;
             if (klasa != null) temp.currentClass = klasa;
             if (nr != null) temp.nr = nr;
-            browserAPI.storage.sync.set({ ["dane"]: temp });
+            browserAPI.storage.sync.set({
+              ["dane"]: temp
+            });
           }
         }
       };
@@ -203,13 +212,16 @@ document.getElementById("ver").innerText = browserAPI.runtime.getManifest().vers
 document.getElementById('copyright-year').innerText = new Date().getFullYear();
 
 let counter = 0;
+
 function debugCounter() {
   counter++;
   if (counter >= 7) {
     browserAPI.storage.sync.get(["options"], function (t) {
       let temp = t["options"];
       temp.debug = !temp.debug;
-      browserAPI.storage.sync.set({ ["options"]: temp });
+      browserAPI.storage.sync.set({
+        ["options"]: temp
+      });
     });
     counter = 0;
   }

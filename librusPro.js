@@ -62,7 +62,7 @@ browserAPI.storage.onChanged.addListener((changes, namespace) => {
 function updateDetails(dane, href) {
   const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
   const xhttpNr = new XMLHttpRequest();
-  xhttpNr.onreadystatechange = function() {
+  xhttpNr.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
       let nr = this.responseText.match(nrRegex);
       if (nr != null) {
@@ -70,7 +70,7 @@ function updateDetails(dane, href) {
       }
       const klasaRegex = /<b>Klasa: <\/b>(.*)&nbsp;<\/p>/;
       const xhttpKlasa = new XMLHttpRequest();
-      xhttpKlasa.onreadystatechange = function() {
+      xhttpKlasa.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
           let klasa = this.responseText.match(klasaRegex);
           if (klasa != null) {
@@ -81,7 +81,9 @@ function updateDetails(dane, href) {
             let temp = DANE_DEFAULT;
             if (klasa != null) temp.currentClass = klasa;
             if (nr != null) temp.nr = nr;
-            browserAPI.storage.sync.set({ ["dane"]: temp });
+            browserAPI.storage.sync.set({
+              ["dane"]: temp
+            });
 
           }
         }
@@ -179,7 +181,7 @@ function getAverage(elements, background, options) {
 
   });
 
-  return (Math.round( sum / elements.length  * 100 + Number.EPSILON ) / 100).toFixed(2);
+  return (Math.round(sum / elements.length * 100 + Number.EPSILON) / 100).toFixed(2);
 }
 
 // Liczenie średniej ważonej, zwracając uwagę na parametr "Licz do średniej:"
@@ -203,7 +205,7 @@ function getWeightedAverage(elements, options) {
         }
         return;
       }
-      
+
       let weight;
       if (liczDoSredniej == "nie" && options.countToAverage) {
         weight = 1;
@@ -232,8 +234,7 @@ function getWeightedAverage(elements, options) {
       if (e.innerText.length == 1) sum += (+e.innerText) * weight;
       else if (e.innerText[1] == "+") sum += (+e.innerText[0] + +options.plusValue) * weight;
       else if (e.innerText[1] == "-") sum += (+e.innerText[0] - +options.minusValue) * weight;
-    }
-    else if (options.depressionMode) {
+    } else if (options.depressionMode) {
       e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
     }
   });
@@ -245,7 +246,7 @@ function getWeightedAverage(elements, options) {
       weights: 0,
     };
   return {
-    average: (Math.round( sum / weights  * 100 + Number.EPSILON ) / 100).toFixed(2),
+    average: (Math.round(sum / weights * 100 + Number.EPSILON) / 100).toFixed(2),
     sum,
     weights,
   };
@@ -253,7 +254,7 @@ function getWeightedAverage(elements, options) {
 
 function getYearAverage(semI, semII) {
   if (semI.weights == 0 && semII.weights == 0) return NO_DATA;
-  return (Math.round( (semI.sum + semII.sum) / (semI.weights + semII.weights)  * 100 + Number.EPSILON ) / 100).toFixed(2);
+  return (Math.round((semI.sum + semII.sum) / (semI.weights + semII.weights) * 100 + Number.EPSILON) / 100).toFixed(2);
 }
 
 function insertNoGrades() {
@@ -333,8 +334,7 @@ function handleGrades(options) {
     }
   }
 
-  if (options.calculateAverages)
-  {
+  if (options.calculateAverages) {
     document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody").appendChild(srednieTr);
 
     // Wyświetlanie średnich dla poszczególnych przedmiotów
@@ -389,16 +389,28 @@ function finalizeDarkTheme() {
 
   // Przyciski w nawigacji
   if (document.querySelector(".fold-start") != null) {
-    document.querySelectorAll(".fold-start").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/fold_dark.png'); + ")";});
-    document.querySelectorAll(".fold-end").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEnd_dark.png'); + ")";});
-    document.querySelectorAll(".fold-end-scroll").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEndScroll_dark.png'); + ")";});
+    document.querySelectorAll(".fold-start").forEach(e => {
+      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/fold_dark.png'); + ")";
+    });
+    document.querySelectorAll(".fold-end").forEach(e => {
+      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEnd_dark.png'); + ")";
+    });
+    document.querySelectorAll(".fold-end-scroll").forEach(e => {
+      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEndScroll_dark.png'); + ")";
+    });
   }
 
   // Wiadomości
   if (document.querySelector(".tree-first-branch") != null) {
-    document.querySelectorAll(".tree-first-branch").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko4_dark.png'); + ")";});
-    document.querySelectorAll(".tree-next-branch").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko1_dark.png'); + ")";});
-    document.querySelectorAll(".tree-last-branch").forEach(e => {e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko2_dark.png'); + ")";});
+    document.querySelectorAll(".tree-first-branch").forEach(e => {
+      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko4_dark.png'); + ")";
+    });
+    document.querySelectorAll(".tree-next-branch").forEach(e => {
+      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko1_dark.png'); + ")";
+    });
+    document.querySelectorAll(".tree-last-branch").forEach(e => {
+      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko2_dark.png'); + ")";
+    });
   }
 
   // Plan lekcji, terminarz
@@ -418,21 +430,34 @@ function finalizeDarkTheme() {
 
   // Losowe bordery w tabelach, bo Librus dał losowo w css je na important... pepoWTF...
   if (document.querySelectorAll(".spacing") != null) {
-    document.querySelectorAll(".spacing").forEach(e => {e.style.setProperty("border-left", "1px #222222 solid", "important");});
+    document.querySelectorAll(".spacing").forEach(e => {
+      e.style.setProperty("border-left", "1px #222222 solid", "important");
+    });
   }
 
   if (document.querySelectorAll("table.decorated table thead th, table.decorated table thead td") != null) {
-    document.querySelectorAll("table.decorated table thead th, table.decorated table thead td").forEach(e => {e.style.setProperty("border-left", "1px #222222 solid", "important");});
+    document.querySelectorAll("table.decorated table thead th, table.decorated table thead td").forEach(e => {
+      e.style.setProperty("border-left", "1px #222222 solid", "important");
+    });
   }
 
   if (window.location.href == "https://synergia.librus.pl/przegladaj_plan_lekcji") {
-    document.querySelectorAll(".border-top").forEach(e => {e.style.setProperty("border-top", "1px #222222 solid", "important"); e.style.setProperty("border-left", "1px #222222 solid", "important");});
-    document.querySelectorAll(".border-right").forEach(e => {e.style.setProperty("border-right", "1px #222222 solid", "important");});
-    document.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr > td").forEach(e => {e.style.setProperty("border-bottom", "0", "important");});
+    document.querySelectorAll(".border-top").forEach(e => {
+      e.style.setProperty("border-top", "1px #222222 solid", "important");
+      e.style.setProperty("border-left", "1px #222222 solid", "important");
+    });
+    document.querySelectorAll(".border-right").forEach(e => {
+      e.style.setProperty("border-right", "1px #222222 solid", "important");
+    });
+    document.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr > td").forEach(e => {
+      e.style.setProperty("border-bottom", "0", "important");
+    });
   }
 
   if (document.querySelectorAll("table.decorated.filters td, table.decorated.filters th") != null) {
-    document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach(e => {e.style.setProperty("border-color", "#222222", "important");});
+    document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach(e => {
+      e.style.setProperty("border-color", "#222222", "important");
+    });
   }
 
   if (document.querySelector('img[src="/images/pomoc_ciemna.png"]') != null) {
@@ -490,7 +515,7 @@ function hideOnes() {
       e.parentElement.parentElement.appendChild(el);
       el.children[0].innerText = "2";
       el.children[0].classList.add("librusPro_jedynki");
-      
+
       const injectedCode = `$('.librusPro_jedynki').tooltip({track: true,show: {delay: 200,duration: 200},hide: {delay: 100,duration: 200}});`;
       const script = document.createElement('script');
       script.appendChild(document.createTextNode(injectedCode));
@@ -522,7 +547,7 @@ if (document.querySelector("#body > form:nth-child(5) > div > h2") != null && do
   odOstLogowania = true;
 }
 
-browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function(t) {
+browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function (t) {
   if (t["aprilfools"] == undefined) {
     const d = new Date();
     if (d.getMonth() == 3 && d.getDate() == 1) aprilfools();
@@ -530,7 +555,9 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function(t) {
 
   let options = t["options"];
   if (options == null) {
-    browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
+    browserAPI.storage.sync.set({
+      ["options"]: OPTIONS_DEFAULT
+    });
     return;
   } else {
     for (let p in OPTIONS_DEFAULT) {
@@ -539,7 +566,9 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function(t) {
         for (let u in options) {
           t[u] = options[u];
         }
-        browserAPI.storage.sync.set({ ["options"]: t });
+        browserAPI.storage.sync.set({
+          ["options"]: t
+        });
         alert("Zaktualizowano wtyczkę LibrusPro do wersji " + browserAPI.runtime.getManifest().version + "! Nie zapomnij polecić znajomym!");
         return;
       }
@@ -575,7 +604,7 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function(t) {
 
   if (options.debug) {
     console.log("[LibrusPro] » Debugging enabled.");
-    browserAPI.storage.sync.get(null, function(result) {
+    browserAPI.storage.sync.get(null, function (result) {
       console.log("[LibrusPro] » Chrome storage data:", result);
     });
   }
@@ -617,21 +646,21 @@ function insertProposedBehavior() {
   const zachRoczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr.bolded > td:nth-child(6)");
   const propZachSrodroczneElement = zachSrodroczneElement.cloneNode(true);
   const propZachRoczneElement = zachRoczneElement.cloneNode(true);
-  
+
   // "-", bądź ocena z zachowania
   propZachSrodroczneElement.innerText = propZachSrodroczne || NO_DATA;
   propZachRoczneElement.innerText = propZachRoczne || NO_DATA;
-  
+
   // Stylizacja proponowanych zachowań
   propZachSrodroczneElement.style.fontStyle = "italic";
   propZachRoczneElement.style.fontStyle = "italic";
   propZachSrodroczneElement.style.fontWeight = "normal";
   propZachRoczneElement.style.fontWeight = "normal";
-  
+
   // Wstawienie stworzonych elementów
   zachSrodroczneElement.parentElement.insertBefore(propZachSrodroczneElement, zachSrodroczneElement);
   zachRoczneElement.parentElement.insertBefore(propZachRoczneElement, zachRoczneElement);
-  
+
   // Zwężenie komórek, aby zrobić miejsce na nowe i wypełnić wiersz
   document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr.bolded > td:nth-child(3)").colSpan = "1";
   propZachSrodroczneElement.colSpan = INDICES.proponowaneI != -1 ? "2" : "1";
@@ -652,8 +681,7 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
       if (e.innerText != "-") toRemove = false;
     })
     if (toRemove) zachowanieTr.style.display = "none";
-  }
-  else {
+  } else {
     // Zwiń zachowanie
     let injectedCode = 'showHide.ShowHide("zachowanie")';
     if (document.getElementById("przedmioty_OP_zachowanie_node") != null) injectedCode += ',showHideOP.ShowHide("zachowanie");';
@@ -677,7 +705,7 @@ function adjustNavbar() {
   const planLekcjiElement = document.createElement("A");
   planLekcjiElement.innerText = "Plan lekcji";
   planLekcjiElement.style.cursor = "pointer";
-  planLekcjiElement.addEventListener("mouseup", function() {
+  planLekcjiElement.addEventListener("mouseup", function () {
     window.open("https://synergia.librus.pl/przegladaj_plan_lekcji");
   });
   planLekcji.appendChild(planLekcjiElement);
@@ -740,7 +768,7 @@ function adjustHeader(dane) {
     num += +e.innerText;
   })
   if (num > 0) tityl = `(${num}) ${tityl}`;
-  
+
   if (location.href.includes("przegladaj_oceny")) tityl += "Oceny";
   else if (location.href.includes("przegladaj_nb")) tityl += "Frekwencja";
   else if (location.href.includes("wiadomosci")) tityl += "Wiadomości";
@@ -754,9 +782,9 @@ function adjustHeader(dane) {
   // Zmiana ikony
   let link = document.querySelector("link[rel~='icon']");
   if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.getElementsByTagName('head')[0].appendChild(link);
+    link = document.createElement('link');
+    link.rel = 'icon';
+    document.getElementsByTagName('head')[0].appendChild(link);
   }
   link.href = browserAPI.runtime.getURL('img/icon.png');
 }
@@ -794,7 +822,7 @@ function aprilfools() {
     f.classList.add("hidden");
     a.innerText = "2";
     a.href = "javascript:$('#liczba_ocen_od_ostatniego_logowania_form').submit();";
-    a.classList.add("button","counter","blue");
+    a.classList.add("button", "counter", "blue");
     document.getElementById("icon-oceny").appendChild(f);
     document.getElementById("icon-oceny").appendChild(a);
   }
@@ -852,11 +880,15 @@ function aprilfools() {
       (document.body || document.head || document.documentElement).appendChild(script);
     }
   });
-  if (document.getElementById("matma") != null) document.getElementById("matma").addEventListener('click', function() {
-    browserAPI.storage.sync.set({ ["aprilfools"]: false });
+  if (document.getElementById("matma") != null) document.getElementById("matma").addEventListener('click', function () {
+    browserAPI.storage.sync.set({
+      ["aprilfools"]: false
+    });
   });
-  if (document.getElementById("polski") != null) document.getElementById("polski").addEventListener('click', function() {
-    browserAPI.storage.sync.set({ ["aprilfools"]: false });
+  if (document.getElementById("polski") != null) document.getElementById("polski").addEventListener('click', function () {
+    browserAPI.storage.sync.set({
+      ["aprilfools"]: false
+    });
   });
 }
 
@@ -874,7 +906,7 @@ if (window.location.href == "https://synergia.librus.pl/moje_zadania") {
     const s = document.createElement("SPAN");
     s.innerText = "(" + e.innerText + ")";
     s.style.fontWeight = "bold";
-    s.style.paddingLeft= "5px";
+    s.style.paddingLeft = "5px";
     e.previousElementSibling.appendChild(s);
     e.remove();
   });
@@ -928,12 +960,12 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
   */
 
   // Automatyczne odświeżanie po zmianach (z pominięciem "Potwiedź ponowne przesłanie formularza")
-  browserAPI.storage.onChanged.addListener(function(changes, namespace) {
+  browserAPI.storage.onChanged.addListener(function (changes, namespace) {
     window.location.replace(window.location.href);
   });
 
   // ---------------------- ISEMPTY FUNCTION --------------------------
-  function isEmpty(obj) { 
+  function isEmpty(obj) {
     for (let emptiness in obj) {
       return false;
     }
@@ -1255,7 +1287,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
     }
 
     overlay.style.display = "none";
-    
+
     let _dateAdded = new Date().toLocaleString();
     let _dateModified = "";
     if (dateAdded != "") {
@@ -1267,20 +1299,18 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       // Czy już są jakieś wydarzenia dla tego dnia
       if (isEmpty(temp)) {
         browserAPI.storage.sync.set({
-          [overlayDate.value]: [
-            {
-              lesson: lesson.value,
-              time: time.value,
-              subject: subject.value,
-              type: type.value,
-              description: description.value,
-              background: colorRadioValue[0],
-              color: colorRadioValue[1],
-              url: imageUrl.value,
-              dateAdded: _dateAdded,
-              dateModified: _dateModified,
-            },
-          ]
+          [overlayDate.value]: [{
+            lesson: lesson.value,
+            time: time.value,
+            subject: subject.value,
+            type: type.value,
+            description: description.value,
+            background: colorRadioValue[0],
+            color: colorRadioValue[1],
+            url: imageUrl.value,
+            dateAdded: _dateAdded,
+            dateModified: _dateModified,
+          }, ]
         });
       } else {
         let t = temp[overlayDate.value];
@@ -1296,13 +1326,15 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           dateAdded: _dateAdded,
           dateModified: _dateModified,
         });
-        browserAPI.storage.sync.set({ [overlayDate.value]: t });
+        browserAPI.storage.sync.set({
+          [overlayDate.value]: t
+        });
       }
     });
   }
 
   // ------------------------ DISPLAYING CUSTOM CELLS (AND "[+]") --------------------
-  const days = document.getElementsByClassName("kalendarz-numer-dnia"); 
+  const days = document.getElementsByClassName("kalendarz-numer-dnia");
   const date = new Date();
 
   // Przyciemnianie przeszłych wydarzeń
@@ -1392,7 +1424,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           temp.push(`Godz: ${event.time}`);
         }
 
-        
+
         if (options.modernizeSchedule) {
           cell.innerText = temp.join("\n");
 
@@ -1458,7 +1490,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
             }
 
             if (event.type != "") {
-              temp[temp.length -1] += ", ";
+              temp[temp.length - 1] += ", ";
             }
             pp = true;
           }
@@ -1469,13 +1501,13 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
               if (!pp) {
                 temp.push(`${event.type.slice(0, 30)} [...]`);
               } else {
-                temp[temp.length -1] += `${event.type.slice(0, 30)} [...]`;
+                temp[temp.length - 1] += `${event.type.slice(0, 30)} [...]`;
               }
             } else {
               if (!pp) {
                 temp.push(`${event.type}`);
               } else {
-                temp[temp.length -1] += `${event.type}`;
+                temp[temp.length - 1] += `${event.type}`;
               }
             }
           }
@@ -1507,16 +1539,16 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           cell.appendChild(image);
         }
 
-        
+
         if (event.description != "") cell.title += "Opis: " + event.description + "<br />";
         cell.title += "Data dodania: " + event.dateAdded;
-        if (event.dateModified != "") cell.title += "<br />Data ostatniej modyfikacji: " + event.dateModified ;
+        if (event.dateModified != "") cell.title += "<br />Data ostatniej modyfikacji: " + event.dateModified;
 
         const removeButton = document.createElement("a");
         removeButton.innerText = "⨉";
         removeButton.classList += "librusPro_removeButton";
         addListenerToRemoveButton(removeButton, cellKey, i);
-        
+
         const editButton = document.createElement("a");
         editButton.innerText = "✎";
         editButton.classList += "librusPro_editButton";
@@ -1568,7 +1600,9 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       } else {
         const t = tempResult[targetKey];
         t.splice(removeIndex, 1);
-        browserAPI.storage.sync.set({ [targetKey]: t });
+        browserAPI.storage.sync.set({
+          [targetKey]: t
+        });
       }
     });
   }
@@ -1666,7 +1700,9 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
             dateAdded: t[editIndex].dateAdded,
             dateModified: new Date().toLocaleString(),
           },
-        browserAPI.storage.sync.set({ [targetKey]: t });
+          browserAPI.storage.sync.set({
+            [targetKey]: t
+          });
       });
     } else {
       browserAPI.storage.sync.get([targetKey], function (tempResult) {
@@ -1771,8 +1807,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
         const d = document.createElement("SPAN");
         if (out.length > 200) {
           out = out.slice(0, 250).replaceAll("<br />", "\n").replaceAll("<br>", "\n") + "\n[...]";
-        }
-        else {
+        } else {
           out = out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
         }
         const u = cell.querySelector(`a[href^="https://liblink.pl/"]:last-child`);
