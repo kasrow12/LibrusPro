@@ -68,7 +68,7 @@ function restoreDefaults() {
 // Prepare
 browserAPI.storage.sync.get(["options"], function (t) {
   let options = t["options"];
-  if (options == null) {
+  if (!options) {
     restoreDefaults();
     return;
   } else {
@@ -188,7 +188,7 @@ browserAPI.storage.sync.get(["dane"], function (t) {
             klasa = klasa[1];
           }
 
-          if (t["dane"] == null || nr != t["dane"].nr || klasa != t["dane"].currentClass) {
+          if (!t["dane"] || nr != t["dane"].nr || klasa != t["dane"].currentClass) {
             let temp = DANE_DEFAULT;
             if (klasa != null) temp.currentClass = klasa;
             if (nr != null) temp.nr = nr;

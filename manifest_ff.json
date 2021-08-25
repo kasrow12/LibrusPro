@@ -32,8 +32,7 @@
 	"web_accessible_resources": [ "img/*" ],
 	"browser_specific_settings": {
 		"gecko": {
-			"id": "{2ddaa55f-7db8-460a-bf9b-01396684935b}",
-			"strict_min_version": "48.0"
+			"id": "{2ddaa55f-7db8-460a-bf9b-01396684935b}"
 		}
 	}
 }

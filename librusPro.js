@@ -47,7 +47,8 @@ if (typeof chrome != null) {
   browserAPI = browser;
 }
 
-console.log("%cDzięki za korzystanie z rozszerzenia LibrusPro!", "color:#ba88b6;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
+console.log("%cDzięki za korzystanie z rozszerzenia LibrusPro!", "color:#ce84c8;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
+console.log("%cJeśli znajduje się tutaj cokolwiek czerwonego i coś nie działa, proszę zgłoś to:", "color:#d63d85;font-size:1rem;font-weight:bold");
 console.log(" %cOficjalny Discord: https://discord.gg/e9EkVEvsDr", "color:#90e9f0;");
 
 browserAPI.storage.onChanged.addListener((changes, namespace) => {
@@ -77,7 +78,7 @@ function updateDetails(dane, href) {
             klasa = klasa[1];
           }
 
-          if (dane == null || nr != dane.nr || klasa != dane.currentClass) {
+          if (!dane || nr != dane.nr || klasa != dane.currentClass) {
             let temp = DANE_DEFAULT;
             if (klasa != null) temp.currentClass = klasa;
             if (nr != null) temp.nr = nr;
@@ -112,7 +113,7 @@ if (window.location.href == "https://synergia.librus.pl/uczen/index" || window.l
 } else if (window.location.href == "https://synergia.librus.pl/terminarz") {
   browserAPI.storage.sync.get(["dane"], function (t) {
     let dane = t["dane"];
-    if (dane != null && dane.currentClass != null) {
+    if (dane && dane.currentClass != null) {
       currentClass = dane.currentClass;
     } else {
       updateDetails(dane, "https://synergia.librus.pl/terminarz");
@@ -139,7 +140,7 @@ const INDICES = {
 };
 
 // Pobranie indexów kolumn
-document.querySelectorAll("#body > form:nth-child(5) > div > div > table:first-of-type > thead > tr:nth-child(2) > td").forEach(e => {
+document.querySelectorAll("#body > form:nth-child(5) > div > div > table:first-of-type > thead > tr:nth-child(2) > td").forEach((e) => {
   const index = [...e.parentElement.children].indexOf(e);
 
   if (e.innerText == "Śr.I") INDICES.sredniaI = index;
@@ -167,7 +168,7 @@ function getAverage(elements, background, options) {
     return NO_DATA;
 
   let sum = 0;
-  elements.forEach(e => {
+  elements.forEach((e) => {
     if (options.depressionMode) {
       e.parentElement.style.background = background;
     }
@@ -195,7 +196,7 @@ function getWeightedAverage(elements, options) {
 
   let sum = 0;
   let weights = 0;
-  elements.forEach(e => {
+  elements.forEach((e) => {
     if (/[0-6][+-]?/.test(e.innerText)) {
       let regexp = /<br>Licz do średniej: (tak|nie)<br>/;
       let liczDoSredniej = (e.title.match(regexp) != null) ? e.title.match(regexp)[1] : "nie";
@@ -262,13 +263,13 @@ function insertNoGrades() {
   noNewGrades.classList = "bolded line1";
   noNewGrades.innerHTML = `<td colspan="64" style="text-align: center;">Brak ocen 😎</td>`;
   const ref = document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody");
-  if (ref != null) {
+  if (ref) {
     ref.insertBefore(noNewGrades, ref.firstElementChild);
   }
 }
 
 function handleGrades(options) {
-  if (document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr:nth-child(1):not([name=przedmioty_all])") == null) {
+  if (!document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr:nth-child(1):not([name=przedmioty_all])")) {
     insertNoGrades();
     return;
   }
@@ -339,7 +340,7 @@ function handleGrades(options) {
 
     // Wyświetlanie średnich dla poszczególnych przedmiotów
     // I sem
-    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaI + OFFSET_CSS})`).forEach(e => {
+    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaI + OFFSET_CSS})`).forEach((e) => {
       const grades = e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`);
       const a = getWeightedAverage(grades, options);
       e.innerText = a.average + (options.debug ? (" (" + e.innerText + ") [" + a.sum + ", " + a.weights + "]") : "");
@@ -347,7 +348,7 @@ function handleGrades(options) {
     });
 
     // II sem
-    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaII + OFFSET_CSS})`).forEach(e => {
+    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaII + OFFSET_CSS})`).forEach((e) => {
       const grades = e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`);
       const a = getWeightedAverage(grades, options);
       e.innerText = a.average + (options.debug ? (" (" + e.innerText + ") [" + a.sum + ", " + a.weights + "]") : "");
@@ -355,7 +356,7 @@ function handleGrades(options) {
     });
 
     // Roczna
-    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaR + OFFSET_CSS})`).forEach(e => {
+    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaR + OFFSET_CSS})`).forEach((e) => {
       const grades = [...e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`), ...e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`)];
       const a = getWeightedAverage(grades, options);
       e.innerText = a.average + (options.debug ? (" (" + e.innerText + ") [" + a.sum + ", " + a.weights + "]") : "");
@@ -379,109 +380,99 @@ function handleGrades(options) {
 function finalizeDarkTheme() {
   // Zamiany obrazków na ich ciemne wersje
   // Wykresy
-  if (document.querySelector("#gradeAverangeGraph > a > img") != null) {
-    document.querySelector("#gradeAverangeGraph > a > img").src = browserAPI.runtime.getURL('img/pobierz_wykres_ocen2_dark.png');
-  }
+  document.querySelectorAll("#gradeAverangeGraph > a > img").forEach((e) => {
+    e.src = browserAPI.runtime.getURL('img/pobierz_wykres_ocen2_dark.png');
+  });
 
-  if (document.querySelector("#absenceGraph > img") != null) {
-    document.querySelector("#absenceGraph > img").src = browserAPI.runtime.getURL('img/pobierz_wykres_absencji_dark.png');
-  }
+  document.querySelectorAll("#absenceGraph > img").forEach((e) => {
+    e.src = browserAPI.runtime.getURL('img/pobierz_wykres_absencji_dark.png');
+  });
 
   // Przyciski w nawigacji
-  if (document.querySelector(".fold-start") != null) {
-    document.querySelectorAll(".fold-start").forEach(e => {
-      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/fold_dark.png'); + ")";
-    });
-    document.querySelectorAll(".fold-end").forEach(e => {
-      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEnd_dark.png'); + ")";
-    });
-    document.querySelectorAll(".fold-end-scroll").forEach(e => {
-      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEndScroll_dark.png'); + ")";
-    });
-  }
+  document.querySelectorAll(".fold-start").forEach((e) => {
+    e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/fold_dark.png'); + ")";
+  });
+  document.querySelectorAll(".fold-end").forEach((e) => {
+    e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEnd_dark.png'); + ")";
+  });
+  document.querySelectorAll(".fold-end-scroll").forEach((e) => {
+    e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/foldEndScroll_dark.png'); + ")";
+  });
 
   // Wiadomości
-  if (document.querySelector(".tree-first-branch") != null) {
-    document.querySelectorAll(".tree-first-branch").forEach(e => {
-      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko4_dark.png'); + ")";
-    });
-    document.querySelectorAll(".tree-next-branch").forEach(e => {
-      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko1_dark.png'); + ")";
-    });
-    document.querySelectorAll(".tree-last-branch").forEach(e => {
-      e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko2_dark.png'); + ")";
-    });
-  }
+  document.querySelectorAll(".tree-first-branch").forEach((e) => {
+    e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko4_dark.png'); + ")";
+  });
+  document.querySelectorAll(".tree-next-branch").forEach((e) => {
+    e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko1_dark.png'); + ")";
+  });
+  document.querySelectorAll(".tree-last-branch").forEach((e) => {
+    e.style.backgroundImage = "url(" + browserAPI.runtime.getURL('img/drzewko2_dark.png'); + ")";
+  });
 
   // Plan lekcji, terminarz
-  if (document.querySelector('img[src="/images/strzalka_prawo.gif"]') != null) {
-    document.querySelectorAll('img[src="/images/strzalka_prawo.gif"]').forEach(e => {
-      e.src = browserAPI.runtime.getURL('img/strzalka_prawo.png');
-      e.style.filter = "none";
-    });
-  }
+  document.querySelectorAll('img[src="/images/strzalka_prawo.gif"]').forEach((e) => {
+    e.src = browserAPI.runtime.getURL('img/strzalka_prawo.png');
+    e.style.filter = "none";
+  });
 
-  if (document.querySelector('img[src="/images/strzalka_lewo.gif"]') != null) {
-    document.querySelectorAll('img[src="/images/strzalka_lewo.gif"]').forEach(e => {
-      e.src = browserAPI.runtime.getURL('img/strzalka_lewo.png');
-      e.style.filter = "none";
-    });
-  }
+  document.querySelectorAll('img[src="/images/strzalka_lewo.gif"]').forEach((e) => {
+    e.src = browserAPI.runtime.getURL('img/strzalka_lewo.png');
+    e.style.filter = "none";
+  });
 
   // Losowe bordery w tabelach, bo Librus dał losowo w css je na important... pepoWTF...
-  if (document.querySelectorAll(".spacing") != null) {
-    document.querySelectorAll(".spacing").forEach(e => {
-      e.style.setProperty("border-left", "1px #222222 solid", "important");
-    });
-  }
+  document.querySelectorAll(".spacing").forEach((e) => {
+    e.style.setProperty("border-left", "1px #222222 solid", "important");
+  });
 
-  if (document.querySelectorAll("table.decorated table thead th, table.decorated table thead td") != null) {
-    document.querySelectorAll("table.decorated table thead th, table.decorated table thead td").forEach(e => {
-      e.style.setProperty("border-left", "1px #222222 solid", "important");
-    });
-  }
+  document.querySelectorAll('.no-border-left[title="Średnia ocen<br> z pierwszego okresu"]').forEach((e) => {
+    e.style.setProperty("border-left", "1px #222222 solid", "important");
+  });
+
+  document.querySelectorAll("table.decorated table thead th, table.decorated table thead td").forEach((e) => {
+    e.style.setProperty("border-left", "1px #222222 solid", "important");
+  });
 
   if (window.location.href == "https://synergia.librus.pl/przegladaj_plan_lekcji") {
-    document.querySelectorAll(".border-top").forEach(e => {
+    document.querySelectorAll(".border-top").forEach((e) => {
       e.style.setProperty("border-top", "1px #222222 solid", "important");
       e.style.setProperty("border-left", "1px #222222 solid", "important");
     });
-    document.querySelectorAll(".border-right").forEach(e => {
+    document.querySelectorAll(".border-right").forEach((e) => {
       e.style.setProperty("border-right", "1px #222222 solid", "important");
     });
-    document.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr > td").forEach(e => {
+    document.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr > td").forEach((e) => {
       e.style.setProperty("border-bottom", "0", "important");
     });
   }
 
-  if (document.querySelectorAll("table.decorated.filters td, table.decorated.filters th") != null) {
-    document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach(e => {
-      e.style.setProperty("border-color", "#222222", "important");
-    });
-  }
+  document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach((e) => {
+    e.style.setProperty("border-color", "#222222", "important");
+  });
 
-  if (document.querySelector('img[src="/images/pomoc_ciemna.png"]') != null) {
-    document.querySelectorAll('img[src="/images/pomoc_ciemna.png"]').forEach(e => {
-      e.src = browserAPI.runtime.getURL('img/pomoc_ciemna.png');
-      e.style.filter = "none";
-    });
-  }
+  document.querySelectorAll('img[src*="pomoc_ciemna.png"]').forEach((e) => {
+    e.src = browserAPI.runtime.getURL('img/pomoc_ciemna.png');
+    e.style.filter = "none";
+  });
 
   // Podświetlenie nowych wiadomości
-  document.querySelectorAll('#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > tbody > tr > td[style="font-weight: bold;"]:nth-child(3)').forEach(e => {
+  document.querySelectorAll('#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > tbody > tr > td[style="font-weight: bold;"]:nth-child(3)').forEach((e) => {
     e.parentElement.classList.add("librusPro_new");
   });
 
   // "Podgląd średniej ocen został wyłączony przez administratora szkoły."
-  document.querySelectorAll(`.line0 > td > img[src*="pomoc_ciemna"], .line1 > td > img[src*="pomoc_ciemna"]`).forEach(e => {
+  document.querySelectorAll(`.line0 > td > img[src*="pomoc_ciemna"], .line1 > td > img[src*="pomoc_ciemna"]`).forEach((e) => {
     e.parentElement.classList.add("center");
   })
 }
 
+// Ukrywanie przedmiotów
 function hideSubjects() {
   document.querySelectorAll("tr[name=przedmioty_all]").forEach((e) => {
     const el = e.previousElementSibling;
-    if (el != null && !el.classList.contains("bolded") && (el.querySelectorAll(".grade-box") == null || el.querySelectorAll(".grade-box").length < 1)) {
+    // Wiersz z zachowaniem nie zostaje usunięty, poza nim wszystkie bez ocen
+    if (el && !el.classList.contains("bolded") && (!el.querySelectorAll(".grade-box") || el.querySelectorAll(".grade-box").length < 1)) {
       el.remove();
       e.remove();
     }
@@ -491,25 +482,25 @@ function hideSubjects() {
 // Usuwanie jedynek
 function hideOnes() {
   // Oceny poprawione (w dodatkowym spanie)
-  document.querySelectorAll("span > .grade-box > a:not(#ocenaTest)").forEach(e => {
+  document.querySelectorAll("span > .grade-box > a:not(#ocenaTest)").forEach((e) => {
     if (/[0-1][+-]?/.test(e.innerText)) {
       [...e.parentElement.parentElement.childNodes].forEach(elm => elm.nodeType != 1 && elm.parentNode.removeChild(elm));
       const regex = /<br \/>Poprawa oceny:(.*)/;
       const b = e.parentElement.nextElementSibling;
-      if (b != null) b.firstElementChild.title = b.firstElementChild.title.replace(regex, "");
+      if (b) b.firstElementChild.title = b.firstElementChild.title.replace(regex, "");
       e.parentElement.remove();
     }
   });
 
   // Oceny zwykłe
-  document.querySelectorAll("td:not(.center) > .grade-box > a:not(#ocenaTest)").forEach(e => {
+  document.querySelectorAll("td:not(.center) > .grade-box > a:not(#ocenaTest)").forEach((e) => {
     if (/[0-1][+-]?/.test(e.innerText)) {
       e.parentElement.remove();
     }
   });
 
   // (Proponowane) (śród)roczne [obsługa mrugania]
-  document.querySelectorAll('td.center > .grade-box > a:not(#ocenaTest)').forEach(e => {
+  document.querySelectorAll('td.center > .grade-box > a:not(#ocenaTest)').forEach((e) => {
     if (/[0-1][+-]?/.test(e.innerText)) {
       const el = e.parentElement.cloneNode(true);
       e.parentElement.parentElement.appendChild(el);
@@ -543,7 +534,7 @@ adjustNavbar();
 insertFooter();
 disableAutoLogout();
 
-if (document.querySelector("#body > form:nth-child(5) > div > h2") != null && document.querySelector("#body > form:nth-child(5) > div > h2").innerHTML.includes("-")) {
+if (document.querySelector("#body > form:nth-child(5) > div > h2") && document.querySelector("#body > form:nth-child(5) > div > h2").innerHTML.includes("-")) {
   odOstLogowania = true;
 }
 
@@ -554,7 +545,7 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function (t) {
   }
 
   let options = t["options"];
-  if (options == null) {
+  if (!options) {
     browserAPI.storage.sync.set({
       ["options"]: OPTIONS_DEFAULT
     });
@@ -614,10 +605,10 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function (t) {
 // --------------------------------------------------------------------------------------------
 
 // szósteczki - maybe kiedyś
-// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = "6"});
-// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach(e => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = Math.floor(Math.random() * (7 - 4) + 4)});
-// document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach(e => {e.innerText = "6.00"});
-// document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach(e => {e.innerText = "6.00"});
+// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = "6"});
+// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = Math.floor(Math.random() * (7 - 4) + 4)});
+// document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach((e) => {e.innerText = "6.00"});
+// document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach((e) => {e.innerText = "6.00"});
 // document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerText = "wzorowe";
 // document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)").innerText = "wzorowe";
 
@@ -630,16 +621,16 @@ function insertProposedBehavior() {
   let propZachSrodroczne = document.querySelector("#przedmioty_zachowanie > td:nth-child(2) > table:first-of-type > tbody");
   let propZachRoczne = document.querySelector("#przedmioty_zachowanie > td:nth-child(2) > table:first-of-type > tbody");
 
-  if (propZachSrodroczne == null || propZachRoczne == null) return;
+  if (!propZachSrodroczne || !propZachRoczne) return;
   propZachSrodroczne = propZachSrodroczne.querySelectorAll("[colspan='3']")[0];
   propZachRoczne = propZachRoczne.querySelectorAll("[colspan='3']")[2];
-  if (propZachSrodroczne == null || propZachRoczne == null) return;
+  if (!propZachSrodroczne || !propZachRoczne) return;
 
   // Pobranie wartości proponowanego zachowania
   propZachSrodroczne = propZachSrodroczne.innerText.split(': ')[1];
   propZachRoczne = propZachRoczne.innerText.split(': ')[1];
-  if (propZachSrodroczne == null) return;
-  if (propZachSrodroczne != null && propZachRoczne == null) propZachRoczne = NO_DATA;
+  if (!propZachSrodroczne) return;
+  if (propZachSrodroczne && !propZachRoczne) propZachRoczne = NO_DATA;
 
   // Elementy zachowania (śród)rocznego (i proponowanego) [niezmienne od proponowanych ocen I, II i R]
   const zachSrodroczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr.bolded > td:nth-child(4)");
@@ -677,14 +668,14 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
     // Ukryj całkowicie zachowanie
     const zachowanieTr = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded");
     let toRemove = true;
-    zachowanieTr.querySelectorAll(".center:not(:first-child)").forEach(e => {
+    zachowanieTr.querySelectorAll(".center:not(:first-child)").forEach((e) => {
       if (e.innerText != "-") toRemove = false;
     })
     if (toRemove) zachowanieTr.style.display = "none";
   } else {
     // Zwiń zachowanie
     let injectedCode = 'showHide.ShowHide("zachowanie")';
-    if (document.getElementById("przedmioty_OP_zachowanie_node") != null) injectedCode += ',showHideOP.ShowHide("zachowanie");';
+    if (document.getElementById("przedmioty_OP_zachowanie_node")) injectedCode += ',showHideOP.ShowHide("zachowanie");';
     const script = document.createElement('script');
     script.appendChild(document.createTextNode(injectedCode));
     (document.body || document.head || document.documentElement).appendChild(script);
@@ -697,7 +688,7 @@ if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen")
 // Plan lekcji do navbara
 function adjustNavbar() {
   const navBarElement = document.querySelector("#main-menu > ul > li:nth-child(3)");
-  if (navBarElement == null) return;
+  if (!navBarElement) return;
   const planLekcji = navBarElement.cloneNode();
   // planLekcji.children[0].href = "javascript:otworz_w_nowym_oknie('/przegladaj_plan_lekcji','plan_u',0,0)";
   // planLekcji.children[0].href = "https://synergia.librus.pl/przegladaj_plan_lekcji";
@@ -729,8 +720,8 @@ function adjustHeader(dane) {
   const number = document.createElement("B");
   number.classList.add("librusPro_yourNumber");
   yourNumber.appendChild(number);
-
-  if (numerek != null) {
+  
+  if (numerek) {
     number.innerText = dane.nr;
     if (document.querySelector("#user-section > span.luckyNumber > b").innerText == dane.nr) {
       const gratulacje = document.createElement("SPAN");
@@ -739,47 +730,68 @@ function adjustHeader(dane) {
       yourNumber.appendChild(gratulacje);
     }
     numerek.parentElement.insertBefore(yourNumber, numerek.nextSibling);
-  } else if (numerekDisabled != null) {
+  } else if (numerekDisabled) {
     number.innerText = dane.nr;
     numerekDisabled.parentElement.parentElement.insertBefore(yourNumber, numerekDisabled.parentElement.nextSibling);
   }
 
+  yourNumber.id = "librusPro_number";
+  yourNumber.title = "<b style='color: #b6dc3f'>Podgląd numerka z dziennika tylko z <b style='color: #a96fe3'>LibrusPro</b>!</b>";
+  const injectedCode = `$('#librusPro_number').tooltip({
+    track: true,
+    show: {
+      delay: 200,
+      duration: 200
+    },
+    hide: {
+      delay: 100,
+      duration: 200
+    }
+  });`;
+  const script = document.createElement('script');
+  script.appendChild(document.createTextNode(injectedCode));
+  (document.body || document.head || document.documentElement).appendChild(script);
   const hakerzy = document.querySelector("#user-section > img");
-  if (hakerzy != null) {
+  if (hakerzy) {
     hakerzy.title += "<br><b style='color: #ee9999'>❗❗ HAKERZY ATAKUJĄ! ❗❗</b>"
   }
 
   const uczen = document.querySelector("#user-section > b > img");
-  if (uczen != null) {
+  if (uczen) {
     uczen.title = "<b style='color: #a96fe3'>Dzięki za korzystanie z rozszerzenia LibrusPro!</b><br><b style='color: #ffd128'>Jeżeli Ci się spodobało, nie zapomnij zostawić<br>5 gwiazdek w sklepie oraz polecić znajomym!</b><br><b style='color: #ff7ca0'><i>Jedz Buraczki!</i></b>"
   }
 
-  const bezpiecznyUczen = document.querySelector("a[title=\"Bezpieczny Uczeń\"]");
-  if (bezpiecznyUczen != null) {
+  const bezpiecznyUczen = document.querySelector('a[title="Bezpieczny Uczeń"]');
+  if (bezpiecznyUczen) {
     bezpiecznyUczen.parentElement.remove();
   }
 
-  // Title i favicon
+  // Zmiana title
   let tityl = "LibrusPro | ";
 
   // Ilość nowych rzeczy
   let num = 0;
-  document.querySelectorAll(".button.counter").forEach(e => {
+  document.querySelectorAll(".button.counter").forEach((e) => {
     num += +e.innerText;
   })
   if (num > 0) tityl = `(${num}) ${tityl}`;
 
-  if (location.href.includes("przegladaj_oceny")) tityl += "Oceny";
-  else if (location.href.includes("przegladaj_nb")) tityl += "Frekwencja";
-  else if (location.href.includes("wiadomosci")) tityl += "Wiadomości";
-  else if (location.href.includes("ogloszenia")) tityl += "Ogłoszenia";
-  else if (location.href.includes("terminarz")) tityl += "Terminarz";
-  else if (location.href.includes("moje_zadania")) tityl += "Zadania domowe";
-  else if (location.href.includes("plan_lekcji")) tityl += "Plan lekcji";
-  else tityl += "Synergia";
-  document.title = tityl;
+  const titels = {
+    "przegladaj_oceny": "Oceny",
+    "przegladaj_nb": "Frekwencja",
+    "wiadomosci": "Wiadomości",
+    "ogloszenia": "Ogłoszenia",
+    "terminarz": "Terminarz",
+    "moje_zadania": "Zadania domowe",
+    "plan_lekcji": "Plan lekcji",
+  }
+  let typTityl = "Synergia";
+  for (const e in titels) {
+    if (location.href.includes(e)) typTityl = titels[e];
+  }
+  document.title = tityl + typTityl;
 
-  // Zmiana ikony
+  // Zamiana favicon
   let link = document.querySelector("link[rel~='icon']");
   if (!link) {
     link = document.createElement('link');
@@ -792,7 +804,7 @@ function adjustHeader(dane) {
 // Copyright
 function insertFooter() {
   const footer = document.querySelector("#footer");
-  if (footer == null) return;
+  if (!footer) return;
   footer.innerHTML = `
   <hr>
   <span id="bottom-logo"></span>
@@ -807,10 +819,10 @@ function insertFooter() {
 
 // KEKW
 function aprilfools() {
-  if (document.getElementById("icon-oceny") == null) return;
-  if (document.getElementById("liczba_ocen_od_ostatniego_logowania_form") != null) {
+  if (!document.getElementById("icon-oceny")) return;
+  if (document.getElementById("liczba_ocen_od_ostatniego_logowania_form")) {
     const a = document.querySelector(`a[href="javascript:$('#liczba_ocen_od_ostatniego_logowania_form').submit();"]`);
-    if (a == null) return;
+    if (!a) return;
     a.innerText = +a.innerText + 2;
   } else {
     const f = document.createElement("FORM");
@@ -831,7 +843,7 @@ function aprilfools() {
   if (odOstLogowania) {
     pp = 5;
   }
-  document.querySelectorAll("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr > td:nth-child(2)").forEach(e => {
+  document.querySelectorAll("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr > td:nth-child(2)").forEach((e) => {
     if (e.innerText.toLowerCase().includes("polski") && !document.getElementById("polski")) {
       const n = document.createElement("SPAN");
       n.innerHTML = `<a id="polski" class="ocena" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">1</a>`;
@@ -880,12 +892,12 @@ function aprilfools() {
       (document.body || document.head || document.documentElement).appendChild(script);
     }
   });
-  if (document.getElementById("matma") != null) document.getElementById("matma").addEventListener('click', function () {
+  if (document.getElementById("matma")) document.getElementById("matma").addEventListener('click', function () {
     browserAPI.storage.sync.set({
       ["aprilfools"]: false
     });
   });
-  if (document.getElementById("polski") != null) document.getElementById("polski").addEventListener('click', function () {
+  if (document.getElementById("polski")) document.getElementById("polski").addEventListener('click', function () {
     browserAPI.storage.sync.set({
       ["aprilfools"]: false
     });
@@ -894,15 +906,15 @@ function aprilfools() {
 
 // Prace domowe
 if (window.location.href == "https://synergia.librus.pl/moje_zadania") {
-  document.querySelectorAll('tr[id^="homework_"] > td.bold:first-child').forEach(e => {
+  document.querySelectorAll('tr[id^="homework_"] > td.bold:first-child').forEach((e) => {
     e.parentElement.classList.add("librusPro_new");
   });
 
-  document.querySelectorAll('img[src*="aktywne.png"]').forEach(e => {
+  document.querySelectorAll('img[src*="aktywne.png"]').forEach((e) => {
     e.parentElement.parentElement.classList.add("librusPro_doneHomework");
   });
 
-  document.querySelectorAll('[style="padding:5px"]').forEach(e => {
+  document.querySelectorAll('[style="padding:5px"]').forEach((e) => {
     const s = document.createElement("SPAN");
     s.innerText = "(" + e.innerText + ")";
     s.style.fontWeight = "bold";
@@ -911,7 +923,7 @@ if (window.location.href == "https://synergia.librus.pl/moje_zadania") {
     e.remove();
   });
 
-  document.querySelectorAll("#body > div > div > table > thead > tr > td:nth-child(5), #body > div > div > table > thead > tr > td:nth-child(6)").forEach(e => {
+  document.querySelectorAll("#body > div > div > table > thead > tr > td:nth-child(5), #body > div > div > table > thead > tr > td:nth-child(6)").forEach((e) => {
     e.colSpan = 1;
   });
 }
@@ -1252,7 +1264,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
     description.value = "";
     imageUrl.value = "";
     firstRadioElement.checked = "true";
-    if (listenerLambdaFunction != null) {
+    if (listenerLambdaFunction) {
       overlayConfirmButton.removeEventListener("click", listenerLambdaFunction);
     }
     listenerLambdaFunction = function () {
@@ -1344,7 +1356,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
 
   browserAPI.storage.sync.get(["options"], function (t) {
     let options = t["options"];
-    if (options != null) {
+    if (options) {
       for (const day of days) {
         const key = `${year}-${(monthId + 1) < 10 ? "0" + (monthId + 1) : monthId + 1}-${day.innerText < 10 ? "0" + day.innerText : day.innerText}`;
         day.style.width = "initial";
@@ -1379,7 +1391,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
   function createCell(cellDay, cellKey, options) {
     browserAPI.storage.sync.get([cellKey], function (result) {
       const events = result[cellKey];
-      if (events == null) {
+      if (!events) {
         return;
       }
       for (let i = 0; i < cellDay.parentElement.childNodes.length; i++) {
@@ -1646,7 +1658,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       imageUrl.value = event.url;
       const color = event.background + "|" + event.color;
       const colorInput = document.querySelector(`input[value="${color}"]`);
-      if (colorInput !== null) {
+      if (colorInput) {
         for (let x = 0; x < 18; x++) {
           if (color == colorInput.value) {
             colorInput.checked = "true";
@@ -1660,7 +1672,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
         document.getElementById("librusPro_colorHexSpan").style.background = event.background;
         document.getElementById("librusPro_colorHexSpan").style.color = event.color;
       }
-      if (listenerLambdaFunction != null) {
+      if (listenerLambdaFunction) {
         overlayConfirmButton.removeEventListener("click", listenerLambdaFunction);
       }
       listenerLambdaFunction = function () {
@@ -1718,8 +1730,8 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
     // Usuwanie klasy
     if (options.removeClasses) {
       const classRegex = /^(([0-9\[\]](.+?))|([A-Za-z]{1,2}\d(.*?)))$/gm;
-      [...cell.childNodes].forEach(e => {
-        if (e.nodeValue != null && e.nodeValue.match(classRegex)) {
+      [...cell.childNodes].forEach((e) => {
+        if (e.nodeValue && e.nodeValue.match(classRegex)) {
           e.previousSibling?.remove();
           e.remove();
         }
@@ -1728,18 +1740,18 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
 
     if (options.modernizeSchedule) {
       // Typ (np. sprawdzian)
-      [...cell.childNodes].forEach(e => {
-        if (e.nodeValue != null && e.nodeValue[0] == ",") {
+      [...cell.childNodes].forEach((e) => {
+        if (e.nodeValue && e.nodeValue[0] == ",") {
           const s = document.createElement("SPAN");
           s.innerText = e.nodeValue.slice(2);
           s.style.textDecoration = "underline";
           s.style.fontSize = "13px";
           s.classList.add("typ");
           const u = cell.querySelector(`a[href^="https://liblink.pl/"]:last-child`);
-          if (u != null) {
+          if (u) {
             s.innerText = "\n" + s.innerText;
           } else {
-            if (e.nextSibling != null && e.nextSibling.nodeName == "BR") e.nextSibling.remove();
+            if (e.nextSibling && e.nextSibling.nodeName == "BR") e.nextSibling.remove();
             s.style.display = "block";
             s.style.marginBottom = "3px";
           }
@@ -1751,7 +1763,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       // Modernizacja odwołań
       const odwolaneRegex = /Odwołane zajęcia(\n.*) na lekcji nr: (\d+) \((.*)\)$/;
       const odwolaneResult = cell.innerText.match(odwolaneRegex);
-      if (cell.innerText != null && odwolaneResult != null) {
+      if (cell.innerText && odwolaneResult) {
         cell.innerText = "Odwołane zajęcia na lekcji nr: " + odwolaneResult[2];
         const p = document.createElement("SPAN");
         p.style.fontWeight = "bold";
@@ -1763,7 +1775,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       // Modernizacja zastępstw/przesunięć
       const zastepstwaRegex = /(Zastępstwo|Przesunięcie) z (.*) na lekcji nr: (\d+) \((.*)\)$/;
       const zastepstwaResult = cell.innerText.match(zastepstwaRegex);
-      if (cell.innerText != null && zastepstwaResult != null) {
+      if (cell.innerText && zastepstwaResult) {
         cell.innerText = zastepstwaResult[1] + " na lekcji nr: " + zastepstwaResult[3];
         const p = document.createElement("SPAN");
         p.style.fontWeight = "bold";
@@ -1782,18 +1794,18 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       }
 
       // Pogrubienie przedmiotu
-      document.querySelectorAll(".przedmiot").forEach(e => {
+      document.querySelectorAll(".przedmiot").forEach((e) => {
         e.style.fontWeight = "bold";
         e.style.fontSize = "13px";
       });
 
       // Usuwanie linków ze starych lekcji online
-      document.querySelectorAll('.past a[href^="https://liblink.pl/"]').forEach(e => {
+      document.querySelectorAll('.past a[href^="https://liblink.pl/"]').forEach((e) => {
         e.remove();
       });
 
       // Zwiększenie paddingu
-      document.querySelectorAll(".kalendarz-dzien td").forEach(e => {
+      document.querySelectorAll(".kalendarz-dzien td").forEach((e) => {
         e.style.padding = "6px 9px";
       });
     }
@@ -1801,8 +1813,8 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
     // Dodawanie opisów
     if (options.addDescriptions) {
       const descriptionRegex = /Opis: (.+?)(<br>|<br \/>)Data/;
-      let out = (cell.title.match(descriptionRegex) != null) ? "Opis: " + cell.title.match(descriptionRegex)[1] : null;
-      if (out != null) {
+      let out = (cell.title.match(descriptionRegex)) ? "Opis: " + cell.title.match(descriptionRegex)[1] : null;
+      if (out) {
         // Opis z title na wierzch, ucięcie zbyt długich.
         const d = document.createElement("SPAN");
         if (out.length > 200) {
@@ -1811,7 +1823,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           out = out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
         }
         const u = cell.querySelector(`a[href^="https://liblink.pl/"]:last-child`);
-        if (u != null) {
+        if (u) {
           d.innerText = "\n" + out;
           cell.insertBefore(d, u);
         } else {
@@ -1825,7 +1837,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
 
   browserAPI.storage.sync.get(["options"], function (t) {
     let options = t["options"];
-    if (options != null) {
+    if (options) {
       // Wersja depresyjna terminarza
       if (options.depressionMode) {
         const calendarDays = document.getElementsByClassName("kalendarz-dzien");
@@ -1840,8 +1852,8 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       }
     }
 
-    document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td").forEach(e => {
-      if (e.title != null && !e.classList.contains("librusPro_custom")) {
+    document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td").forEach((e) => {
+      if (e.title && !e.classList.contains("librusPro_custom")) {
         adjustCellContent(e, options);
       }
     });
