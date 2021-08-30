@@ -51,18 +51,19 @@ function restoreDefaults() {
     ["options"]: OPTIONS_DEFAULT
   });
   browserAPI.storage.sync.remove(["aprilfools"]);
-  document.getElementById('hideSubjects').checked = true;
-  document.getElementById('calculateAverages').checked = true;
-  document.getElementById('depressionMode').checked = false;
-  document.getElementById('modernizeSchedule').checked = true;
-  document.getElementById('removeClasses').checked = true;
-  document.getElementById('addDescriptions').checked = true;
-  document.getElementById('darkTheme').checked = true;
-  document.getElementById('hideOnes').checked = false;
-  document.getElementById('countZeros').checked = true;
-  document.getElementById('countToAverage').checked = false;
-  document.getElementById('plusValue').value = 0.5;
-  document.getElementById('minusValue').value = 0.25;
+  // Janusz, nie przeładowuję, żeby animacja przycisku się dokończyła
+  document.getElementById('hideSubjects').checked = OPTIONS_DEFAULT.hideSubjects;
+  document.getElementById('calculateAverages').checked = OPTIONS_DEFAULT.calculateAverages;
+  document.getElementById('depressionMode').checked = OPTIONS_DEFAULT.depressionMode;
+  document.getElementById('modernizeSchedule').checked = OPTIONS_DEFAULT.modernizeSchedule;
+  document.getElementById('removeClasses').checked = OPTIONS_DEFAULT.removeClasses;
+  document.getElementById('addDescriptions').checked = OPTIONS_DEFAULT.addDescriptions;
+  document.getElementById('darkTheme').checked = OPTIONS_DEFAULT.darkTheme;
+  document.getElementById('hideOnes').checked = OPTIONS_DEFAULT.hideOnes;
+  document.getElementById('countZeros').checked = OPTIONS_DEFAULT.countZeros;
+  document.getElementById('countToAverage').checked = OPTIONS_DEFAULT.countToAverage;
+  document.getElementById('plusValue').value = OPTIONS_DEFAULT.plusValue;
+  document.getElementById('minusValue').value = OPTIONS_DEFAULT.minusValue;
 }
 
 // Prepare
@@ -170,7 +171,7 @@ document.getElementById('form').onsubmit = updateOptions;
 
 // Update details
 browserAPI.storage.sync.get(["dane"], function (t) {
-  const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
+  const nrRegex = /<th class="big">Nr w dzienniku <\/th>\s*?<td>\s*?(\d*)\s*?<\/td>/;
   const xhttpNr = new XMLHttpRequest();
   xhttpNr.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {

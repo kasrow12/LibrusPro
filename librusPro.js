@@ -48,7 +48,7 @@ if (typeof chrome != null) {
 }
 
 console.log("%cDzięki za korzystanie z rozszerzenia LibrusPro!", "color:#ce84c8;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
-console.log("%cJeśli znajduje się tutaj cokolwiek czerwonego i coś nie działa, proszę zgłoś to:", "color:#d63d85;font-size:1rem;font-weight:bold");
+console.log("%cJeśli znajduje się tutaj cokolwiek czerwonego i coś nie działa, proszę zgłoś to:", "color:#d63d4a;font-size:1rem;font-weight:bold");
 console.log(" %cOficjalny Discord: https://discord.gg/e9EkVEvsDr", "color:#90e9f0;");
 
 browserAPI.storage.onChanged.addListener((changes, namespace) => {
@@ -59,9 +59,9 @@ browserAPI.storage.onChanged.addListener((changes, namespace) => {
   }
 });
 
-// Aktualizacja numerku i klasy
+// Aktualizacja numerku i klasy [klasa z widoku ocen = 3a LO, a klasa z informacji = 3 a LO -> dlatego w taki sposób :)]
 function updateDetails(dane, href) {
-  const nrRegex = /<th class="big">Nr w dzienniku <\/th>\n                <td>\n                    (.*)\n                <\/td>/;
+  const nrRegex = /<th class="big">Nr w dzienniku <\/th>\s*?<td>\s*?(\d*)\s*?<\/td>/;
   const xhttpNr = new XMLHttpRequest();
   xhttpNr.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
@@ -173,11 +173,11 @@ function getAverage(elements, background, options) {
       e.parentElement.style.background = background;
     }
 
-    if (!options.countZeros && e.innerText[0] == "0") return;
+    if (!options.countZeros && e.innerText[0] === "0") return;
 
     if (e.innerText.length == 1) sum += +e.innerText;
-    else if (e.innerText[1] == "+") sum += +e.innerText[0] + +options.plusValue;
-    else if (e.innerText[1] == "-") sum += +e.innerText[0] - +options.minusValue;
+    else if (e.innerText[1] == "+") sum += +e.innerText[0] + options.plusValue;
+    else if (e.innerText[1] == "-") sum += +e.innerText[0] - options.minusValue;
     else sum += +e.innerText[0];
 
   });
@@ -758,7 +758,7 @@ function adjustHeader(dane) {
 
   const uczen = document.querySelector("#user-section > b > img");
   if (uczen) {
-    uczen.title = "<b style='color: #a96fe3'>Dzięki za korzystanie z rozszerzenia LibrusPro!</b><br><b style='color: #ffd128'>Jeżeli Ci się spodobało, nie zapomnij zostawić<br>5 gwiazdek w sklepie oraz polecić znajomym!</b><br><b style='color: #ff7ca0'><i>Jedz Buraczki!</i></b>"
+    uczen.title = "<b style='color: #8debe3'>Dzięki za korzystanie z rozszerzenia <b style='color: #a96fe3'>LibrusPro</b>!</b><br><b style='color: #ffd128'>Jeżeli Ci się spodobało, nie zapomnij zostawić<br>5 gwiazdek w sklepie oraz polecić znajomym!</b><br><b style='color: #ff7ca0'><i>Jedz Buraczki!</i></b>"
   }
 
   const bezpiecznyUczen = document.querySelector('a[title="Bezpieczny Uczeń"]');
@@ -808,12 +808,12 @@ function insertFooter() {
   footer.innerHTML = `
   <hr>
   <span id="bottom-logo"></span>
-  <div class="librusPro_icon" style="background: url(&quot;` + browserAPI.runtime.getURL('img/icon.png') + `&quot;);"></div>
+  <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="librusPro_icon" style="background: url(&quot;` + browserAPI.runtime.getURL('img/icon.png') + `&quot;);"></a>
   <div class="librusPro_footer">
-    <div class="librusPro_copyright">
-      <div>LibrusPro © ` + new Date().getFullYear() + ` Maks Kowalski</div>
-      <a href="https://discord.gg/e9EkVEvsDr" target="_blank" class="librusPro_link">Oficjalny Discord!</a>
-    </div>
+    <span style="color: #96c5b4;">» Podoba się wtyczka? <a href="https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf" target="_blank" class="librusPro_link">Zostaw 5<span style="font-size: 11px;">⭐</span></a></span>
+    <div style="color: #94cae4;">» Wbijaj na oficjalny <a href="https://discord.gg/e9EkVEvsDr" target="_blank" class="librusPro_link">Discord</a>!</div>
+    
+    <div>» <span style="font-style: italic">LibrusPro © ` + new Date().getFullYear() + ` Maks Kowalski</span></div>
   </div>`
 }
 
@@ -986,46 +986,37 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
 
   // ---------------------- CREATE OVERLAY --------------------------
   const overlay = document.createElement("div");
-  overlay.style.display = "none";
-  overlay.style.clear = "both";
-  overlay.style.width = "100vw";
-  overlay.style.height = "100vh";
-  overlay.style.position = "fixed";
-  overlay.style.top = "0";
-  overlay.style.left = "0";
-  overlay.style.right = "0";
-  overlay.style.bottom = "0";
-  overlay.style.zIndex = "10000";
-  overlay.style.background = "#111111aa";
   overlay.classList = "librusPro_body";
   overlay.innerHTML = `
-      <style> @media screen and (max-height: 680px) { .librusPro_pageBody { overflow: hidden !important; } .librusPro_body { overflow-y: scroll; } }
+      <style> 
+      .librusPro_body {display: none; clear: both; width: 100vw; height: 100vh; position: fixed; inset: 0; z-index: 10000; background: #111111aa;}
+      @media screen and (max-height: 680px) { .librusPro_pageBody { overflow: hidden !important; } .librusPro_body { overflow-y: scroll; } }
       body {overflow: visible;}
       @-webkit-keyframes blinking {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
       @keyframes blinking {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
       .librusPro_container {border: 1px solid black; width: 20vw; max-width: 270px; min-width: 270px; margin: 8vh auto 0 auto; padding: 10px 20px 7px 20px; border-radius: 5px; -webkit-box-shadow: 2px 3px 5px #000000; box-shadow: 2px 3px 5px #000000}
       .librusPro_text {font-size: 19px; text-align: center; margin: 10px 0 5px 0}
-      .librusPro_date {text-shadow: 1px 1px 3px #111111; font-size: 15px; text-align: center; padding-bottom: 10px; border-bottom: 1px solid #adadad; width: 90%; margin: 0 auto}
+      .librusPro_date {text-shadow: 1px 1px 3px #111111; font-size: 15px; text-align: center; padding-bottom: 10px; border-bottom: 1px solid #adadad; width: 90%; margin: 0 auto 3px auto}
       .librusPro_field {width: 90%; margin: 0 auto}
       .librusPro_twoFieldContainer {width: 90%; margin: 0 auto; display: -webkit-box; display: -ms-flexbox; display: flex; }
       .librusPro_title {display: block; font-size: 12px; margin: 10px 0 3px 10px;}
-      .librusPro_input {-webkit-box-shadow: 1px 1px 3px #000000;box-shadow: 1px 1px 3px #000000;width: 100% !important; margin: 0 !important; padding: 3px 10px !important; height: initial !important; border: 1px solid #222222 !important;}
+      .librusPro_input {-webkit-box-shadow: 1px 1px 3px #000000; box-shadow: 1px 1px 3px #000000; width: 100% !important; margin: 0 !important; padding: 3px 10px !important; height: initial !important; border: 1px solid #222222 !important;}
       .librusPro_input:focus {border: 1px solid #666666 !important}
       .librusPro_inputTime {max-width: 90px; height: 25px !important; border-radius: 5px;}
       .librusPro_inputTime:focus {outline: none}
-      .librusPro_select {-webkit-box-shadow: 1px 1px 3px #111111;box-shadow: 1px 1px 3px #111111; background: #ffffff; margin: 0 !important; width: 100%; padding: 7px 7px; height: initial; border: 1px solid #222222 !important; font-size: 13px;}
+      .librusPro_select {-webkit-box-shadow: 1px 1px 3px #111111; box-shadow: 1px 1px 3px #111111; background: #ffffff; margin: 0 !important; width: 100%; padding: 7px 7px; height: initial; border: 1px solid #222222 !important; font-size: 13px;}
       .librusPro_select:focus {border: 1px solid #666666 !important; }
       .librusPro_button {text-align: center; color: #333333; width: 70%; margin: 15px auto 0 auto; padding: 7px; border-radius: 5px; -webkit-transition: background 0.2s; -o-transition: background 0.2s; transition: background 0.2s; cursor: pointer; color: #eeeeee; -webkit-filter: brightness(0.9); filter: brightness(0.9);}
-      .librusPro_button-add {background: #429148}
-      .librusPro_button-edit {background: #2444ac}
-      .librusPro_button-close {margin-top: 10px;background: #c44b4b}
+      .librusPro_button-add {background: #429148; box-shadow: 1px 1px 3px #111111;}
+      .librusPro_button-edit {background: #2444ac; box-shadow: 1px 1px 3px #111111;}
+      .librusPro_button-close {margin-top: 10px; background: #c44b4b; box-shadow: 1px 1px 3px #111111;}
       .librusPro_button-add:hover {background: #35743a}
       .librusPro_button-edit:hover {background: #1c327c}
       .librusPro_button-close:hover {background: #7e3030}
       #twoField1 {margin-right: 0; padding-right: 10px; border-right: 1px solid #8e8e8e00 !important}
       #twoField2 {margin-left: 0; padding-left: 10px;}
       .librusPro_error {color: #ff5555; text-align: center; font-size: 16px; margin: 5px 0}
-      .librusPro_radioContainer {display: block; position: relative; width: 30px; height: 30px; margin: 5px auto 0 auto; cursor: pointer; font-size: 22px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-filter: brightness(0.8); filter: brightness(0.8);}
+      .librusPro_radioContainer {display: block; position: relative; width: 30px; height: 30px; margin: 5px auto 0 auto; cursor: pointer; font-size: 22px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-filter: brightness(0.9); filter: brightness(0.9);}
       .librusPro_radioContainer input {position: absolute; opacity: 0; cursor: pointer;}
       .librusPro_radioSpan {position: absolute; top: 0; left: 0; height: 31px; width: 31px; background-color: #ffffff; border-radius: 50%; -webkit-box-shadow: 1px 1px 3px #333333; box-shadow: 1px 1px 3px #333333;}
       .librusPro_radioContainer .librusPro_radioSpan::after {top: 11px; left: 11px; width: 9px; height: 9px; border-radius: 50%; background: #ffffff;}
@@ -1040,7 +1031,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       #librusPro_datePicker {padding: 2px 8px; outline: none; border-radius: 5px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px;}
       #librusPro_datePicker:focus {border: 1px solid #666666 !important}
       .librusPro_bottomText {font-size: 11px; text-align: center; margin-top: 17px; color: #626262}
-      .librusPro_addButton { display: none; float: left; margin-top: 5px; color: #bbbbbb; font-weight: bold; cursor: pointer;}
+      .librusPro_addButton {display: none; float: left; margin-top: 5px; color: #bbbbbb; font-weight: bold; cursor: pointer;}
       td:hover > .kalendarz-dzien .librusPro_addButton {display: inline-block;}
       .librusPro_custom:hover > .librusPro_removeButton {display: block;}
       .librusPro_custom:hover > .librusPro_editButton {display: block;}

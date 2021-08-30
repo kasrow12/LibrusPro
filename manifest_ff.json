@@ -5,7 +5,7 @@
 	"manifest_version": 2,
 	"author": "Maks Kowalski",
 	"short_name": "LibrusPro",
-	"permissions": [ "storage", "https://synergia.librus.pl/*" ],
+	"permissions": [ "storage", "https://synergia.librus.pl/*", "https://portal.librus.pl/*" ],
 	"icons": {
 		"512": "img/icon.png"
 	},
@@ -27,6 +27,10 @@
 			"matches": [ "https://synergia.librus.pl/*" ],
 			"css": [ "librusPro.css" ],
 			"run_at": "document_start"
+		},
+		{
+			"matches": [ "https://portal.librus.pl/*" ],
+			"js": [ "portal.js" ]
 		}
 	],
 	"web_accessible_resources": [ "img/*" ],

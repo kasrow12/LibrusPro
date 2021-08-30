@@ -48,28 +48,27 @@ td[style^="height: 25px"] {
 }
 .librusPro_icon {
 	display: inline-flex;
-	height: 27px;
-	width: 27px;
+    margin: 3px 0 0 3px;
+	height: 37px;
+	width: 37px;
 	background-size: cover !important;
 }
+#bottom-logo {
+	margin-top: 5px;
+}
 .librusPro_link {
-	cursor: pointer;
-	margin-right: 20px;
-	display: inline-block;
-	color: #7289da;
+	color: #4276c3;
+	transition: color 0.1s;
 }
 .librusPro_link:hover {
 	text-decoration: underline;
 	color: #9eb0f1;
 }
-.librusPro_copyright {
-	color: rgb(153, 153, 153);
-	cursor: vertical-text;
-}
 .librusPro_footer {
 	margin-left: 5px;
-	vertical-align: top;
-	display: inline-flex;
+	display: inline-block;
+	color: #999999;
+	cursor: vertical-text;
 }
 .librusPro_congratulations {
 	margin-left: 5px;
