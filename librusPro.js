@@ -597,6 +597,7 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function (t) {
     console.log("[LibrusPro] » Debugging enabled.");
     browserAPI.storage.sync.get(null, function (result) {
       console.log("[LibrusPro] » Chrome storage data:", result);
+      console.log("[LibrusPro] » Chrome storage data:", JSON.stringify(result));
     });
   }
 
