@@ -59,7 +59,7 @@ browserAPI.storage.onChanged.addListener((changes, namespace) => {
   }
 });
 
-// Aktualizacja numerku i klasy [klasa z widoku ocen = 3a LO, a klasa z informacji = 3 a LO -> dlatego w taki sposób :)]
+// Aktualizacja numerku, klasy i planu lekcji [klasa z widoku ocen = 3a LO, a klasa z informacji = 3 a LO -> dlatego w taki sposób :)]
 function updateDetails(dane, href) {
   const nrRegex = /<th class="big">Nr w dzienniku <\/th>\s*?<td>\s*?(\d*)\s*?<\/td>/;
   const xhttpNr = new XMLHttpRequest();
@@ -85,10 +85,44 @@ function updateDetails(dane, href) {
             browserAPI.storage.sync.set({
               ["dane"]: temp
             });
-
           }
+
+          // const przedmioty = new Set();
+          const planLekcji = {
+            0: [],
+            1: [],
+            2: [],
+            3: [],
+            4: [],
+            "dzwonki": [],
+          };
+          const xhttpPlan = new XMLHttpRequest();
+          xhttpPlan.responseType = "document";
+          xhttpPlan.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+              this.response.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr.line1").forEach((e) => {
+                const nr = e.firstElementChild.innerText;
+                const godz = e.childNodes[1].innerText;
+                e.querySelectorAll(".line1").forEach((el) => {
+                  planLekcji.dzwonki[nr] = godz;
+                  const b = el.querySelector(".text > b");
+                  if (!b) return;
+                  const dzienTyg = [...el.parentElement.children].indexOf(el) - 2;
+                  planLekcji[dzienTyg][nr] = b.innerText;
+                });
+              });
+              // this.response.querySelectorAll("#timetableEntryBox > div > b").forEach((e) => {
+                // przedmioty.add(e.innerText);
+              // });
+              browserAPI.storage.sync.set({
+                ["plan"]: planLekcji
+              });
+              document.location.replace(href);
+            }
+          };
+          xhttpPlan.open("GET", "https://synergia.librus.pl/przegladaj_plan_lekcji", true);
+          xhttpPlan.send();
         }
-        document.location.replace(href);
       };
       xhttpKlasa.open("GET", "https://synergia.librus.pl/przegladaj_oceny/uczen", true);
       xhttpKlasa.send();
@@ -989,54 +1023,6 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
   const overlay = document.createElement("div");
   overlay.classList = "librusPro_body";
   overlay.innerHTML = `
-      <style> 
-      .librusPro_body {display: none; clear: both; width: 100vw; height: 100vh; position: fixed; inset: 0; z-index: 10000; background: #111111aa;}
-      @media screen and (max-height: 680px) { .librusPro_pageBody { overflow: hidden !important; } .librusPro_body { overflow-y: scroll; } }
-      body {overflow: visible;}
-      @-webkit-keyframes blinking {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
-      @keyframes blinking {0% {-webkit-filter: invert(0);filter: invert(0);} 10% {-webkit-filter: invert(0.3);filter: invert(0.3);} 20% {-webkit-filter: invert(0);filter: invert(0);}}
-      .librusPro_container {border: 1px solid black; width: 20vw; max-width: 270px; min-width: 270px; margin: 8vh auto 0 auto; padding: 10px 20px 7px 20px; border-radius: 5px; -webkit-box-shadow: 2px 3px 5px #000000; box-shadow: 2px 3px 5px #000000}
-      .librusPro_text {font-size: 19px; text-align: center; margin: 10px 0 5px 0}
-      .librusPro_date {text-shadow: 1px 1px 3px #111111; font-size: 15px; text-align: center; padding-bottom: 10px; border-bottom: 1px solid #adadad; width: 90%; margin: 0 auto 3px auto}
-      .librusPro_field {width: 90%; margin: 0 auto}
-      .librusPro_twoFieldContainer {width: 90%; margin: 0 auto; display: -webkit-box; display: -ms-flexbox; display: flex; }
-      .librusPro_title {display: block; font-size: 12px; margin: 10px 0 3px 10px;}
-      .librusPro_input {-webkit-box-shadow: 1px 1px 3px #000000; box-shadow: 1px 1px 3px #000000; width: 100% !important; margin: 0 !important; padding: 3px 10px !important; height: initial !important; border: 1px solid #222222 !important;}
-      .librusPro_input:focus {border: 1px solid #666666 !important}
-      .librusPro_inputTime {max-width: 90px; height: 25px !important; border-radius: 5px;}
-      .librusPro_inputTime:focus {outline: none}
-      .librusPro_select {-webkit-box-shadow: 1px 1px 3px #111111; box-shadow: 1px 1px 3px #111111; background: #ffffff; margin: 0 !important; width: 100%; padding: 7px 7px; height: initial; border: 1px solid #222222 !important; font-size: 13px;}
-      .librusPro_select:focus {border: 1px solid #666666 !important; }
-      .librusPro_button {text-align: center; color: #333333; width: 70%; margin: 15px auto 0 auto; padding: 7px; border-radius: 5px; -webkit-transition: background 0.2s; -o-transition: background 0.2s; transition: background 0.2s; cursor: pointer; color: #eeeeee; -webkit-filter: brightness(0.9); filter: brightness(0.9);}
-      .librusPro_button-add {background: #429148; box-shadow: 1px 1px 3px #111111;}
-      .librusPro_button-edit {background: #2444ac; box-shadow: 1px 1px 3px #111111;}
-      .librusPro_button-close {margin-top: 10px; background: #c44b4b; box-shadow: 1px 1px 3px #111111;}
-      .librusPro_button-add:hover {background: #35743a}
-      .librusPro_button-edit:hover {background: #1c327c}
-      .librusPro_button-close:hover {background: #7e3030}
-      #twoField1 {margin-right: 0; padding-right: 10px; border-right: 1px solid #8e8e8e00 !important}
-      #twoField2 {margin-left: 0; padding-left: 10px;}
-      .librusPro_error {color: #ff5555; text-align: center; font-size: 16px; margin: 5px 0}
-      .librusPro_radioContainer {display: block; position: relative; width: 30px; height: 30px; margin: 5px auto 0 auto; cursor: pointer; font-size: 22px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-filter: brightness(0.9); filter: brightness(0.9);}
-      .librusPro_radioContainer input {position: absolute; opacity: 0; cursor: pointer;}
-      .librusPro_radioSpan {position: absolute; top: 0; left: 0; height: 31px; width: 31px; background-color: #ffffff; border-radius: 50%; -webkit-box-shadow: 1px 1px 3px #333333; box-shadow: 1px 1px 3px #333333;}
-      .librusPro_radioContainer .librusPro_radioSpan::after {top: 11px; left: 11px; width: 9px; height: 9px; border-radius: 50%; background: #ffffff;}
-      .librusPro_radioContainer input:checked ~ .librusPro_radioSpan::after {display: block;}
-      .librusPro_radioSpan::after {content: ""; position: absolute; display: none;}
-      .librusPro_colorContainer {padding: 7px 0 12px 0 ; border-top: 1px solid #adadad; border-bottom: 1px solid #adadad; display: -ms-grid; display: grid; -ms-grid-columns: 1fr 1px 1fr 1px 1fr 1px 1fr 1px 1fr 1px 1fr; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr; -ms-grid-rows: 1fr 1px 1fr 1px 1fr; grid-template-rows: 1fr 1fr 1fr; gap: 1px 1px; grid-template-areas: ". . . . . ." ". . . . . ." ". . . . . ."; width: 90%; margin: 12px auto 0 auto;}
-      .librusPro_radioContainer .librusPro_darkDot::after {background: #222222}
-      .librusPro_removeButton {display: none; position: absolute; top: 3px; right: 5px; color: #ffffff; font-weight: bold; cursor: pointer; text-shadow: 1px 1px 2px #333333;}
-      .librusPro_editButton {display: none; position: absolute; top: 1px; right: 20px; color: #ffffff; font-weight: bold; cursor: pointer; text-shadow: 1px 1px 2px #333333; }
-      textarea {resize: none; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 17px; font-size: 13px; scrollbar-color: dark;}
-      #librusPro_lesson, #librusPro_subject, #librusPro_imageUrl, #librusPro_type {font-size: 13px !important;}
-      #librusPro_datePicker {padding: 2px 8px; outline: none; border-radius: 5px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 12px;}
-      #librusPro_datePicker:focus {border: 1px solid #666666 !important}
-      .librusPro_bottomText {font-size: 11px; text-align: center; margin-top: 17px; color: #626262}
-      .librusPro_addButton {display: none; float: left; margin-top: 5px; color: #bbbbbb; font-weight: bold; cursor: pointer;}
-      td:hover > .kalendarz-dzien .librusPro_addButton {display: inline-block;}
-      .librusPro_custom:hover > .librusPro_removeButton {display: block;}
-      .librusPro_custom:hover > .librusPro_editButton {display: block;}
-      </style>
       <div class="librusPro_container">
           <div class="librusPro_text" id="librusPro_header">Dodaj zdarzenie</div>
           <div class="librusPro_error" id="librusPro_error"></div>
@@ -1827,7 +1813,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
     }
   }
 
-  browserAPI.storage.sync.get(["options"], function (t) {
+  browserAPI.storage.sync.get(["options", "plan"], function (t) {
     let options = t["options"];
     if (options) {
       // Wersja depresyjna terminarza
@@ -1845,9 +1831,54 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
     }
 
     document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td").forEach((e) => {
-      if (e.title && !e.classList.contains("librusPro_custom")) {
+      if (!e.classList.contains("librusPro_custom")) {
         adjustCellContent(e, options);
       }
     });
+
+    let plan = t["plan"];
+    if (plan) {
+      let h = 0;
+      for (let d in plan) {
+        if (d == "dzwonki") continue;
+        h += plan[d].length;
+      }
+      if (h > 0) {
+        document.querySelectorAll(".center:not(.weekend) > .kalendarz-dzien").forEach((e) => {
+          const timetable = document.createElement("ARTICLE");
+          timetable.innerText = "≡";
+          timetable.classList.add("librusPro_timetable");
+          e.insertBefore(timetable, e.querySelector(".kalendarz-numer-dnia"));
+
+          const dzienTyg = [...e.parentElement.parentElement.children].indexOf(e.parentElement);
+          const t = plan[dzienTyg];
+          const u = [];
+          for (let i = 0; i < t.length; i++) {
+            if (!t[i]) {
+              if (i != 0) {
+                u.push(`<b style="color: #0791bb">${i}</b> <i style="color: #aaaaaa">(${plan.dzwonki[i]})</i> -`);
+              }
+              continue;
+            }
+            u.push(`<b style="color: #0791bb">${i}</b> <i style="color: #aaaaaa">(${plan.dzwonki[i]})</i> ${t[i]}`);
+          }
+          timetable.title = u.join("<br>");
+        });
+        const injectedCode = `$('.librusPro_timetable').tooltip({
+          track: true,
+          show: {
+            delay: 200,
+            duration: 200
+          },
+          hide: {
+            delay: 100,
+            duration: 200
+          }
+        });`;
+        const script = document.createElement('script');
+        script.appendChild(document.createTextNode(injectedCode));
+        (document.body || document.head || document.documentElement).appendChild(script);
+      }
+    }
   });
 }

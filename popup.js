@@ -92,6 +92,8 @@ browserAPI.storage.sync.get(["options"], function (t) {
   document.getElementById('countToAverage').checked = options.countToAverage;
   document.getElementById('plusValue').value = options.plusValue;
   document.getElementById('minusValue').value = options.minusValue;
+
+  if (options.debug) document.getElementById("debugButton").classList.add("debug");
 });
 
 const resetButton = document.getElementById("resetButton");
