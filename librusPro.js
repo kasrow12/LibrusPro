@@ -198,25 +198,23 @@ INDICES.ocenyII = INDICES.sredniaII - 1;
 
 // Liczenie średniej arytmetycznej np. do proponowanych
 function getAverage(elements, background, options) {
-  if (elements.length < 1)
-    return NO_DATA;
-
   let sum = 0;
+  let count = 0;
   elements.forEach((e) => {
-    if (options.depressionMode) {
-      e.parentElement.style.background = background;
-    }
-
+    if (options.depressionMode) e.parentElement.style.background = background;
     if (!options.countZeros && e.innerText[0] === "0") return;
 
-    if (e.innerText.length == 1) sum += +e.innerText;
-    else if (e.innerText[1] == "+") sum += +e.innerText[0] + options.plusValue;
-    else if (e.innerText[1] == "-") sum += +e.innerText[0] - options.minusValue;
-    else sum += +e.innerText[0];
-
+    if (/[0-6][+-]?/.test(e.innerText)) {
+      sum += +e.innerText[0];
+      count++;
+      if (e.innerText.length > 1) {
+        if (e.innerText[1] == "+") sum += +options.plusValue;
+        else if (e.innerText[1] == "-") sum += +options.minusValue;
+      }
+    }
   });
-
-  return (Math.round(sum / elements.length * 100 + Number.EPSILON) / 100).toFixed(2);
+  if (count == 0) return NO_DATA;
+  return (Math.round(sum / count * 100 + Number.EPSILON) / 100).toFixed(2);
 }
 
 // Liczenie średniej ważonej, zwracając uwagę na parametr "Licz do średniej:"
@@ -288,8 +286,16 @@ function getWeightedAverage(elements, options) {
 }
 
 function getYearAverage(semI, semII) {
-  if (semI.weights == 0 && semII.weights == 0) return NO_DATA;
-  return (Math.round((semI.sum + semII.sum) / (semI.weights + semII.weights) * 100 + Number.EPSILON) / 100).toFixed(2);
+  if (semI.weights == 0 && semII.weights == 0) return {
+      average: NO_DATA,
+      sum: 0,
+      weights: 0,
+    };
+  return {
+    average: (Math.round((semI.sum + semII.sum) / (semI.weights + semII.weights) * 100 + Number.EPSILON) / 100).toFixed(2),
+    sum: semI.sum + semII.sum,
+    weights: semI.weights + semII.weights,
+  };
 }
 
 function insertNoGrades() {
@@ -315,48 +321,107 @@ function handleGrades(options) {
     return;
   }
 
-  const ocenyI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:not(.bolded) > td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`);
-  const proponowaneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:not(.bolded) > td:nth-child(${INDICES.proponowaneI + OFFSET_CSS}) > span > a`);
-  const srodroczneI = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr > td:nth-child(${INDICES.srodroczneI + OFFSET_CSS}) > span > a`);
+  const tbody = document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody");
+  const proponowaneI = tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.proponowaneI + OFFSET_CSS}) > span > a`);
+  const srodroczneI = tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.srodroczneI + OFFSET_CSS}) > span > a`);
+  const proponowaneII = tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.proponowaneII + OFFSET_CSS}) > span > a`);
+  const srodroczneII = tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.srodroczneII + OFFSET_CSS}) > span > a`);
+  const proponowaneR = tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.proponowaneR + OFFSET_CSS}) > span > a`);
+  const roczne = tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.roczne + OFFSET_CSS}) > span > a`);
 
-  const ocenyII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr > td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`);
-  const proponowaneII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr > td:nth-child(${INDICES.proponowaneII + OFFSET_CSS}) > span > a`);
-  const srodroczneII = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr > td:nth-child(${INDICES.srodroczneII + OFFSET_CSS}) > span > a`);
+  const averages = [];
+  const rows = document.querySelectorAll('#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:not(.bolded):not([id^="przedmioty"]');
 
-  // const ocenyR = [...ocenyI, ...ocenyII];
-  const proponowaneR = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr > td:nth-child(${INDICES.proponowaneR + OFFSET_CSS}) > span > a`);
-  const roczne = document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr > td:nth-child(${INDICES.roczne + OFFSET_CSS}) > span > a`);
+  // Średnia z I i II okresu
+  let avgI = {
+    sum: 0,
+    weights: 0,
+  };
+  let avgII = {
+    sum: 0,
+    weights: 0,
+  };
+  let errors = [];
+  // Średnie dla poszczególnych przedmiotów
+  for (let i = 0; i < rows.length; i++) {
+    const averageI = getWeightedAverage(rows[i].querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`), options);
+    const averageII = getWeightedAverage(rows[i].querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`), options);
+    const averageR = getYearAverage(averageI, averageII);
+    averages[i] = [averageI, averageII, averageR];
+    avgI.sum += averageI.sum;
+    avgI.weights += averageI.weights;
+    avgII.sum += averageII.sum;
+    avgII.weights += averageII.weights;
+
+    // Wyświetlanie
+    if (options.calculateAverages) {
+      const averageIel = rows[i].children[INDICES.sredniaI + OFFSET_JS];
+      if (averageIel.innerText.length > 2 && (averageIel.innerText != averageI.average)) {
+        errors.push(averageIel);
+        averageIel.innerText = `${averageI.average} (${averageIel.innerText})`;
+      } else {
+        averageIel.innerText = averageI.average + (options.debug ? ` (${averageIel.innerText}) [${averageI.sum}; ${averageI.weights}]` : "");
+      }
+
+      const averageIIel = rows[i].children[INDICES.sredniaII + OFFSET_JS];
+      if (averageIIel.innerText.length > 2 && (averageIIel.innerText != averageII.average)) {
+        errors.push(averageIIel);
+        averageIIel.innerText = `${averageII.average} (${averageIIel.innerText})`;
+      } else {
+        averageIIel.innerText = averageII.average + (options.debug ? ` (${averageIIel.innerText}) [${averageII.sum}; ${averageII.weights}]` : "");
+      }
+
+      const averageRel = rows[i].children[INDICES.sredniaR + OFFSET_JS];
+      if (averageRel.innerText.length > 2 && (averageRel.innerText != averageR.average)) {
+        errors.push(averageRel);
+        averageRel.innerText = `${averageR.average} (${averageRel.innerText})`;
+      } else {
+        averageRel.innerText = averageR.average + (options.debug ? ` (${averageRel.innerText}) [${averageR.sum}; ${averageR.weights}]` : "");
+      }
+
+      averageIel.classList.add("right");
+      averageIIel.classList.add("right");
+      averageRel.classList.add("right");
+    }
+  }
+  if (errors.length > 0) {
+    const legend = document.querySelector("#body > form:nth-child(5) > div > div > div.legend.left.stretch > h3");
+    legend.innerText = "[LibrusPro] » Przynajmniej jedna z obliczonych średnich przez LibrusaPro różni się od tej wyliczonej przez Librusa Synergię (poprawna znajduje się w nawiasach). Możesz dostosować pewne parametry uwzględniane przy jej liczeniu w menu ustawień rozszerzenia. Aby uzyskać więcej informacji i pomóc w eliminacji potencjalnego błędu, skontaktuj się ze mną na Discordzie. (Link na dole strony)";
+    console.log("%c[LibrusPro] » Przynajmniej jedna z obliczonych średnich przez LibrusaPro różni się od tej wyliczonej przez Librusa Synergię (poprawna znajduje się w nawiasach). Możesz dostosować pewne parametry uwzględniane przy jej liczeniu w menu ustawień rozszerzenia. Aby uzyskać więcej informacji i pomóc w eliminacji potencjalnego błędu, skontaktuj się ze mną na Discordzie. (Link na dole strony)", "color: #ff5555;");
+    legend.id = "error_legend";
+    const cl = document.createElement("DIV");
+    cl.innerText = "X";
+    cl.onclick = () => document.getElementById("error_legend").style.display = "none";
+    cl.classList.add("librusPro_error-close");
+    legend.appendChild(cl);
+    if (options.debug) {
+      errors.forEach((e) => {
+        e.style.setProperty("color", "#ff5555", "important");
+      });
+    }
+  }
 
   // Wstawienie średnich w wiersz tabeli
   srednieTr.children[0].innerText = "";
   srednieTr.children[1].innerText = "Średnia";
   srednieTr.children[INDICES.ocenyI + OFFSET_JS].innerText = "";
   srednieTr.children[INDICES.ocenyII + OFFSET_JS].innerText = "";
-  srednieTr.classList.add("librusPro_average");
-
-  const ocenyIresult = getWeightedAverage(ocenyI, options);
-  srednieTr.children[INDICES.sredniaI + OFFSET_JS].innerText = ocenyIresult.average;
-
-  const ocenyIIresult = getWeightedAverage(ocenyII, options);
-  srednieTr.children[INDICES.sredniaII + OFFSET_JS].innerText = ocenyIIresult.average;
-
-  srednieTr.children[INDICES.sredniaR + OFFSET_JS].innerText = getYearAverage(ocenyIresult, ocenyIIresult);
-
+  srednieTr.children[INDICES.sredniaI + OFFSET_JS].innerText = avgI.weights > 0 ? (Math.round(avgI.sum / avgI.weights * 100 + Number.EPSILON) / 100).toFixed(2) : NO_DATA;
+  srednieTr.children[INDICES.sredniaII + OFFSET_JS].innerText = avgII.weights > 0 ? (Math.round(avgII.sum / avgII.weights * 100 + Number.EPSILON) / 100).toFixed(2) : NO_DATA;
+  srednieTr.children[INDICES.sredniaR + OFFSET_JS].innerText = getYearAverage(avgI, avgII).average;
   srednieTr.children[INDICES.srodroczneI + OFFSET_JS].innerText = getAverage(srodroczneI, DEPRESSION_MODE_COLORS.final, options);
   srednieTr.children[INDICES.srodroczneII + OFFSET_JS].innerText = getAverage(srodroczneII, DEPRESSION_MODE_COLORS.final, options);
   srednieTr.children[INDICES.roczne + OFFSET_JS].innerText = getAverage(roczne, DEPRESSION_MODE_COLORS.final, options);
+  srednieTr.classList.add("librusPro_average");
 
-  if (INDICES.proponowaneI > 0) {
+  if (INDICES.proponowaneI > 0)
     srednieTr.children[INDICES.proponowaneI + OFFSET_JS].innerText = getAverage(proponowaneI, DEPRESSION_MODE_COLORS.proposed, options);
-  }
 
-  if (INDICES.proponowaneII > 0) {
+  if (INDICES.proponowaneII > 0)
     srednieTr.children[INDICES.proponowaneII + OFFSET_JS].innerText = getAverage(proponowaneII, DEPRESSION_MODE_COLORS.proposed, options);
-  }
 
-  if (INDICES.proponowaneR > 0) {
+  if (INDICES.proponowaneR > 0)
     srednieTr.children[INDICES.proponowaneR + OFFSET_JS].innerText = getAverage(proponowaneR, DEPRESSION_MODE_COLORS.proposed, options);
-  }
 
   // Poświetlenie średniej zaliczającej się na czerwony pasek
   if (!odOstLogowania) {
@@ -370,32 +435,7 @@ function handleGrades(options) {
   }
 
   if (options.calculateAverages) {
-    document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody").appendChild(srednieTr);
-
-    // Wyświetlanie średnich dla poszczególnych przedmiotów
-    // I sem
-    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaI + OFFSET_CSS})`).forEach((e) => {
-      const grades = e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`);
-      const a = getWeightedAverage(grades, options);
-      e.innerText = a.average + (options.debug ? (" (" + e.innerText + ") [" + a.sum + ", " + a.weights + "]") : "");
-      e.classList.add("right");
-    });
-
-    // II sem
-    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaII + OFFSET_CSS})`).forEach((e) => {
-      const grades = e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`);
-      const a = getWeightedAverage(grades, options);
-      e.innerText = a.average + (options.debug ? (" (" + e.innerText + ") [" + a.sum + ", " + a.weights + "]") : "");
-      e.classList.add("right");
-    });
-
-    // Roczna
-    document.querySelectorAll(`#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:nth-child(2n + 1):not(.bolded):not(.librusPro_average) > td:nth-child(${INDICES.sredniaR + OFFSET_CSS})`).forEach((e) => {
-      const grades = [...e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`), ...e.parentElement.querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`)];
-      const a = getWeightedAverage(grades, options);
-      e.innerText = a.average + (options.debug ? (" (" + e.innerText + ") [" + a.sum + ", " + a.weights + "]") : "");
-      e.classList.add("right");
-    });
+    tbody.appendChild(srednieTr);
   }
 
   // Zmiana koloru ocen z zachowania
@@ -631,7 +671,7 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function (t) {
     console.log("[LibrusPro] » Debugging enabled.");
     browserAPI.storage.sync.get(null, function (result) {
       console.log("[LibrusPro] » Chrome storage data:", result);
-      console.log("[LibrusPro] » Chrome storage data:", JSON.stringify(result));
+      // console.log("[LibrusPro] » Chrome storage data:", JSON.stringify(result));
     });
   }
 
@@ -756,8 +796,8 @@ function adjustHeader(dane) {
   number.classList.add("librusPro_yourNumber");
   yourNumber.appendChild(number);
   
+  number.innerText = dane.nr;
   if (numerek) {
-    number.innerText = dane.nr;
     if (document.querySelector("#user-section > span.luckyNumber > b").innerText == dane.nr) {
       const gratulacje = document.createElement("SPAN");
       gratulacje.classList.add("librusPro_congratulations")
@@ -766,7 +806,7 @@ function adjustHeader(dane) {
     }
     numerek.parentElement.insertBefore(yourNumber, numerek.nextSibling);
   } else if (numerekDisabled) {
-    number.innerText = dane.nr;
+    yourNumber.style.marginLeft = "5px";
     numerekDisabled.parentElement.parentElement.insertBefore(yourNumber, numerekDisabled.parentElement.nextSibling);
   }
 
@@ -1414,7 +1454,6 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           temp.push(`Godz: ${event.time}`);
         }
 
-
         if (options.modernizeSchedule) {
           cell.innerText = temp.join("\n");
 
@@ -1528,7 +1567,6 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           image.style.borderRadius = "5px";
           cell.appendChild(image);
         }
-
 
         if (event.description != "") cell.title += "Opis: " + event.description + "<br />";
         cell.title += "Data dodania: " + event.dateAdded;

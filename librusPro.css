@@ -395,3 +395,18 @@ td:hover>.kalendarz-dzien .librusPro_addButton {
 td:hover>.kalendarz-dzien>.librusPro_timetable {
 	display: inline-block;
 }
+.librusPro_error-close {
+	position: absolute;
+    right: 0;
+    top: 0;
+    padding: 5px 8px;
+	cursor: pointer;
+}
+#error_legend {
+	color: #ff9b9b;
+    padding: 15px 15vw;
+    background: #404040;
+    position: relative;
+	border: 1px solid #000000;
+	border-radius: 5px;
+}
