@@ -403,10 +403,22 @@ td:hover>.kalendarz-dzien>.librusPro_timetable {
 	cursor: pointer;
 }
 #error_legend {
-	color: #ff9b9b;
+	color: #ff4d4d;
     padding: 15px 15vw;
-    background: #404040;
+    background: #fafafa;
     position: relative;
-	border: 1px solid #000000;
+	border: 1px solid #aaaaaa;
 	border-radius: 5px;
+}
+.librusPro_loading {
+	background: #eeeeee;
+	width: 1000px;
+    margin: 20px auto;
+	padding: 20px 0;
+	box-sizing: border-box;
+	text-align: center;
+	border: 1px solid #555555;
+	border-radius: 5px;
+	color: #333333;
+	font-size: 15px;
 }

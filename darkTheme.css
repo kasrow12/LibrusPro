@@ -760,3 +760,11 @@ table.decorated {
 	opacity: 0.8 !important;
 	transition: opacity 0.2s;
 }
+.librusPro_loading {
+	background: var(--line1);
+	color: var(--textcolor3);
+}
+#error_legend {
+    background: #404040;
+	color: #ff9b9b;
+}

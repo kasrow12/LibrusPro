@@ -61,6 +61,10 @@ browserAPI.storage.onChanged.addListener((changes, namespace) => {
 
 // Aktualizacja numerku, klasy i planu lekcji [klasa z widoku ocen = 3a LO, a klasa z informacji = 3 a LO -> dlatego w taki sposób :)]
 function updateDetails(dane, href) {
+  const loading = document.createElement("DIV");
+  loading.innerText = "Ładowanie...";
+  loading.classList.add("librusPro_loading");
+  document.getElementById("body").appendChild(loading);
   const nrRegex = /<th class="big">Nr w dzienniku <\/th>\s*?<td>\s*?(\d*)\s*?<\/td>/;
   const xhttpNr = new XMLHttpRequest();
   xhttpNr.onreadystatechange = function () {
@@ -109,6 +113,8 @@ function updateDetails(dane, href) {
                   if (!b) return;
                   const dzienTyg = [...el.parentElement.children].indexOf(el) - 2;
                   planLekcji[dzienTyg][nr] = b.innerText;
+                  const zast = el.querySelector(".plan-lekcji-info");
+                  if (zast) planLekcji[dzienTyg][nr] += ` (${zast.innerText})`;
                 });
               });
               // this.response.querySelectorAll("#timetableEntryBox > div > b").forEach((e) => {
@@ -1894,13 +1900,13 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           for (let i = 0; i < t.length; i++) {
             if (!t[i]) {
               if (i != 0) {
-                u.push(`<b style="color: #0791bb">${i}</b> <i style="color: #aaaaaa">(${plan.dzwonki[i]})</i> -`);
+                u.push(`<b style="color: #0791bb">${i}.</b> <i style="color: #aaaaaa">(${plan.dzwonki[i]})</i> -`);
               }
               continue;
             }
-            u.push(`<b style="color: #0791bb">${i}</b> <i style="color: #aaaaaa">(${plan.dzwonki[i]})</i> ${t[i]}`);
+            u.push(`<b style="color: #0791bb">${i}.</b> <i style="color: #aaaaaa">(${plan.dzwonki[i]})</i> ${t[i]}`);
           }
-          timetable.title = u.join("<br>");
+          timetable.title = 'Plan lekcji <i style="color: #bbbbbb">(z bieżącego tygodnia)</i>:<br>' + u.join("<br>");
         });
         const injectedCode = `$('.librusPro_timetable').tooltip({
           track: true,
