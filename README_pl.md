@@ -12,6 +12,7 @@
 ## 🦊 Firefoxa: <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Kliknij tutaj</a>
 ## 🌍 Microsoft Edge (XD): <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Kliknij tutaj</a>
 ## ⭕ Opera: Najpierw pobierz <a href="https://addons.opera.com/en/extensions/details/install-chrome-extensions/">ten dodatek</a>, a następnie <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">kliknij tutaj</a>.
+## 📱 Android: <a href="https://github.com/kasrow12/LibrusPro/blob/master/docs/LibrusPro%20-%20wersja%20mobilna.pdf">Instrukcja instalacji</a>
 
 
 # 🛠 Funkcje
