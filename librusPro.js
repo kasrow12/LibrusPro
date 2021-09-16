@@ -22,6 +22,7 @@ const OPTIONS_DEFAULT = {
   plusValue: 0.5,
   minusValue: 0.25,
   debug: false,
+  averageWarn: false,
 };
 const DEPRESSION_MODE_COLORS = {
   proposed: "#aaad84",
@@ -391,15 +392,26 @@ function handleGrades(options) {
     }
   }
   if (errors.length > 0) {
-    const legend = document.querySelector("#body > form:nth-child(5) > div > div > div.legend.left.stretch > h3");
-    legend.innerText = "[LibrusPro] » Przynajmniej jedna z obliczonych średnich przez LibrusaPro różni się od tej wyliczonej przez Librusa Synergię (poprawna znajduje się w nawiasach). Możesz dostosować pewne parametry uwzględniane przy jej liczeniu w menu ustawień rozszerzenia. Aby uzyskać więcej informacji i pomóc w eliminacji potencjalnego błędu, skontaktuj się ze mną na Discordzie. (Link na dole strony)";
     console.log("%c[LibrusPro] » Przynajmniej jedna z obliczonych średnich przez LibrusaPro różni się od tej wyliczonej przez Librusa Synergię (poprawna znajduje się w nawiasach). Możesz dostosować pewne parametry uwzględniane przy jej liczeniu w menu ustawień rozszerzenia. Aby uzyskać więcej informacji i pomóc w eliminacji potencjalnego błędu, skontaktuj się ze mną na Discordzie. (Link na dole strony)", "color: #ff5555;");
-    legend.id = "error_legend";
-    const cl = document.createElement("DIV");
-    cl.innerText = "X";
-    cl.onclick = () => document.getElementById("error_legend").style.display = "none";
-    cl.classList.add("librusPro_error-close");
-    legend.appendChild(cl);
+    if (!options.averageWarn) {
+      const legend = document.querySelector("#body > form:nth-child(5) > div > div > div.legend.left.stretch > h3");
+      legend.innerText = "[LibrusPro] » Przynajmniej jedna z obliczonych średnich przez LibrusaPro różni się od tej wyliczonej przez Librusa Synergię (poprawna znajduje się w nawiasach). Możesz dostosować pewne parametry uwzględniane przy jej liczeniu w menu ustawień rozszerzenia. Aby uzyskać więcej informacji i pomóc w eliminacji potencjalnego błędu, skontaktuj się ze mną na Discordzie. (Link na dole strony)";
+      legend.id = "error_legend";
+      const cl = document.createElement("DIV");
+      cl.innerText = "X";
+      cl.addEventListener("click", function()  {
+        document.getElementById("error_legend").style.display = "none";
+        browserAPI.storage.sync.get(["options"], function (t) {
+          let temp = t["options"];
+          temp.averageWarn = true;
+          browserAPI.storage.sync.set({
+            ["options"]: temp
+          });
+        });
+      });
+      cl.classList.add("librusPro_error-close");
+      legend.appendChild(cl);
+    }
     if (options.debug) {
       errors.forEach((e) => {
         e.style.setProperty("color", "#ff5555", "important");

@@ -33,6 +33,7 @@ const OPTIONS_DEFAULT = {
   plusValue: 0.5,
   minusValue: 0.25,
   debug: false,
+  averageWarn: false,
 };
 
 let browserAPI;
@@ -147,6 +148,7 @@ function validate() {
         plusValue: document.getElementById('plusValue').value,
         minusValue: document.getElementById('minusValue').value,
         debug: false,
+        averageWarn: false,
       }
     }, () => {
       setTimeout(callback, 450);
