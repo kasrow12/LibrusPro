@@ -86,7 +86,7 @@ td[style^="height: 25px"] {
 	z-index: 10000;
 	background: #111111aa;
 }
-@media screen and (max-height: 680px) {
+@media screen and (max-height: 800px) {
 	.librusPro_pageBody {
 		overflow: hidden !important;
 	}

@@ -771,3 +771,7 @@ table.decorated {
 #timetableEntryBox .plan-lekcji-info {
 	background: #6e801e;
 }
+#body > form:nth-child(5) > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan="9"] {
+	background-color: var(--line1);
+	color: var(--line01color);
+}

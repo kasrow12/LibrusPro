@@ -92,7 +92,6 @@ function updateDetails(dane, href) {
             });
           }
 
-          // const przedmioty = new Set();
           const planLekcji = {
             0: [],
             1: [],
@@ -113,14 +112,12 @@ function updateDetails(dane, href) {
                   const b = el.querySelector(".text > b");
                   if (!b) return;
                   const dzienTyg = [...el.parentElement.children].indexOf(el) - 2;
-                  planLekcji[dzienTyg][nr] = b.innerText;
+                  const lekcja = [b.innerText];
                   const zast = el.querySelector(".plan-lekcji-info");
-                  if (zast) planLekcji[dzienTyg][nr] += ` (${zast.innerText})`;
+                  if (zast) lekcja[1] = `(${zast.innerText})`;
+                  planLekcji[dzienTyg][nr] = lekcja;
                 });
               });
-              // this.response.querySelectorAll("#timetableEntryBox > div > b").forEach((e) => {
-                // przedmioty.add(e.innerText);
-              // });
               browserAPI.storage.sync.set({
                 ["plan"]: planLekcji
               });
@@ -1090,18 +1087,23 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
                   <label class="librusPro_title" style="margin-top: 5px;" for="librusPro_lesson">Nr lekcji:</label>
                   <input placeholder="3" type="text" id="librusPro_lesson" class="librusPro_input">
               </div>
-              <div class="librusPro_twoField" id="twoField2" >
+              <div class="librusPro_twoField" id="twoField2">
                   <label class="librusPro_title" style="margin-top: 5px;" for="librusPro_time">Godzina:</label>
                   <input type="time" id="librusPro_time" class="librusPro_input librusPro_inputTime">
               </div> 
           </div>
           <div class="librusPro_field">
-              <label class="librusPro_title" for="librusPro_subject">Przedmiot:</label>
-              <input placeholder="Matematyka" type="text" id="librusPro_subject" class="librusPro_input">
+              <label class="librusPro_title" for="librusPro_subject"  id="librusPro_subjectSelectLabel">Przedmiot:</label>
+              <select id="librusPro_subjectSelect" class="librusPro_select" onchange="librusPro_onSelectChange('subject')">
+                  <option value="">-- wybierz --</option>                  
+                  <option value="Inny" id="librusPro_subjectSelect-other">Inny (Jaki?)</option>
+              </select>
+              <label id="librusPro_subjectTitle" class="librusPro_title" style="display: none" for="librusPro_subject">Przedmiot:</label>
+              <input placeholder="Matematyka" type="text" id="librusPro_subject" class="librusPro_input" style="display: none;">
           </div>
           <div class="librusPro_field">
               <label class="librusPro_title" for="librusPro_typeSelect">Typ:</label>
-              <select id="librusPro_typeSelect" class="librusPro_select" onchange="librusPro_onSelectChange()">
+              <select id="librusPro_typeSelect" class="librusPro_select" onchange="librusPro_onSelectChange('type')">
                   <option value="">-- wybierz --</option>
                   <option value="Sprawdzian" style="background-color: #ebebeb; color: #333333">Sprawdzian</option>
                   <option value="Kartkówka">Kartkówka</option>
@@ -1110,7 +1112,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
                   <option value="Inny" style="background-color: #ebebeb; color: #333333">Inny (Jaki?)</option>
               </select>
               <label id="librusPro_typeTitle" class="librusPro_title" style="display: none" for="librusPro_type">Typ:</label>
-              <input placeholder="Zaliczenie" type="text" id="librusPro_type" class="librusPro_input" style="display: none; /*margin-top: 15px*/">
+              <input placeholder="Zaliczenie" type="text" id="librusPro_type" class="librusPro_input" style="display: none;">
           </div>
           <div class="librusPro_field">
               <label class="librusPro_title" for="librusPro_description">Opis:</label>
@@ -1206,21 +1208,18 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
   // ----------------------------------------------------
   const pageScript = document.createElement("script");
   pageScript.innerHTML = `
-      function librusPro_onSelectChange() {
-        const typeSelect = document.getElementById("librusPro_typeSelect").options[document.getElementById("librusPro_typeSelect").selectedIndex].value;
-        const typeInputTitle = document.getElementById("librusPro_typeTitle");
-        const typeInput = document.getElementById("librusPro_type");
-        if (typeSelect == "Inny")
-        {
-          typeInputTitle.style.display = "block";
-          typeInput.style.display = "block";
-          typeInput.value = "";
-        }
-        else
-        {
-          typeInputTitle.style.display = "none";
-          typeInput.style.display = "none";
-          typeInput.value = typeSelect;
+      function librusPro_onSelectChange(kind) {
+        const select = document.getElementById("librusPro_" + kind + "Select").options[document.getElementById("librusPro_" + kind + "Select").selectedIndex].value;
+        const inputTitle = document.getElementById("librusPro_" + kind + "Title");
+        const input = document.getElementById("librusPro_" + kind);
+        if (select == "Inny") {
+          inputTitle.style.display = "block";
+          input.style.display = "block";
+          input.value = "";
+        } else {
+          inputTitle.style.display = "none";
+          input.style.display = "none";
+          input.value = select;
         }
       }
       function librusPro_eventHexColor(color) {
@@ -1233,7 +1232,6 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           document.getElementById("librusPro_hexRadio").value = color + "|#ffffff";
         }
         document.getElementById("librusPro_hexRadio").checked = true;
-
       }
       function librusPro_isLightFontColorForBackground(bgColor) {
         var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
@@ -1292,7 +1290,12 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
     overlayConfirmButton.classList.add("librusPro_button-add");
     time.value = 0;
     lesson.value = "";
+    subjectSelect.value = "";
     subject.value = "";
+    if (subjectSelectLabel.style.display === "none") {
+      subjectInputTitle.style.display = "block";
+      subjectInput.style.display = "block";
+    }
     typeSelect.value = "";
     type.value = "";
     typeInputTitle.style.display = "none";
@@ -1312,7 +1315,12 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
   // ---------------- "ADD" CLICKED INSIDE "[+]" / CREATE CUSTOM EVENT --------------------
   const lesson = document.getElementById("librusPro_lesson");
   const time = document.getElementById("librusPro_time");
+  const subjectSelectLabel = document.getElementById("librusPro_subjectSelectLabel");
+  const subjectSelect = document.getElementById("librusPro_subjectSelect");
+  const subjectSelectOther = document.getElementById("librusPro_subjectSelect-other");
   const subject = document.getElementById("librusPro_subject");
+  const subjectInputTitle = document.getElementById("librusPro_subjectTitle");
+  const subjectInput = document.getElementById("librusPro_subject");
   const typeSelect = document.getElementById("librusPro_typeSelect");
   const type = document.getElementById("librusPro_type");
   const typeInputTitle = document.getElementById("librusPro_typeTitle");
@@ -1401,6 +1409,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
 
         const addButton = document.createElement("a");
         addButton.innerText = "[+]";
+        addButton.title = 'Dodaj nowe wydarzenie';
         addButton.classList.add("librusPro_addButton");
         addListenerToAddButton(addButton, key);
         day.parentElement.insertBefore(addButton, day);
@@ -1675,11 +1684,26 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       lesson.value = event.lesson
       time.value = event.time;
       subject.value = event.subject;
+      subjectSelect.value = "Inny";
+      if (subjectSelectLabel.style.display === "none") {
+        subjectInputTitle.style.display = "block";
+        subjectInput.style.display = "block";
+      } else {
+        for (let i = 0; i < subjectSelect.options.length; i++) {
+          if (subjectSelect.options[i].value === event.subject) {
+            subjectSelect.value = event.subject;
+          }
+        }
+        if (subjectSelect.value == "Inny") {
+          subjectInputTitle.style.display = "block";
+          subjectInput.style.display = "block";
+        }
+      }
       type.value = event.type;
-      description.value = event.description;
       typeSelect.value = "Inny";
       typeInputTitle.style.display = "none";
       typeInput.style.display = "none";
+      description.value = event.description;
       for (let i = 0; i < typeSelect.options.length; i++) {
         if (typeSelect.options[i].value === event.type) {
           typeSelect.value = event.type;
@@ -1886,18 +1910,20 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
       }
     }
 
-    document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td").forEach((e) => {
-      if (!e.classList.contains("librusPro_custom")) {
-        adjustCellContent(e, options);
-      }
+    document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td:not(.librusPro_custom)").forEach((e) => {
+      adjustCellContent(e, options);
     });
 
     let plan = t["plan"];
     if (plan) {
       let h = 0;
+      const przedmioty = new Set();
       for (let d in plan) {
         if (d == "dzwonki") continue;
         h += plan[d].length;
+        plan[d].forEach((e) => {
+          if (e) przedmioty.add(e[0]);
+        });
       }
       if (h > 0) {
         document.querySelectorAll(".center:not(.weekend) > .kalendarz-dzien").forEach((e) => {
@@ -1916,11 +1942,11 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
               }
               continue;
             }
-            u.push(`<b style="color: #0791bb">${i}.</b> <i style="color: #aaaaaa">(${plan.dzwonki[i]})</i> ${t[i]}`);
+            u.push(`<b style="color: #0791bb">${i}.</b> <i style="color: #aaaaaa">(${plan.dzwonki[i]})</i> ${t[i].join(' ')}`);
           }
           timetable.title = 'Plan lekcji <i style="color: #bbbbbb">(z bieżącego tygodnia)</i>:<br>' + u.join("<br>");
         });
-        const injectedCode = `$('.librusPro_timetable').tooltip({
+        const injectedCode = `$('.librusPro_timetable, .librusPro_addButton').tooltip({
           track: true,
           show: {
             delay: 200,
@@ -1934,6 +1960,19 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
         const script = document.createElement('script');
         script.appendChild(document.createTextNode(injectedCode));
         (document.body || document.head || document.documentElement).appendChild(script);
+      }
+      if (przedmioty.size > 0) {
+        [...przedmioty].sort().forEach((e) => {
+          const o = document.createElement("OPTION");
+          o.value = e;
+          o.innerText = e;
+          subjectSelect.insertBefore(o, subjectSelectOther);
+        })
+      } else {
+        subjectSelectLabel.style.display = "none";
+        subjectSelect.style.display = "none";
+        subjectInput.style.display = "block";
+        subjectInputTitle.style.display = "block";
       }
     }
   });
