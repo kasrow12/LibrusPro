@@ -1160,8 +1160,11 @@ function displayGradeManagerOverlay(element, options, isNew = true, isFinal = fa
     const regexp = /(<br>Waga: )(\d+?)(<br>)/;
     weightInput.value = title.match(regexp)?.[2] ?? weightInput.value;
     // Oceny inne niż liczbowe, np. bz
-    if (document.querySelectorAll('#librusPro_grade option[value="' + element.innerText + '"]').length === 0) {
-      gradeInput.insertAdjacentHTML("beforeend", '<option value="' + element.innerText + '">' + element.innerText + '</option>');
+    if (document.querySelectorAll(`#librusPro_grade option[value="${element.innerText}"]`).length === 0) {
+      const option = document.createElement("OPTION");
+      option.value = element.innerText;
+      option.innerText = element.innerText;
+      gradeInput.appendChild(option);
     }
     gradeInput.value = element.innerText;
     editButton.onclick = (e) => {
