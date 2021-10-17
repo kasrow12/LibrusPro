@@ -174,13 +174,9 @@ img[src*="usun_kosz.png"] {
 	-webkit-filter: brightness(1) contrast(1);
 	filter: brightness(1) contrast(1);
 }
-#gradeAverangeGraph > a > img {
-	-webkit-filter: brightness(0.7) contrast(1.2);
-	filter: brightness(0.7) contrast(1.2);
-}
-#gradeAverangeGraph {
-	-webkit-filter: brightness(0.8);
-	filter: brightness(0.8);
+#gradeAverangeGraph, #absenceGraph {
+	-webkit-filter: brightness(0.7) contrast(1.2) !important;
+	filter: brightness(0.7) contrast(1.2) !important;
 }
 #user-section > img {
 	-webkit-filter: invert(1);
@@ -272,10 +268,6 @@ select:not([name="rgbKoloru"]) > option {
 #AbsenceGraphDiv {
 	-webkit-filter: brightness(0.7);
 	filter: brightness(0.7);
-}
-#absenceGraph > img {
-	-webkit-filter: brightness(0.6) contrast(1.2);
-	filter: brightness(0.6) contrast(1.2);
 }
 text {
 	fill: #ffffff !important;
@@ -774,4 +766,20 @@ table.decorated {
 #body > form:nth-child(5) > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan="9"] {
 	background-color: var(--line1);
 	color: var(--line01color);
+}
+.librusPro_grade-manager-label > span, .librusPro_grade-manager-advice {
+	color: var(--textcolor5);
+}
+.librusPro_grade-editor-body {
+	background: var(--lightbackground);
+}
+.librusPro_inputNumber {
+	color: #ffffff;
+	background: #555555;
+}
+.librusPro_title-tak {
+	color: #57a755;
+}
+.librusPro_title-nie  {
+	color: #e96767;
 }

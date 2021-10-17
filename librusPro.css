@@ -228,6 +228,12 @@ body {
 	background: #c44b4b;
 	box-shadow: 1px 1px 3px #111111;
 }
+.librusPro_button-remove {
+	margin-top: 10px;
+	background: #c4cb5c;
+	color: #222222;
+	box-shadow: 1px 1px 3px #111111;
+}
 .librusPro_button-add:hover {
 	background: #35743a
 }
@@ -404,11 +410,12 @@ td:hover>.kalendarz-dzien>.librusPro_timetable {
 }
 #error_legend {
 	color: #ff4d4d;
-    padding: 15px 15vw;
+    padding: 15px 10vw;
     background: #fafafa;
     position: relative;
 	border: 1px solid #aaaaaa;
 	border-radius: 5px;
+	font-size: 13px;
 }
 .librusPro_loading {
 	background: #eeeeee;
@@ -421,4 +428,85 @@ td:hover>.kalendarz-dzien>.librusPro_timetable {
 	border-radius: 5px;
 	color: #333333;
 	font-size: 15px;
+}
+.librusPro_add-grade {
+	display: inline-block;
+	opacity: 0;
+	padding: 0 .5em;
+	cursor: pointer;
+	transition: opacity 0.2s;
+	visibility: hidden;
+}
+td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
+	opacity: 1;
+	visibility: visible;
+}
+.librusPro_grade-manager {
+	padding-left: .5em;
+	line-height: 18px;
+}
+.librusPro_grade-manager-label {
+	margin-right: 5px;
+}
+.librusPro_grade-manager-label > span {
+	margin-right: .5em;
+	font-weight: bold;
+}
+.librusPro_grade-manager-advice {
+	font-style: italic;
+}
+.cursor-pointer {
+	cursor: pointer;
+}
+.librusPro_grade-manager-icon {
+	padding-left: 3em;
+}
+.librusPro_grade-manager-icon > img {
+	width: 40px;
+	filter: invert(0.4)
+}
+
+
+.librusPro_grade-editor-overlay {
+	display: none;
+	clear: both;
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	inset: 0;
+	z-index: 10000;
+	background: #111111aa;
+}
+@media screen and (max-height: 800px) {
+	.librusPro_grade-editor-overlay {
+		overflow-y: scroll;
+	}
+}
+.librusPro_grade-editor-body {
+	border: 1px solid black;
+	width: 20vw;
+	max-width: 270px;
+	min-width: 270px;
+	margin: 8vh auto 0 auto;
+	padding: 10px 20px 7px 20px;
+	border-radius: 5px;
+	-webkit-box-shadow: 2px 3px 5px #000000;
+	box-shadow: 2px 3px 5px #000000
+}
+.librusPro_inputNumber {
+	border-radius: 5px ;
+	outline: none;
+	border: 1px solid #222222;
+	box-shadow: 1px 1px 3px #000000;
+	padding: 8px 10px !important;
+    box-sizing: border-box;
+}
+.librusPro_grade-editor-body {
+	background: #f6f6f6;
+}
+.librusPro_title-tak {
+	color: #196616;
+}
+.librusPro_title-nie {
+	color: #962c2c;
 }

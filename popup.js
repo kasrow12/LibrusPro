@@ -34,6 +34,7 @@ const OPTIONS_DEFAULT = {
   minusValue: 0.25,
   debug: false,
   averageWarn: false,
+  modernizeTitles: true,
 };
 
 let browserAPI;
@@ -65,6 +66,7 @@ function restoreDefaults() {
   document.getElementById('countToAverage').checked = OPTIONS_DEFAULT.countToAverage;
   document.getElementById('plusValue').value = OPTIONS_DEFAULT.plusValue;
   document.getElementById('minusValue').value = OPTIONS_DEFAULT.minusValue;
+  document.getElementById('modernizeTitles').checked = OPTIONS_DEFAULT.modernizeTitles;
 }
 
 // Prepare
@@ -93,6 +95,7 @@ browserAPI.storage.sync.get(["options"], function (t) {
   document.getElementById('countToAverage').checked = options.countToAverage;
   document.getElementById('plusValue').value = options.plusValue;
   document.getElementById('minusValue').value = options.minusValue;
+  document.getElementById('modernizeTitles').checked = options.modernizeTitles;
 
   if (options.debug) document.getElementById("debugButton").classList.add("debug");
 });
@@ -149,6 +152,7 @@ function validate() {
         minusValue: document.getElementById('minusValue').value,
         debug: false,
         averageWarn: false,
+        modernizeTitles: document.getElementById('modernizeTitles').checked,
       }
     }, () => {
       setTimeout(callback, 450);
