@@ -808,6 +808,11 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function (t) {
     handleGrades(options);
   }
 
+  // Modernizacja dymków w widoku frekwencji
+  if (options.modernizeTitles && window.location.href == "https://synergia.librus.pl/przegladaj_nb/uczen") {
+    document.querySelectorAll(".box > .ocena").forEach(e => modernizeTitle(e));
+  }
+
   let dane = t["dane"];
   if (dane != undefined) {
     adjustHeader(dane);
@@ -825,7 +830,7 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function (t) {
 
   // Inne rozszerzenia
   if (document.getElementById(atob("TGlicGx1cw==")))
-    alert(decodeURIComponent(escape(atob("W0xpYnJ1c1Byb10gV3lrcnl0byBpbm5lIHJvenN6ZXJ6ZW5pZSB6d2nEhXphbmUgeiBmdW5rY2pvbm93YW5pZW0gZHppZW5uaWthIExpYnJ1cyAoTGliUGx1cykuIEFieSB1bmlrbsSFxIcgcG90ZW5jamFsbnljaCBwcm9ibGVtw7N3IGkga29uZmxpa3TDs3cgeiBMaWJydXNQcm8sIHd5xYLEhWN6IHBvem9zdGHFgmUgcm96c3plcnplbmlhIGRvIExpYnJ1c2Eu"))))
+    alert(decodeURIComponent(escape(atob("W0xpYnJ1c1Byb10gV3lrcnl0byBpbm5lIHJvenN6ZXJ6ZW5pZSB6d2nEhXphbmUgeiBmdW5rY2pvbm93YW5pZW0gZHppZW5uaWthIExpYnJ1cyAoTGliUGx1cykuIEFieSB1bmlrbsSFxIcgcG90ZW5jamFsbnljaCBwcm9ibGVtw7N3IGkga29uZmxpa3TDs3cgeiBMaWJydXNQcm8sIHd5xYLEhWN6IHBvem9zdGHFgmUgcm96c3plcnplbmlhIGRvIExpYnJ1c2Eu"))));
 
   location.href = "javascript: librusPro_jqueryTitle()";
 });
@@ -1269,25 +1274,24 @@ function removeGrade(element) {
   handleGrades(element.librusPro_options, true);
 }
 
-const TITLE_MODERNIZATION = {
-  '(Ocena:) ([\\D\\d]*?)<br>': '<span style="color: #90be6d;">$2</span><br>',
-  '(Kategoria:) (.*?)<br>': '<span style="color: #d9ac41;">$2</span><br>',
-  '(Data:) (.*?)<br>': '<span style="color: #cb997e;">$2</span><br>',
-  '(Nauczyciel:) (.*?)<br>': '<span style="color: #aaaaaa;">$2</span><br>',
-  '(Licz do średniej:) (tak|nie)': '<span class="librusPro_title-$2">$2</span>',
-  '(Waga:) (\\d+?)((<br(\/?)>)|$)': '<b><span style="color: #f3722c;">$2</span></b>$3',
-  '(Dodał:) (.*?)((<br(\/?)>)|$)': '<span style="color: #aaaaaa;">$2</span>$3',
-  '(Data zapowiedzi:) (.*?)((<br(\/?)>)|$)': '<span style="color: #cb997e;">$2</span>$3',
-  '(Data realizacji:) (.*?)((<br(\/?)>)|$)': '<span style="color: #cb997e;">$2</span>$3',
-  '(Komentarz:) ([\\D\\d]*?)((<br(\/?)>)|$)': '<span style="color: #979dac;">$2</span>$3',
-  '(Poprawa oceny:) (.{0,2}) \\((.*?)\\)((<br(\/?)>)|$)': '<b style="color: #f19c79;">$2</b> <span style="color: #219ebc;">(<span style="color: #d9ac41;">$3</span>)</span>$4',
-  '(Obowiązek wyk. zadania:) (TAK)': '<span class="librusPro_title-tak">tak</span>',
-}
+const TITLE_MODERNIZATION = [
+  // Oceny
+  [/(Ocena:|Lekcja:) ([\D\d]*?)(<br\/?>|$)/g, '<span class="librusPro_title-grade">$2</span>$3'],
+  [/(Kategoria:|Rodzaj:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-type">$2</span>$3'],
+  [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
+  [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
+  [/(Nauczyciel:|Dodał:|Uczeń:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2</span>$3'],
+  [/(Waga:) (\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
+  [/(Komentarz:|Temat zajęć:) ([\D\d]*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-comment">$2</span>$3'],
+  [/(Opis:) ([\D\d]*?)Data dodania:/g, '<span class="librusPro_title-comment">$2</span>Data dodania:'],
+  [/(Poprawa oceny:) (.{0,2}) \((.*?)\)(<br ?\/?>|$)/g, '<b class="librusPro_title-improved">$2</b> <span class="librusPro_title-brackets">(<span class="librusPro_title-type">$3</span>)</span>$4'],
+  [/(Godzina lekcyjna:) (\d+?)<\/b>(<br ?\/?>|$)/g, '<span class="librusPro_title-improved">$2</span>$3'],
+]
 
 function modernizeTitle(element) {
   let title = element.title;
-  for (let i in TITLE_MODERNIZATION) {
-    title = title.replace(RegExp(i), '<b style="color: #577590;">$1</b> ' + TITLE_MODERNIZATION[i]);
+  for (let i of TITLE_MODERNIZATION) {
+    title = title.replaceAll(i[0], '<b class="librusPro_title-label">$1</b> ' + i[1]);
   }
   element.title = title;
 }
@@ -1861,6 +1865,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
         if (event.description != "") cell.title += "Opis: " + event.description + "<br />";
         cell.title += "Data dodania: " + event.dateAdded;
         if (event.dateModified != "") cell.title += "<br />Data ostatniej modyfikacji: " + event.dateModified;
+        if (options.modernizeTitles) modernizeTitle(cell);
 
         const removeButton = document.createElement("a");
         removeButton.innerText = REMOVE_SYMBOL;
@@ -2160,6 +2165,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
     }
 
     document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td:not(.librusPro_custom)").forEach((e) => {
+      if (options.modernizeTitles) modernizeTitle(e);
       adjustCellContent(e, options);
     });
 

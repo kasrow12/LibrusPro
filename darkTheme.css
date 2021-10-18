@@ -777,9 +777,13 @@ table.decorated {
 	color: #ffffff;
 	background: #555555;
 }
+.librusPro_title-Tak,
+.librusPro_title-TAK,
 .librusPro_title-tak {
 	color: #57a755;
 }
+.librusPro_title-Nie,
+.librusPro_title-NIE,
 .librusPro_title-nie  {
 	color: #e96767;
 }

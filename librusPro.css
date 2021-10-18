@@ -504,9 +504,40 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
 .librusPro_grade-editor-body {
 	background: #f6f6f6;
 }
+.librusPro_title-Tak,
+.librusPro_title-TAK,
 .librusPro_title-tak {
 	color: #196616;
 }
-.librusPro_title-nie {
+.librusPro_title-Nie,
+.librusPro_title-NIE,
+.librusPro_title-nie  {
 	color: #962c2c;
+}
+.librusPro_title-date {
+	color: #cb997e;
+}
+.librusPro_title-user {
+	color: #aaaaaa;
+}
+.librusPro_title-weight {
+	color: #f3722c;
+}
+.librusPro_title-comment {
+	color: #a2a9ba;
+}
+.librusPro_title-improved {
+	color: #f19c79;
+}
+.librusPro_title-brackets {
+	color: #219ebc;
+}
+.librusPro_title-type {
+	color: #d9ac41;
+}
+.librusPro_title-grade {
+	color: #90be6d;
+}
+.librusPro_title-label {
+	color: #577590;
 }
