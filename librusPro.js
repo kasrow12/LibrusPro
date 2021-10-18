@@ -178,6 +178,7 @@ const jQinjectedCode = `
       }
     });
   }
+  setTimeout(librusPro_jqueryTitle, 1000);
 `;
 const jQscript = document.createElement('script');
 jQscript.appendChild(document.createTextNode(jQinjectedCode));
@@ -1275,7 +1276,6 @@ function removeGrade(element) {
 }
 
 const TITLE_MODERNIZATION = [
-  // Oceny
   [/(Ocena:|Lekcja:) ([\D\d]*?)(<br\/?>|$)/g, '<span class="librusPro_title-grade">$2</span>$3'],
   [/(Kategoria:|Rodzaj:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-type">$2</span>$3'],
   [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
@@ -2165,8 +2165,8 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
     }
 
     document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td:not(.librusPro_custom)").forEach((e) => {
-      if (options.modernizeTitles) modernizeTitle(e);
       adjustCellContent(e, options);
+      if (options.modernizeTitles) modernizeTitle(e);
     });
 
     let plan = t["plan"];
