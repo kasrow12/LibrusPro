@@ -617,14 +617,21 @@ function handleGrades(options, recalculate = false) {
     tbody.appendChild(srednieTr);
   }
 
-  // Zmiana koloru ocen z zachowania
-  if (options.depressionMode && !recalculate) {
-    document.querySelectorAll(".positive-behaviour").forEach((e) => {
-      e.style.background = DEPRESSION_MODE_COLORS.positiveBehavior;
-    });
-    document.querySelectorAll(".negative-behaviour").forEach((e) => {
-      e.style.background = DEPRESSION_MODE_COLORS.negativeBehavior;
-    });
+  // Zmiana koloru ocen z zachowania oraz modernizacja dymka
+  if (!recalculate) {
+    if (options.depressionMode) {
+      document.querySelectorAll(".positive-behaviour").forEach((e) => {
+        e.style.background = DEPRESSION_MODE_COLORS.positiveBehavior;
+      });
+      document.querySelectorAll(".negative-behaviour").forEach((e) => {
+        e.style.background = DEPRESSION_MODE_COLORS.negativeBehavior;
+      });
+    }
+    if (options.modernizeTitles) {
+      document.querySelectorAll(".positive-behaviour > a, .negative-behaviour > a").forEach((e) => {
+        modernizeTitle(e);
+      });
+    }
   }
 }
 
@@ -1278,7 +1285,7 @@ function removeGrade(element) {
 const TITLE_MODERNIZATION = [
   [/(Ocena:|Lekcja:) ([\D\d]*?)(<br\/?>|$)/g, '<span class="librusPro_title-grade">$2</span>$3'],
   [/(Kategoria:|Rodzaj:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-type">$2</span>$3'],
-  [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
+  [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:| wystawienia:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
   [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
   [/(Nauczyciel:|Dodał:|Uczeń:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2</span>$3'],
   [/(Waga:) (\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
