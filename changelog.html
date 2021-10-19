@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibrusPro - Lista zmian</title>
+    <style>
+body
+{
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	background: #363636;
+    width: 50vw;
+    margin: 2em auto;
+}
+@media screen and (max-width: 1200px) {
+    body {
+        width: 70vw;
+    }
+}
+@media screen and (max-width: 900px) {
+    body {
+        width: 90vw;
+    }
+}
+.logo-container {
+	text-align: center;
+	display: flex;
+	margin: 5px 0 5px 0;
+	align-items: center;
+	justify-content: center;
+}
+.logo {
+	width: 65px;
+	height: 65px;
+	margin-right: 10px;
+} 
+.title
+{
+	font-family: "Comic Sans MS", "Comic Sans", cursive;
+	font-size: 23px;
+	padding: 0px 10px;
+	color: #aa5180;
+}
+.sub-title
+{
+	font-size: 14px;
+	padding: 0px 5px;
+	color: #8ca5c4;
+}
+.author {
+	color: #8ca5c4;
+	font-size: 15px;
+}
+.quote {
+	text-align: center;
+	font-size: 17px;
+	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+	margin: 10px 0 5px 0;
+	color: #cccccc;
+	font-style: italic;
+}
+.footer {
+	padding-top: .5em;
+	margin-top: 1em;
+    border-top: 1px solid #222222;
+}
+.discord-link {
+    padding: 0.3em;
+    margin-bottom: 0.3em;
+    display: inline-block;
+	color: #7289DA;
+}
+.discord-link:hover {
+	color: #ffffff;
+	transition: color 0.3s;
+}
+.copyright {
+    font-style: italic;
+}
+* {
+    font-family: 'Roboto', sans-serif;
+}
+.container {
+    margin: 1em auto 0 auto;
+    padding: 1em;
+    width: 90%;
+}
+.icon {
+	display: inline-block;
+	margin: 3px 0 0 3px;
+	height: 37px;
+	width: 37px;
+	background-size: cover !important;
+    background: url("img/icon.png");
+}
+.footer-text {
+    margin-left: 5px;
+	display: inline-block;
+	color: #999999;
+	cursor: vertical-text;
+}
+.link {
+	color: #4276c3;
+	transition: color 0.1s;
+}
+.link:hover {
+	text-decoration: underline;
+	color: #9eb0f1;
+}
+.changelog {
+    background: #e7e7e7;
+    width: 90%;
+    padding: 1em;
+    margin: 0 auto 2em auto;
+    box-shadow: 3px 3px 10px #141414;
+    border-radius: 5px;
+}
+.changelog:last-child {
+    margin-bottom: 0;
+}
+.version {
+    display: inline-block;
+    margin-right: .5em;
+    margin-left: 0.5em;
+    font-size: 24px;
+    color: #8d2f61;
+    font-weight: bold;
+}
+.version::before {
+    content: 'v';
+}
+.version-date {
+    display: inline-block;
+    color: #777777;
+}
+.changelog:first-child > .version-date::after {
+    color: #137413;
+    display: inline-block;
+    margin-left: 1em;
+    font-size: 17px;
+    text-decoration: underline;
+    content: "Najnowsza";
+}
+.change::before {
+    content: "» ";
+    padding: 0.2em;
+}
+.change {
+    font-size: 15px;
+}
+.highlight {
+    color: #aa5180;
+}
+.header {
+    text-align: center;
+    border-bottom: 1px solid #272727;
+    border-top: 1px solid #272727;
+    color: #ececec;
+    padding: 0.7em 0;
+}
+</style>
+</head>
+<body>
+    <div class="logo-container">
+		<img src="img/icon.png" class="logo">
+		<div class="title">LibrusPro<div class="sub-title">Made with ❤️ by:<div class="author">Maks&nbsp;Kowalski</div></div></div>
+	</div>
+	<div class="quote">Ulepsz Librusa już dziś!</div>
+    <h2 class="header">Co nowego?</h2>
+    <div class="container">
+        <div class="changelog">
+            <div class="version">2.9.0</div><div class="version-date">19.10.2021 r.</div>
+            <div class="changes">
+                <div class="change">Dodano możliwość wyświetlenia wykazu uczęszczania, czyli informacji dot. <b class="highlight">procentowej obecności</b> na danych zajęciach.</div>
+                <div class="change">Dodano <b class="highlight">changelog</b>.</div>
+                <div class="change">Dodano <b class="highlight">modernizację dymków frekwencji oraz wydarzeń</b> w terminarzu.</div>
+            </div>
+        </div>
+        <div class="changelog">
+            <div class="version">2.8.1</div><div class="version-date">17.10.2021 r.</div>
+            <div class="changes">
+                <div class="change">Dodano <b class="highlight">możliwość</b> tymczasowego, lokalnego <b class="highlight">dodawania ocen i edycji istniejących</b>, aby np. sprawdzić jaka byłaby średnia wtedy średnia.</div>
+                <div class="change">Dodano <b class="highlight">modernizację dymków</b> po najechaniu na oceny (możliwa do wyłączenia w menu rozszerzenia).</div>
+            </div>
+        </div>
+        <div class="changelog">
+            <div class="version">2.7.0</div><div class="version-date">21.09.2021 r.</div>
+            <div class="changes">
+                <div class="change"><b class="highlight">Zoptymalizowano</b> system liczenia średnich.</div>
+                <div class="change">Dodano <b class="highlight">ekran ładowania</b>.</div>
+                <div class="change">Dodano <b class="highlight">informację, gdy wyliczona średnia przez rozszerzenie różni się</b> od faktycznej (w przypadku, gdy podgląd średnich jest włączony w danej szkole). [Wyłączone w przypadku "Ukrywania jedynek"]</div>
+                <div class="change">Dodano <b class="highlight">możliwość wyboru przedmiotu z listy</b>, podczas dodawania swojego wydarzenia w terminarzu (zamiast jego ręcznego wpisywania).</div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="icon"></a>
+        <div class="footer-text">
+            <span style="color: #96c5b4;">» Podoba się wtyczka? <a href="https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf" target="_blank" class="link">Zostaw 5<span style="font-size: 11px;">⭐</span></a></span>
+            <div style="color: #94cae4;">» Wbijaj na oficjalny <a href="https://discord.gg/e9EkVEvsDr" target="_blank" class="link">Discord</a>!</div>
+            
+        <div>» <span style="font-style: italic">LibrusPro © 2021 Maks Kowalski</span></div>
+    </div>
+</body>
+</html>

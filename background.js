@@ -52,3 +52,16 @@ browserAPI.storage.onChanged.addListener((changes, namespace) => {
     }
   }
 });
+
+// Aktualizacje
+chrome.runtime.onInstalled.addListener((reason) => {
+  if (reason["reason"] === chrome.runtime.OnInstalledReason.INSTALL) {
+    // chrome.tabs.create({
+    //   url: 'welcome.html'
+    // });
+  } else if (reason["reason"] === chrome.runtime.OnInstalledReason.UPDATE) {
+    chrome.tabs.create({
+      url: 'changelog.html'
+    });
+  }
+});
