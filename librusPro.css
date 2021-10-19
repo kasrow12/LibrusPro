@@ -463,7 +463,7 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
 }
 .librusPro_grade-manager-icon > img {
 	width: 40px;
-	filter: invert(0.4)
+	filter: invert(0.7)
 }
 
 
@@ -540,4 +540,19 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
 }
 .librusPro_title-label {
 	color: #577590;
+}
+.librusPro_attendance-statistics-button {
+	margin: 2em auto !important;
+	display: block !important;
+}
+.librusPro_header {
+	margin: 2em 0;
+}
+.colspan {
+	vertical-align: top !important;
+}
+.librusPro_sub-header {
+	font-style: italic;
+	font-weight: normal;
+	font-size: 13px;
 }

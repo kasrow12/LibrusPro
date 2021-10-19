@@ -241,22 +241,17 @@ select:not([name="rgbKoloru"]) > option {
 .box[style="float: left; background-color:#F7F8FA; "] > a {
 	color: #ffffff !important;
 }
-#absence_form > div > div > table.filters.decorated.center.small > tbody > tr > th,
-#absence_form > div > div > table.filters.decorated.center.small > tbody > tr > td {
-	background: var(--lightbackground);
-	color: var(--textcolor);
-}
-#absence_form > div > div > table.center.big.decorated > tbody > tr:nth-child(2n + 1) > td {
+#absence_form > div > div > table.center.decorated > tbody > tr:nth-child(2n + 1) > td {
 	background: var(--line0) !important;
-	color: var(--textcolor);
+	color: var(--textcolor5);
 	transition: background-color 0.1s;
 }
-#absence_form > div > div > table.center.big.decorated > tbody > tr:nth-child(2n) > td {
-	color: var(--textcolor);
+#absence_form > div > div > table.center.decorated > tbody > tr:nth-child(2n) > td {
+	color: var(--textcolor5);
 	background: var(--line1) !important;
 	transition: background-color 0.1s;
 }
-#absence_form > div > div > table.center.big.decorated > tbody > tr:hover > td {
+#absence_form > div > div > table.center.decorated > tbody > tr:hover > td {
 	background: var(--lightbackground) !important;
 }
 #AbsencesArchiveGraphDiv,
@@ -786,4 +781,22 @@ table.decorated {
 .librusPro_title-NIE,
 .librusPro_title-nie  {
 	color: #e96767;
+}
+.librusPro_tfoot-text {
+	color: var(--textcolor) !important;
+}
+#librusPro_lessonsAttendance td:nth-child(3) {
+	color: #ffbaba !important;
+}
+#librusPro_lessonsAttendance td:nth-child(4) {
+	color: #c2ae76 !important;
+}
+#librusPro_lessonsAttendance td:nth-child(5) {
+	color: #719fb0 !important;
+}
+.librusPro_sub-header {
+	color: #936694;
+}
+.librusPro_grade-manager-icon > img {
+	filter: invert(0.4)
 }
