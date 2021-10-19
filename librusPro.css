@@ -556,3 +556,10 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
 	font-weight: normal;
 	font-size: 13px;
 }
+#librusPro_lessonsAttendance td:nth-child(3), #librusPro_lessonsAttendance td:nth-child(4) {
+	text-align: right;
+}
+#librusPro_lessonsAttendance td:nth-child(5) {
+	text-align: right;
+	font-weight: bold;
+}

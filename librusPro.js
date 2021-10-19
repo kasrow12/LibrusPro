@@ -91,6 +91,13 @@ async function getAttendanceLessonsStatistics() {
           </tr>
         </thead>
         <tbody id="librusPro_lessonsAttendance">
+        <tr class="line0 bolded">
+          <td>Razem</td>
+          <td></td>
+          <td id="librusPro_totalAbsences">0</td>
+          <td id="librusPro_totalAttendances">0</td>
+          <td id="librusPro_totalAttendancePercent"></td>
+        </tr>
         </tbody>
         <tfoot>
           <tr>
@@ -111,6 +118,9 @@ async function getAttendanceLessonsStatistics() {
       parent.insertBefore(header, parent.firstElementChild);
       location.href = "javascript: librusPro_jqueryTitle()";
       const container = document.getElementById("librusPro_lessonsAttendance");
+      const totalAbsencesEl = document.getElementById("librusPro_totalAbsences");
+      const totalAttendancesEl = document.getElementById("librusPro_totalAttendances");
+      const totalAttendancePercentEl = document.getElementById("librusPro_totalAttendancePercent");
       for (let lesson of lessons["Lessons"]) {
         fetch(API + `Attendances/LessonsStatistics/${lesson["Id"]}`)
         .then(response => response.json())
@@ -120,19 +130,34 @@ async function getAttendanceLessonsStatistics() {
               const subjectName = await fetch(API + `Subjects/${lesson["Subject"]["Id"]}`)
               .then(response => response.json())
               .then(data => {return data["Subject"]["Name"]});
+
               const teacherName = await fetch(API + `Users/${lesson["Teacher"]["Id"]}`)
               .then(response => response.json())
               .then(data => {return `${data["User"]["FirstName"]} ${data["User"]["LastName"]}`});
+
               const absences = lessonStats["Absences"];
-              const totalAttendances = lessonStats["Attendances"];
-              container.innerHTML += `
-              <tr class="line0">
-                <td>${subjectName}</td>
-                <td>${teacherName}</td>
-                <td class="right">${absences}</td>
-                <td class="right">${totalAttendances}</td>
-                <td class="right bold">${((totalAttendances-absences)/totalAttendances*100).toFixed(2)}%</td>
-              </tr>`;
+              const attendances = lessonStats["Attendances"];
+              const tr = document.createElement("TR");
+              tr.classList.add("line0");
+              const subjectNameEl = document.createElement("td");
+              const teacherNameEl = document.createElement("td");
+              const absencesEl = document.createElement("td");
+              const attendancesEl = document.createElement("td");
+              const percentageEl = document.createElement("td");
+              subjectNameEl.innerText = subjectName;
+              teacherNameEl.innerText = teacherName;
+              absencesEl.innerText = absences;
+              attendancesEl.innerText = attendances;
+              percentageEl.innerText = ((attendances - absences) / attendances * 100).toFixed(2) + "%";
+              tr.appendChild(subjectNameEl);
+              tr.appendChild(teacherNameEl);
+              tr.appendChild(absencesEl);
+              tr.appendChild(attendancesEl);
+              tr.appendChild(percentageEl);
+              container.insertBefore(tr, container.firstElementChild);
+              totalAbsencesEl.innerText = +totalAbsencesEl.innerText + absences;
+              totalAttendancesEl.innerText = +totalAttendancesEl.innerText + attendances;
+              totalAttendancePercentEl.innerText = ((+totalAttendancesEl.innerText - +totalAbsencesEl.innerText) / +totalAttendancesEl.innerText * 100).toFixed(2) + "%";
             }
           }
         });
