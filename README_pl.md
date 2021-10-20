@@ -4,7 +4,7 @@
     <img src="img/icon.png" alt="Logo" width="30%" height="30%">
   </a>
   <h1 align="center">📚 LibrusPro 🎉</h1>
-  <h4 align="center">💠 Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, wyświetlające średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz kilka drobnych usprawnień jego funkcjonalności i wyglądu. 💠</h4>
+  <h4 align="center">💠 Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, liczące średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, pozwalające na dodawanie własnych wydarzeń w terminarzu, wyświetlenie procentowej obecności z każdego przedmiotu oraz kilka drobnych usprawnień jego funkcjonalności i wyglądu. 💠</h4>
 </p>
 
 # ⏩ Obecnie dostępne dla:
@@ -39,6 +39,9 @@ Chcesz dodać własne wydarzenie do swojego terminarza? Planowane kartkówki, od
 ## ⭐️ • Obliczanie średniej ocen 📈
 Niektóre szkoły wyłączają możliwość wyświetlania średniej ocen dla ich uczniów i rodziców. Na szczęście Twój komputer potrafi dodawać, mnożyć i dzielić, więc sobie sam poradzi :) W tabeli znajdziesz odpowiednio średnią z semestru, z ocen proponowanych, ze śródrocznych, a także ze wszystkich ocen cząstkowych (średnia roczna).
 
+## ⭐️ • Wyświetlanie procentowej frekwencji z przedmiotów 🎓
+Zastanawiasz się ile masz procent frekwencji z danego przedmiotu? Może chcesz wiedzieć, ile jeszcze lekcji możesz opuścić, aby nadal być klasyfikowanym? Nie ma sprawy. W zakładce Frekwencja wystarczy, że naciśniesz odpowiedni przycisk, a Twoje procenty obecności magicznie się pojawią.
+
 ## ⭐️ • Ukrywanie przedmiotów bez ocen 🚫
 Po co w ogóle mają się wyświetlać, skoro przez cały rok nie dostaniesz z nich ani jednej oceny?
 
@@ -46,7 +49,16 @@ Po co w ogóle mają się wyświetlać, skoro przez cały rok nie dostaniesz z n
 Nie możesz nigdy zapamiętać, który masz numerek w dzienniku? Od teraz będzie zawsze widniał na górze strony obok "Szczęśliwego Numerka", abyś go już nigdy nie zapomniał(a). Jeśli w Twojej szkole jest włączona opcja jego losowania, to już nigdy nie przegapisz tego, kiedy będzie nim Twój!
 
 ## ⭐️ • Modernizacja terminarza 📅
-Po co najeżdżać na każdą rzecz w terminarzu, aby przeczytać jej opis? Od teraz znajdziesz wszystko na wierzchu, bez konieczności najeżdżania! Wygoda ponad wszystko. Możesz także wyłączyć wyświetlanie swojej klasy pod każdym zdarzeniem, a także skorzystać z trybu modernizacji terminarza, który sprawia go trochę bardziej czytelnym i odchudzonym. (Zajrzyj do opcji rozszerzenia, aby włączyć/wyłączyć poszczególne funkcje)
+Po co najeżdżać na każdą rzecz w terminarzu, aby przeczytać jej opis? Od teraz znajdziesz wszystko na wierzchu, bez konieczności najeżdżania! Wygoda ponad wszystko. Możesz także wyłączyć wyświetlanie swojej klasy pod każdym zdarzeniem, a także skorzystać z trybu modernizacji terminarza, który sprawia go trochę bardziej czytelnym i odchudzonym.
+Jeśli Twoja szkoła udostępniła plan lekcji, to będziesz go również widzieć po najechaniu na symbol '≡' znajdujący się w kafelkach.
+(Zajrzyj do opcji rozszerzenia, aby włączyć/wyłączyć poszczególne funkcje)
+
+## ⭐️ • Modernizacja dymków 📢
+Dymki z dodatkowymi informacjami, które pojawiają się po najechaniu na oceny, nieobecności, bądź wydarzenia w terminarzu, od teraz nabierają nowych barw i wyglądają choć trochę lepiej, niż szare mury szkoły, do której uczęszczasz.
+
+## ⭐️ • Tymczasowa modyfikacja ocen 📝
+Gdy włączysz to ustawienie w widoku ocen, będziesz mógł(a) tymczasowo, lokalnie dodawać nowe oceny, bądź edytować i usuwać bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.
+(Po odświeżeniu strony wszystko wróci do stanu sprzed modyfikacji! Zmiany zachodzą jedynie lokalnie i nie mają wpływu na Twoje rzeczywiste oceny!)
 
 ## ⭐️ • Wersja depresyjna 🕶
 Stonowane kolory ocen i wydarzeń w terminarzu, gdy czujesz się nie najlepiej. Wersja możliwa do włączenia w opcjach rozszerzenia.
@@ -61,7 +73,8 @@ Dopóki karta z e-dziennikiem będzie otwarta, Twoja sesja nie wygaśnie! Koniec
   - usunięcie przycisku Wersja Alternatywna, kto normalny z tego korzysta...,
   - usunięcie przycisku Bezpieczny Uczeń w szkołach, w których jest on włączony,
   - usunięcie zbędnych przycisków z paska nawigacyjnego - Ankiety, Biblioteka,
-  - dodanie w zamian przycisku Plan lekcji, który także otwiera go w nowej karcie, a nie oknie.
+  - dodanie w zamian przycisku Plan lekcji, który także otwiera go w nowej karcie, a nie oknie,
+  - poświetlenie średniej rocznej kwalifikującej się na czerwony pasek.
 
 ## 👑 Z rozszerzeniem LibrusPro, to Ty stajesz się władcą tego e-dziennika. Nie przegap takiej okazji!
 
