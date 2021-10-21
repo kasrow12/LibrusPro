@@ -542,7 +542,7 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
 	color: #577590;
 }
 .librusPro_attendance-statistics-button {
-	margin: 2em auto !important;
+	margin: .3em auto !important;
 	display: block !important;
 }
 .librusPro_header {
@@ -558,8 +558,12 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
 }
 #librusPro_lessonsAttendance td:nth-child(3), #librusPro_lessonsAttendance td:nth-child(4) {
 	text-align: right;
+	padding: 4px;
 }
 #librusPro_lessonsAttendance td:nth-child(5) {
 	text-align: right;
 	font-weight: bold;
+}
+#librusPro_lessonsAttendance td.librusPro_lessons-attendance-low:nth-child(5) {
+	color: #be6f6f !important;
 }

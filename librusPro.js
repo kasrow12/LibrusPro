@@ -74,53 +74,26 @@ async function getAttendanceLessonsStatistics() {
     fetch(API + 'Lessons')
     .then(response => response.json())
     .then(async function(lessons) {
-      const parent = document.querySelector(".container-background");
-      let template = document.createElement('template');
-      let html = `
-      <table class="center big decorated" style="margin-bottom: 4em;">
-        <thead>
-          <tr>
-            <td rowspan="2">Przedmiot</td>
-            <td rowspan="2">Nauczyciel</td>
-            <td colspan="3" class="colspan" style="padding: 0;"><span>Frekwencja</span></td>
-          </tr>
-          <tr class="no-border-top">
-            <td class="spacing librusPro_jqueryTitle" title="Łączna liczba nieobecności" style="border-left: 1px solid rgb(34, 34, 34) !important;">nb</td>
-            <td class="librusPro_jqueryTitle" title="Łączna liczba wszystkich wpisanych frekwencji do dziennika">Razem</td>
-            <td class="librusPro_jqueryTitle" title="Procent obecności na danym przedmiocie wg Librusa">Procent</td>
-          </tr>
-        </thead>
-        <tbody id="librusPro_lessonsAttendance">
-        <tr class="line0 bolded">
-          <td>Razem</td>
-          <td></td>
-          <td id="librusPro_totalAbsences">0</td>
-          <td id="librusPro_totalAttendances">0</td>
-          <td id="librusPro_totalAttendancePercent"></td>
-        </tr>
-        </tbody>
-        <tfoot>
-          <tr>
-            <td class="librusPro_tfoot-text" colspan="5">Widok przedstawia aktualne dane pobrane z dziennika Librus Synergia.</td>
-          </tr>
-        </tfoot>
-      </table>`;
-      html = html.trim();
-      template.innerHTML = html;
-      parent.insertBefore(template.content.firstChild, parent.firstElementChild);
-      const header = document.createElement("H3");
-      header.classList.add("center", "librusPro_header");
-      header.innerText = "Wykaz uczęszczania";
-      const subHeader = document.createElement("DIV");
-      subHeader.classList.add("librusPro_sub-header");
-      subHeader.innerText = "Dzięki LibrusPro!";
-      header.appendChild(subHeader);
-      parent.insertBefore(header, parent.firstElementChild);
-      location.href = "javascript: librusPro_jqueryTitle()";
+      document.querySelector(".librusPro_tfoot-text").innerText = "Widok przedstawia aktualne dane pobrane z dziennika Librus Synergia.";
       const container = document.getElementById("librusPro_lessonsAttendance");
-      const totalAbsencesEl = document.getElementById("librusPro_totalAbsences");
-      const totalAttendancesEl = document.getElementById("librusPro_totalAttendances");
-      const totalAttendancePercentEl = document.getElementById("librusPro_totalAttendancePercent");
+      const tr = document.createElement("TR");
+      tr.classList.add("line0", "bolded");
+      const _spacer = document.createElement("td");
+      const totalTitle = document.createElement("td");
+      const totalAbsencesEl = document.createElement("td");
+      const totalAttendancesEl = document.createElement("td");
+      const totalAttendancePercentEl = document.createElement("td");
+      totalTitle.innerText = "Razem";
+      totalTitle.classList.add("right");
+      totalAbsencesEl.innerText = "0";
+      totalAttendancesEl.innerText = "0";
+      totalAttendancePercentEl.innerText = "%";
+      tr.appendChild(_spacer);
+      tr.appendChild(totalTitle);
+      tr.appendChild(totalAbsencesEl);
+      tr.appendChild(totalAttendancesEl);
+      tr.appendChild(totalAttendancePercentEl);
+      container.insertBefore(tr, container.firstElementChild);
       for (let lesson of lessons["Lessons"]) {
         fetch(API + `Attendances/LessonsStatistics/${lesson["Id"]}`)
         .then(response => response.json())
@@ -148,7 +121,9 @@ async function getAttendanceLessonsStatistics() {
               teacherNameEl.innerText = teacherName;
               absencesEl.innerText = absences;
               attendancesEl.innerText = attendances;
-              percentageEl.innerText = ((attendances - absences) / attendances * 100).toFixed(2) + "%";
+              const percent = ((attendances - absences) / attendances * 100).toFixed(2);
+              percentageEl.innerText = percent + "%";
+              if (percent < 50) percentageEl.classList.add("librusPro_lessons-attendance-low");
               tr.appendChild(subjectNameEl);
               tr.appendChild(teacherNameEl);
               tr.appendChild(absencesEl);
@@ -157,7 +132,8 @@ async function getAttendanceLessonsStatistics() {
               container.insertBefore(tr, container.firstElementChild);
               totalAbsencesEl.innerText = +totalAbsencesEl.innerText + absences;
               totalAttendancesEl.innerText = +totalAttendancesEl.innerText + attendances;
-              totalAttendancePercentEl.innerText = ((+totalAttendancesEl.innerText - +totalAbsencesEl.innerText) / +totalAttendancesEl.innerText * 100).toFixed(2) + "%";
+              const totalPercent = ((+totalAttendancesEl.innerText - +totalAbsencesEl.innerText) / +totalAttendancesEl.innerText * 100).toFixed(2);
+              totalAttendancePercentEl.innerText = totalPercent + "%";
             }
           }
         });
@@ -165,31 +141,66 @@ async function getAttendanceLessonsStatistics() {
     });
   } catch(error) {
     console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu statystyk frekwencji!", "color: #ff5555;", error);
-    const parent = document.querySelector(".container-background");
-    let template = document.createElement('template');
-    let html = `
-      <h3 class="center">Sesja wygasła! Zaloguj się ponownie, aby pobrać wykaz uczęszczania.</h3>  
-    `;
-      html = html.trim();
-      template.innerHTML = html;
-      parent.insertBefore(template.content.firstChild, parent.firstElementChild);
+    const container = document.getElementById("librusPro_lessonsAttendance");
+    const tr = document.createElement("TR");
+    tr.classList.add("line0", "bolded");
+    const errorMessage = document.createElement("td");
+    errorMessage.innerText = "Sesja wygasła! Zaloguj się ponownie, aby pobrać wykaz uczęszczania.";
+    errorMessage.colSpan = "5";
+    errorMessage.classList.add("center");
+    tr.appendChild(errorMessage);
+    container.insertBefore(tr, container.firstElementChild);
     return;
   }
 }
 
 if (window.location.href === "https://synergia.librus.pl/przegladaj_nb/uczen") {
   const parent = document.querySelector(".container-background");
-  const button = document.createElement("INPUT");
-  button.value = "Pobierz wykaz uczęszczania (Procenty frekwencji)";
-  button.type = "submit";
-  button.classList.add("librusPro_attendance-statistics-button", "ui-button", "ui-widget", "ui-state-default", "ui-corner-all");
-  button.onclick = () => {
+  const header = document.createElement("H3");
+  header.classList.add("center", "librusPro_header");
+  header.innerText = "Wykaz uczęszczania";
+  const subHeader = document.createElement("DIV");
+  subHeader.classList.add("librusPro_sub-header");
+  subHeader.innerText = "Dzięki LibrusPro!";
+  header.appendChild(subHeader);
+  parent.insertBefore(header, parent.firstElementChild);
+  let template = document.createElement('template');
+  let html = `
+  <table class="center big decorated" style="margin-bottom: 4em;">
+    <thead>
+      <tr>
+        <td rowspan="2">Przedmiot</td>
+        <td rowspan="2">Nauczyciel</td>
+        <td colspan="3" class="colspan" style="padding: 0;"><span>Frekwencja</span></td>
+      </tr>
+      <tr class="no-border-top">
+        <td class="spacing librusPro_jqueryTitle" title="Łączna liczba nieobecności" style="border-left: 1px solid rgb(34, 34, 34) !important;">nb</td>
+        <td class="librusPro_jqueryTitle" title="Łączna liczba wszystkich wpisanych frekwencji do dziennika">Razem</td>
+        <td class="librusPro_jqueryTitle" title="Procent obecności na danym przedmiocie wg Librusa">Procent</td>
+      </tr>
+    </thead>
+    <tbody id="librusPro_lessonsAttendance">
+    <tr class="line0">
+      <td colspan="5"><input type="submit" class="librusPro_attendance-statistics-button ui-button ui-widget ui-state-default ui-corner-all" value="Pobierz wykaz uczęszczania (Procenty frekwencji)"></td>
+    </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td class="librusPro_tfoot-text" colspan="5">&nbsp;</td>
+      </tr>
+    </tfoot>
+  </table>`;
+  html = html.trim();
+  template.innerHTML = html;
+  parent.insertBefore(template.content.firstChild, header.nextSibling);
+  document.querySelector(".librusPro_attendance-statistics-button").onclick = (e) => {
     getAttendanceLessonsStatistics();
-    button.remove();
+    e.target.parentElement.parentElement.remove();
   }
-  parent.insertBefore(button, parent.firstElementChild);
+  location.href = "javascript: librusPro_jqueryTitle()";
 }
 
+// TO DO: yoink z API/Me
 // Aktualizacja numerku, klasy i planu lekcji [klasa z widoku ocen = 3a LO, a klasa z informacji = 3 a LO -> dlatego w taki sposób :)]
 function updateDetails(dane, href) {
   const loading = document.createElement("DIV");
