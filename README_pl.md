@@ -4,7 +4,7 @@
     <img src="img/icon.png" alt="Logo" width="30%" height="30%">
   </a>
   <h1 align="center">📚 LibrusPro 🎉</h1>
-  <h4 align="center">💠 Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, liczące średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, pozwalające na dodawanie własnych wydarzeń w terminarzu, wyświetlenie procentowej obecności z każdego przedmiotu oraz kilka drobnych usprawnień jego funkcjonalności i wyglądu. 💠</h4>
+  <h4 align="center">💠 Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, liczące średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, wyświetlające procentową obecność/frekwencję z każdego przedmiotu, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz dodające wiele usprawnień funkcjonalności i wyglądu Librusa. 💠</h4>
 </p>
 
 # ⏩ Obecnie dostępne dla:
@@ -66,7 +66,7 @@ Stonowane kolory ocen i wydarzeń w terminarzu, gdy czujesz się nie najlepiej. 
 ## ⭐️ • Zapobieganie automatycznemu wylogowaniu 🎉
 Dopóki karta z e-dziennikiem będzie otwarta, Twoja sesja nie wygaśnie! Koniec nieprzyjemnych komunikatów "STOP".
 
-## ⭐️ • Poprawki wizualne 🔨
+## ⭐️ • Poprawki oraz dodatki wizualne 🔨
   - możliwość wyłączenia wyświetlania jedynek w menu rozszerzenia,
   - wyświetlanie proponowanego zachowania w tabeli głównej,
   - wyeksponowanie nowych (i oddanych) prac domowych oraz wiadomości,
@@ -74,6 +74,7 @@ Dopóki karta z e-dziennikiem będzie otwarta, Twoja sesja nie wygaśnie! Koniec
   - usunięcie przycisku Bezpieczny Uczeń w szkołach, w których jest on włączony,
   - usunięcie zbędnych przycisków z paska nawigacyjnego - Ankiety, Biblioteka,
   - dodanie w zamian przycisku Plan lekcji, który także otwiera go w nowej karcie, a nie oknie,
+  - otwieranie podglądów prac domowych w nowej karcie, a nie oknie,
   - poświetlenie średniej rocznej kwalifikującej się na czerwony pasek.
 
 ## 👑 Z rozszerzeniem LibrusPro, to Ty stajesz się władcą tego e-dziennika. Nie przegap takiej okazji!
