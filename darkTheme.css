@@ -241,16 +241,19 @@ select:not([name="rgbKoloru"]) > option {
 .box[style="float: left; background-color:#F7F8FA; "] > a {
 	color: #ffffff !important;
 }
+div.warning-content tr:nth-child(2n + 1) > td,
 #absence_form > div > div > table.center.decorated > tbody > tr:nth-child(2n + 1) > td {
 	background: var(--line0) !important;
 	color: var(--textcolor5);
 	transition: background-color 0.1s;
 }
+div.warning-content tr:nth-child(2n) > td,
 #absence_form > div > div > table.center.decorated > tbody > tr:nth-child(2n) > td {
 	color: var(--textcolor5);
 	background: var(--line1) !important;
 	transition: background-color 0.1s;
 }
+div.warning-content tr:hover > td,
 #absence_form > div > div > table.center.decorated > tbody > tr:hover > td {
 	background: var(--lightbackground) !important;
 }
@@ -430,7 +433,6 @@ img[src*="attachment.png"] {
 	> a:not(.selected) {
 	color: var(--line01color);
 }
-/* archiwum */
 #body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n) > td,
 #body > form > div > div > table > tbody > tr > td,
 #body > form > div > div > table > tbody > tr > th,
@@ -520,6 +522,7 @@ div.warning-content > p {
 #body > div > div > div > table > tbody > tr > td > table > tbody > tr > td,
 #formWiadomosci > div > div > div > div > p,
 #body > div > div > table > thead > tr > td > a,
+div.warning-content tr > td,
 td > table > tbody > tr.line1.bolded > td {
 	color: var(--textcolor3) !important;
 }

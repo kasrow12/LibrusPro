@@ -1266,22 +1266,9 @@ if (window.location.href == "https://synergia.librus.pl/moje_zadania") {
 
   // Otwieranie prac domowych w nowej karcie, a nie oknie
   document.querySelectorAll(`input[onclick*="otworz_w_nowym_oknie('/moje_zadania/podglad/"]`).forEach((e) => {
-    const f = String(e.onclick);
-    const regex = /checkAsRead\((\d*?)\);/;
-    const result = f.match(regex, f);
-    if (result) {
-      e.onclick = function() {
-        checkAsRead(result[1]);
-        window.open(`https://synergia.librus.pl/moje_zadania/podglad/${result[1]}`);
-      }
-    }
+    const regex = /(otworz_w_nowym_oknie\(\'\/moje_zadania\/podglad\/)(\d*?)(\',\'o1\',650,600\);)/;
+    e.outerHTML = e.outerHTML.replace(regex, `window.open('https://synergia.librus.pl/moje_zadania/podglad/$2');`);
   });
-
-  /*<input type="button" value="Podgląd" class="small ui-button ui-widget ui-state-default ui-corner-all" onclick="
-  checkAsRead(765295);
-  otworz_w_nowym_oknie('/moje_zadania/podglad/765295','o1',650,600);
-  " role="button" aria-disabled="false" style="z-index: 0;">*/
-
 }
 
 function disableAutoLogout() {
