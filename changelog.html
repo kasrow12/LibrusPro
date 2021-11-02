@@ -38,36 +38,31 @@ body
 .title
 {
 	font-family: "Comic Sans MS", "Comic Sans", cursive;
-	font-size: 23px;
+	font-size: 1.5rem;
 	padding: 0px 10px;
 	color: #aa5180;
 }
 .sub-title
 {
-	font-size: 14px;
+	font-size: .9rem;
 	padding: 0px 5px;
 	color: #8ca5c4;
 }
 .author {
 	color: #8ca5c4;
-	font-size: 15px;
+	font-size: .95rem;
 }
 .quote {
 	text-align: center;
-	font-size: 17px;
+	font-size: 1.1rem;
 	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 	margin: 10px 0 5px 0;
 	color: #cccccc;
 	font-style: italic;
 }
-.footer {
-	padding-top: .5em;
-	margin-top: 1em;
-    border-top: 1px solid #222222;
-}
 .discord-link {
-    padding: 0.3em;
-    margin-bottom: 0.3em;
+    padding: .3em;
+    margin-bottom: .3em;
     display: inline-block;
 	color: #7289DA;
 }
@@ -122,8 +117,8 @@ body
 .version {
     display: inline-block;
     margin-right: .5em;
-    margin-left: 0.5em;
-    font-size: 24px;
+    margin-left: .5em;
+    font-size: 1.5rem;
     color: #8d2f61;
     font-weight: bold;
 }
@@ -138,16 +133,16 @@ body
     color: #137413;
     display: inline-block;
     margin-left: 1em;
-    font-size: 17px;
+    font-size: 1.1rem;
     text-decoration: underline;
     content: "Najnowsza";
 }
 .change::before {
     content: "» ";
-    padding: 0.2em;
+    padding: .2em;
 }
 .change {
-    font-size: 15px;
+    font-size: .95rem;
 }
 .highlight {
     color: #aa5180;
@@ -157,7 +152,10 @@ body
     border-bottom: 1px solid #272727;
     border-top: 1px solid #272727;
     color: #ececec;
-    padding: 0.7em 0;
+    padding: .7em 0;
+}
+.credit {
+    font-size: .8rem;
 }
 </style>
 </head>
@@ -169,6 +167,15 @@ body
 	<div class="quote">Ulepsz Librusa już dziś!</div>
     <h2 class="header">Co nowego?</h2>
     <div class="container">
+        <div class="changelog">
+            <div class="version">2.9.1</div><div class="version-date">02.11.2021 r.</div>
+            <div class="changes">
+                <div class="change">Wymuszono otwieranie podglądu prac domowych w <b class="highlight">nowej karcie</b>, a nie oknie. <i class="credit">@Mateusz</i></div>
+                <div class="change">Wprowadzono wizualne poprawki w widoku <b class="highlight">prac domowych</b>.</div>
+                <div class="change">Wyeksponowano przycisk <b class="highlight">wykazu uczęszczania</b> oraz dodano podświetlanie frekwencji mniejszej niż <b class="highlight">50%</b>.</div>
+                <div class="change">Zaktualizowano <b class="highlight">opisy</b> rozszerzenia na stronach pobierania.</div>
+            </div>
+        </div>
         <div class="changelog">
             <div class="version">2.9.0</div><div class="version-date">19.10.2021 r.</div>
             <div class="changes">
@@ -194,10 +201,11 @@ body
             </div>
         </div>
     </div>
+    <h2 class="header">Masz jakieś pomysły, błędy, pytania? » <a href="https://discord.gg/e9EkVEvsDr" target="_blank" class="link">Discord</a></h2>
     <div class="footer">
         <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="icon"></a>
         <div class="footer-text">
-            <span style="color: #96c5b4;">» Podoba się wtyczka? <a href="https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf" target="_blank" class="link">Zostaw 5<span style="font-size: 11px;">⭐</span></a></span>
+            <span style="color: #96c5b4;">» Podoba się wtyczka? <a href="https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf" target="_blank" class="link">Zostaw 5<span style="font-size: .7rem;">⭐</span></a></span>
             <div style="color: #94cae4;">» Wbijaj na oficjalny <a href="https://discord.gg/e9EkVEvsDr" target="_blank" class="link">Discord</a>!</div>
             
         <div>» <span style="font-style: italic">LibrusPro © 2021 Maks Kowalski</span></div>
