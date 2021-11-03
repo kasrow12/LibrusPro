@@ -2313,6 +2313,14 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           }
         }
       }
+
+      if (options.darkTheme) {
+        document.querySelectorAll(`[onclick*="/terminarz/szczegoly_wolne/"]`).forEach((e) => {
+          if (!e.innerText.includes("Nieobecność:")) {
+            e.parentElement.parentElement.parentElement.parentElement.parentElement.classList.add("weekend");
+          }
+        });
+      }
     }
 
     document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td:not(.librusPro_custom)").forEach((e) => {
