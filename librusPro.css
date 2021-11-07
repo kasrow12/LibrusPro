@@ -581,3 +581,6 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
 [id*="homework_"] > td:nth-child(6) > div:nth-child(2) > div {
 	margin-left: .5em;
 }
+.librusPro_comment-yours > * {
+	background: #cae9e6 !important;
+}

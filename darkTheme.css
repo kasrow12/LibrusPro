@@ -433,7 +433,8 @@ img[src*="attachment.png"] {
 	> a:not(.selected) {
 	color: var(--line01color);
 }
-#body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n) > td,
+#body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:nth-child(2n + 1) > *,
+#body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n + 1) > td,
 #body > form > div > div > table > tbody > tr > td,
 #body > form > div > div > table > tbody > tr > th,
 #body > div > div > form > table > tbody > tr:nth-child(2n + 1) > td,
@@ -448,7 +449,8 @@ img[src*="attachment.png"] {
 	color: var(--textcolor4);
 	transition: background-color 0.1s;
 }
-#body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n + 1) > td,
+#body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:nth-child(2n) > *,
+#body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n) > td,
 #body > div > div > form > table > tbody > tr:nth-child(2n) > td,
 #body > div > div > form > table > tbody > tr:nth-child(2n) > th,
 #body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:nth-child(2n) > td,
@@ -459,6 +461,7 @@ img[src*="attachment.png"] {
 	background: var(--line1) !important;
 	transition: background-color 0.1s;
 }
+#body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:hover > *,
 #body > div > div > form > table > tbody > tr:hover > td,
 #body > div > div > form > table > tbody > tr:hover > th,
 #body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:hover > td,
@@ -805,4 +808,7 @@ table.decorated {
 }
 .weekend, .pusta {
 	background: #2d2d2d !important;
+}
+#body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr.librusPro_comment-yours > * {
+	background: #253a38 !important;
 }

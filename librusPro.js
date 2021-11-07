@@ -44,6 +44,7 @@ const GRADE_MANAGER_DEFAULT_COLOR = "#00ff00";
 const ADD_SYMBOL = "✎";
 const REMOVE_SYMBOL = "⨉";
 const API = "https://synergia.librus.pl/gateway/api/2.0/";
+const COMMENTS_NUMBER = 100;
 
 // Kompatybilność
 let browserAPI;
@@ -64,6 +65,27 @@ browserAPI.storage.onChanged.addListener((changes, namespace) => {
     }
   }
 });
+
+// Wyświetlanie charakterystycznych dymków po najechaniu na dane elementy
+const jQinjectedCode = `
+  function librusPro_jqueryTitle() {
+    $('.librusPro_jqueryTitle').tooltip({
+      track: true,
+      show: {
+        delay: 200,
+        duration: 200
+      },
+      hide: {
+        delay: 100,
+        duration: 200
+      }
+    });
+  }
+  setTimeout(librusPro_jqueryTitle, 1000);
+`;
+const jQscript = document.createElement('script');
+jQscript.appendChild(document.createTextNode(jQinjectedCode));
+(document.body || document.head || document.documentElement).appendChild(jQscript);
 
 async function getAttendanceLessonsStatistics() {
   try {
@@ -152,6 +174,100 @@ async function getAttendanceLessonsStatistics() {
     container.insertBefore(tr, container.firstElementChild);
     return;
   }
+}
+
+function displayComments(comments) {
+  // Pomijanie 'undefined' z początku i końca listy, ale pozostawienie ich w środku
+  let start = comments.length;
+  let end = 0;
+  for (let i = 0; i < comments.length; i++) {
+    if (comments[i] !== undefined) {
+      end = i;
+      if (i < start) start = i;
+    }
+  }
+  const parent = document.querySelector(".container-background");
+  if (start > end) {
+    const header = document.createElement("H3");
+    header.classList.add("center", "librusPro_header");
+    header.innerText = "Nie znaleziono żadnych komentarzy w pobliżu!";
+    parent.appendChild(header);
+    return;
+  }
+  const template = document.createElement("template");
+  const html = `
+  <table class="decorated medium center">	
+    <thead>
+      <tr class="line1">
+        <td style="width: 40px;">Pozycja</td>
+        <td>Komentarz</td>
+      </tr>
+    </thead>
+    <tbody id="librusPro_commentsBody">
+    </tbody>
+    <tfoot>
+      <tr><td colspan="2">&nbsp;</td></tr>
+    </tfoot>
+  </table>`
+  template.innerHTML = html.trim();
+  const table = template.content.firstChild;
+  parent.appendChild(table);
+  const tbody = document.getElementById("librusPro_commentsBody");
+  for (let i = start; i <= end; i++) {
+    const tr = document.createElement("TR");
+    tr.classList.add("line1");
+    const td1 = document.createElement("TD");
+    td1.classList.add("center");
+    const td2 = document.createElement("TD");
+    td1.innerText = `${(i - COMMENTS_NUMBER) > 0 ? "+" : ""}${i - COMMENTS_NUMBER}`;
+    td2.innerText = comments[i] ?? "";
+    if (i - COMMENTS_NUMBER === 0) {
+      tr.classList.add("librusPro_comment-yours");
+    }
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tbody.appendChild(tr);
+  }
+}
+
+function getCommentsInProximity() {
+  try {
+    const regex = /https:\/\/synergia.librus.pl\/przegladaj_oceny\/szczegoly\/(\d*)/;
+    const id = window.location.href.match(regex)?.[1] ?? 0;
+    const comments = [];
+    for (let i = 0; i <= 2 * COMMENTS_NUMBER; i++) {
+      fetch(`https://synergia.librus.pl/komentarz_oceny/1/${+id + i - COMMENTS_NUMBER}`)
+      .then(response => response.text())
+      .then(data => {
+        comments[i] = data.match(/<tr class="line1"><td >(.*?)<\/td>/)?.[1];
+
+        // Jeśli wykonały się wszystkie poprzednie żądania, a to jest ostatnie, wyświetlamy
+        if (Object.keys(comments).length > 2 * COMMENTS_NUMBER) {
+          displayComments(comments);
+        }
+      });
+    }
+  } catch(error) {
+    console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu komentarzy w otoczeniu!", "color: #ff5555;", error);
+    return;
+  }
+}
+
+if (window.location.href.indexOf("https://synergia.librus.pl/przegladaj_oceny/szczegoly/") > -1) {
+  const template = document.createElement("template");
+  const html = `
+  <div class="center">
+    <input type="submit" id="librusPro_commentsButton" class="librusPro_comments-button ui-button ui-widget ui-state-default ui-corner-all" value="Wyświetl komentarze innych">
+    <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article style='text-align: justify;'><b style='color: #a96fe3'>LibrusPro</b><br>Jeżeli Twój nauczyciel wstawił oceny kilku osobom jednocześnie np. ze sprawdzianu (dodawanie seryjne) i&nbsp;wpisał komentarze np. zawierające liczbę uzyskanych punktów przez każdego ucznia, bądź wynik procentowy, to korzystając z tego przycisku możesz podejrzeć te komentarze ocen wpisanych w tym samym czasie co Tobie.</article><br><i style='color: #999999'>Przykładowa sytuacja:</i><br><span style='color: #91b8a5'>Nauczyciel wstawia wszystkim oceny ze sprawdzianu z&nbsp;rozdziału I. W komentarzu zamieścił informację ile miałeś(-aś) punktów na 20. Twój komentarz wygląda przykładowo:</span><br><b>&nbsp;Rozdział I - 19/20 95%</b><br><span style='color: #91b8a5'>Gdy użyjesz tego przycisku, wyświetli Ci się lista komentarzy wraz z odpowiednimi ich numerami.<br><span style='color: #aaaaaa'>&nbsp;-1 | Rozdział I - 15/20 75%<br>&nbsp;0 | Rozdział I - 19/20 95%<br>&nbsp;+1 | Rozdział I - 20/20 100%</span><br>'0' to Twój komentarz, więc te przed nim są wynikami osób przed Tobą na liście, a analogicznie za nim (z&nbsp;plusami), po Tobie na liście.</span><br><b style='color: #6fa5e3'>Podejrzeć możesz jedynie <u>komentarze</u>!</b>" src="/images/pomoc_ciemna.png">
+  </div>
+  `
+  template.innerHTML = html.trim();
+  document.querySelector(".container-background").appendChild(template.content.firstChild);
+  document.getElementById("librusPro_commentsButton").addEventListener("click", function(event) {
+    event.target.parentElement.remove() ;
+    getCommentsInProximity();
+  });
+  location.href = "javascript: librusPro_jqueryTitle()";
 }
 
 if (window.location.href === "https://synergia.librus.pl/przegladaj_nb/uczen") {
@@ -300,27 +416,6 @@ if (window.location.href == "https://synergia.librus.pl/uczen/index" || window.l
   });
 }
 
-// Wyświetlanie charakterystycznych dymków po najechaniu na dane elementy
-const jQinjectedCode = `
-  function librusPro_jqueryTitle() {
-    $('.librusPro_jqueryTitle').tooltip({
-      track: true,
-      show: {
-        delay: 200,
-        duration: 200
-      },
-      hide: {
-        delay: 100,
-        duration: 200
-      }
-    });
-  }
-  setTimeout(librusPro_jqueryTitle, 1000);
-`;
-const jQscript = document.createElement('script');
-jQscript.appendChild(document.createTextNode(jQinjectedCode));
-(document.body || document.head || document.documentElement).appendChild(jQscript);
-
 // Przełącznik modyfikacji ocen
 let gradeManagerEnabled = false;
 let gradeManager;
@@ -333,11 +428,11 @@ function insertGradeManager() {
   <td class="librusPro_grade-manager-icon">
     <img src="${browserAPI.runtime.getURL('img/pen.png')}">
   </td>
-  <td class="librusPro_grade-manager librusPro_jqueryTitle">
+  <td class="librusPro_grade-manager">
     <label class="librusPro_grade-manager-label">
       <span>Tymczasowa modyfikacja ocen:</span>
       <input type="checkbox" id="librusPro_gradeManagerCheckbox">
-      <img class="tooltip helper-icon" title="<article style='text-align: justify;'><b style='color: #a96fe3'>LibrusPro</b><br>Gdy to ustawienie jest <b class='librusPro_title-tak'>włączone</b>, możesz tymczasowo lokalnie dodawać nowe oceny, bądź edytować i usuwać bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.</article><i style='color: #a96fe3'>(Po odświeżeniu strony wszystko wraca do stanu sprzed modyfikacji! Wszystkie zmiany zachodzą jedynie lokalnie i nie mają wpływu na Twoje rzeczywiste oceny!)</i><br><b style='color: #6fa5e3'>Oceny możesz dodawać dzięki '${ADD_SYMBOL}',<br>a modyfikować po prostu klikając na daną ocenę.</b>" src="/images/pomoc_ciemna.png">
+      <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article style='text-align: justify;'><b style='color: #a96fe3'>LibrusPro</b><br>Gdy to ustawienie jest <b class='librusPro_title-tak'>włączone</b>, możesz tymczasowo lokalnie dodawać nowe oceny, bądź edytować i usuwać bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.</article><i style='color: #a96fe3'>(Po odświeżeniu strony wszystko wraca do stanu sprzed modyfikacji! Wszystkie zmiany zachodzą jedynie lokalnie i nie mają wpływu na Twoje rzeczywiste oceny!)</i><br><b style='color: #6fa5e3'>Oceny możesz dodawać dzięki '${ADD_SYMBOL}',<br>a modyfikować po prostu klikając na daną ocenę.</b>" src="/images/pomoc_ciemna.png">
     </label>
     <div class="librusPro_grade-manager-advice">(Najedź, aby dowiedzieć się więcej)</div>
   </td>
@@ -380,8 +475,6 @@ function insertGradeManager() {
     document.querySelectorAll(".librusPro_add-grade").forEach((el) => {
       el.classList.toggle("librusPro_add-grade-enabled");
     });    
-    
-
   }
 }
 // Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest. Pozdro
