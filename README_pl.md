@@ -56,6 +56,9 @@ Jeśli Twoja szkoła udostępniła plan lekcji, to będziesz go również widzie
 ## ⭐️ • Modernizacja dymków 📢
 Dymki z dodatkowymi informacjami, które pojawiają się po najechaniu na oceny, nieobecności, bądź wydarzenia w terminarzu, od teraz nabierają nowych barw i wyglądają choć trochę lepiej, niż szare mury szkoły, do której uczęszczasz.
 
+## ⭐️ • Podglądanie komentarzy innych 🕵️‍♀️
+W widoku szczegółów oceny (po jej kliknięciu) znajduje się przycisk, pozwalający na wyświetlenie komentarzy ocen wpisanych seryjnie, czyli kilku osobom naraz. Jeżeli nauczyciel zamieścił tam informację nt. zdobytych punktów z danego sprawdzianu, to możesz poznać wyniki swoich kolegów, bądź koleżanek przed i za Tobą na liście.
+
 ## ⭐️ • Tymczasowa modyfikacja ocen 📝
 Gdy włączysz to ustawienie w widoku ocen, będziesz mógł(a) tymczasowo, lokalnie dodawać nowe oceny, bądź edytować i usuwać bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.
 (Po odświeżeniu strony wszystko wróci do stanu sprzed modyfikacji! Zmiany zachodzą jedynie lokalnie i nie mają wpływu na Twoje rzeczywiste oceny!)
