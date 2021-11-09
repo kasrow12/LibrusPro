@@ -587,6 +587,6 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
 .pusta, #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr:nth-child(1) > td:not(.center, :nth-child(6)) {
 	background: #e6e6e6 !important;
 }
-#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(6), #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(7) {
+#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(6), #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(7), .weekend {
 	background: #e2e2e2 !important;
 }

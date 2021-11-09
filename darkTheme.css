@@ -809,7 +809,7 @@ table.decorated {
 .pusta, #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr:nth-child(1) > td:not(.center, :nth-child(6)) {
 	background: #303030 !important;
 }
-#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(6), #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(7) {
+#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(6), #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(7), .weekend {
 	background: #2d2d2d !important;
 }
 #body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr.librusPro_comment-yours > * {
