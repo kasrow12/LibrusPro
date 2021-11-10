@@ -1213,9 +1213,14 @@ function adjustHeader(dane) {
     hakerzy.title += "<br><b style='color: #ee9999'>❗❗ HAKERZY ATAKUJĄ! ❗❗</b>"
   }
 
-  const uczen = document.querySelector("#user-section > b > img");
+  const uczen = document.querySelector("#user-section > b");
   if (uczen) {
-    uczen.title = "<b style='color: #8debe3'>Dzięki za korzystanie z rozszerzenia <b style='color: #a96fe3'>LibrusPro</b>!</b><br><b style='color: #ffd128'>Jeżeli Ci się spodobało, nie zapomnij zostawić<br>5 gwiazdek w sklepie oraz polecić znajomym!</b><br><b style='color: #ff7ca0'><i>Jedz Buraczki!</i></b>"
+    uczen.onclick = () => window.open("https://synergia.librus.pl/wydruki/wydruk_danych_osobowych/2137.pdf", '_blank').focus();
+  }
+
+  const uczenHelp = document.querySelector("#user-section > b > img");
+  if (uczenHelp) {
+    uczenHelp.title = "<b style='color: #8debe3'>Dzięki za korzystanie z rozszerzenia <b style='color: #a96fe3'>LibrusPro</b>!</b><br><b style='color: #ffd128'>Jeżeli Ci się spodobało, nie zapomnij zostawić<br>5 gwiazdek w sklepie oraz polecić znajomym!</b><br><b style='color: #ff7ca0'><i>Jedz Buraczki!</i></b>"
   }
 
   const bezpiecznyUczen = document.querySelector('a[title="Bezpieczny Uczeń"]');

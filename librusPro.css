@@ -590,3 +590,11 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
 #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(6), #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(7), .weekend {
 	background: #e2e2e2 !important;
 }
+#user-section > b {
+	color: #744465;
+	transition: color 0.2s;
+}
+#user-section > b:hover {
+	color: #ac6c97;
+	cursor: pointer;
+}
