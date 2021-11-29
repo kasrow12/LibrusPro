@@ -637,7 +637,7 @@ function getYearAverage(semI, semII) {
 function insertNoGrades() {
   const noNewGrades = document.createElement("TR");
   noNewGrades.classList = "bolded line1";
-  noNewGrades.innerHTML = `<td colspan="64" style="text-align: center;">Brak ocen 😎</td>`;
+  noNewGrades.innerHTML = `<td colspan="64" style="text-align: center;">Brak ocen <span class="emoji">😎</span></td>`;
   const ref = document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody");
   if (ref) {
     ref.insertBefore(noNewGrades, ref.firstElementChild);
@@ -1210,7 +1210,7 @@ function adjustHeader(dane) {
   yourNumber.title = "<b style='color: #b6dc3f'>Podgląd numerka z dziennika tylko z <b style='color: #a96fe3'>LibrusPro</b>!</b>";
   const hakerzy = document.querySelector("#user-section > img");
   if (hakerzy) {
-    hakerzy.title += "<br><b style='color: #ee9999'>❗❗ HAKERZY ATAKUJĄ! ❗❗</b>"
+    hakerzy.title += "<br>❗❗ <b style='color: #ee9999'>HAKERZY ATAKUJĄ!</b> ❗❗"
   }
 
   const uczen = document.querySelector("#user-section > b");
