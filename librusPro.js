@@ -25,6 +25,7 @@ const OPTIONS_DEFAULT = {
   averageWarn: false,
   modernizeTitles: true,
   showTeacherFreeDays: true,
+  enableGradeManager: true,
 };
 const DEPRESSION_MODE_COLORS = {
   proposed: "#aaad84",
@@ -696,7 +697,7 @@ function handleGrades(options, recalculate = false) {
         if (!td.firstElementChild) {
           td.addEventListener("click", function addGrade(e) {
             if (!gradeManagerEnabled) {
-              gradeManager.focus();
+              gradeManager?.focus();
               return;
             };
             displayGradeManagerOverlay(e.target, options, true, true);
@@ -713,7 +714,7 @@ function handleGrades(options, recalculate = false) {
         plus.title = "Dodaj tymczasowo";
         plus.addEventListener("click", (e) => {
           if (!gradeManagerEnabled) {
-            gradeManager.focus();
+            gradeManager?.focus();
             return;
           };
           displayGradeManagerOverlay(e.target.parentElement, options);
@@ -800,7 +801,7 @@ function handleGrades(options, recalculate = false) {
     document.querySelectorAll(".grade-box:not(#Ocena0, .positive-behaviour, .negative-behaviour) > a").forEach((e) => {
       e.addEventListener("click", (event) => {
         if (!gradeManagerEnabled) {
-          gradeManager.focus();
+          gradeManager?.focus();
           return;
         };
         event.preventDefault();
@@ -993,7 +994,6 @@ let odOstLogowania = false;
 adjustNavbar();
 insertFooter();
 disableAutoLogout();
-insertGradeManager();
 
 if (document.querySelector("#body > form:nth-child(5) > div > h2")?.innerText.includes("-")) {
   odOstLogowania = true;
@@ -1021,10 +1021,13 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function (t) {
         browserAPI.storage.sync.set({
           ["options"]: t
         });
-        alert("Zaktualizowano wtyczkę LibrusPro do wersji " + browserAPI.runtime.getManifest().version + "! Nie zapomnij polecić znajomym!");
         return;
       }
     }
+  }
+
+  if (options.enableGradeManager) {
+    insertGradeManager();
   }
 
   if (options.darkTheme) {
