@@ -24,6 +24,7 @@ const OPTIONS_DEFAULT = {
   debug: false,
   averageWarn: false,
   modernizeTitles: true,
+  showTeacherFreeDays: true,
 };
 const DEPRESSION_MODE_COLORS = {
   proposed: "#aaad84",
@@ -2288,7 +2289,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
   // ------------------- MODERNIZE EVENTS, ADD DESCRIPTIONS, REMOVE CLASSES ---------------
 
   function adjustCellContent(cell, options) {
-    // Usuwanie klasy
+    // Ukrywanie klasy
     if (options.removeClasses) {
       const classRegex = /^(([0-9\[\]](.+?))|([A-Za-z]{1,2}\d(.*?)))$/gm;
       [...cell.childNodes].forEach((e) => {
@@ -2412,6 +2413,7 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
         }
       }
 
+      // Zaciemnianie dni wolnych
       if (options.darkTheme) {
         document.querySelectorAll(`[onclick*="/terminarz/szczegoly_wolne/"]`).forEach((e) => {
           if (!e.innerText.includes("Nieobecność:")) {
@@ -2419,12 +2421,18 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           }
         });
       }
-    }
 
-    document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td:not(.librusPro_custom)").forEach((e) => {
-      adjustCellContent(e, options);
-      if (options.modernizeTitles) modernizeTitle(e);
-    });
+      document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td:not(.librusPro_custom)").forEach((e) => {
+        // Ukrywanie nieobecności nauczycieli
+        if (!options.showTeacherFreeDays && e.innerText.includes("Nieobecność:")) {
+          e.remove();
+          return;
+        }
+
+        adjustCellContent(e, options);
+        if (options.modernizeTitles) modernizeTitle(e);
+      });
+    }
 
     let plan = t["plan"];
     if (plan) {
