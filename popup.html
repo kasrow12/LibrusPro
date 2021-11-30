@@ -3,14 +3,26 @@
 <head>
 	<meta charset="utf-8">
 <style>
-body
-{
-	font-family: Verdana, Geneva, Tahoma, sans-serif;
+* {
+	font-family: 'Roboto', sans-serif;
+}
+html {
+	margin: 0;
+	padding: 0;
+	min-width: 330px;
+	max-width: 330px;
+}
+body {
+	margin: 0;
+	box-sizing: border-box;
+	max-height: 600px;
+	font-family: sans-serif;
 	text-align: center;
-	padding: 5px 25px 0 25px;
+	padding: 13px 15px 7px 15px;
 	background: #363636;
-	min-width: 220px;
-	max-width: 350px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 .logo-container {
 	display: flex;
@@ -23,15 +35,13 @@ body
 	height: 65px;
 	margin-right: 10px;
 } 
-.title
-{
+.title {
 	font-family: "Comic Sans MS", "Comic Sans", cursive;
 	font-size: 23px;
 	padding: 0px 10px;
 	color: #aa5180;
 }
-.sub-title
-{
+.sub-title {
 	font-size: 14px;
 	padding: 0px 5px;
 	color: #8ca5c4;
@@ -43,20 +53,59 @@ body
 .quote {
 	font-size: 17px;
 	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-	margin: 10px 0 5px 0;
+	margin: 10px 0;
 	color: #cccccc;
 	font-style: italic;
 }
 input[type="number"] {
 	margin-left: 20px;
-	border-radius: 5px;
-	padding: 3px 5px;
+	padding: 5px 11px;
 	outline: none;
 	background: #555555;
 	color: #ffffff;
-	border: 1px solid #222222;
-	box-shadow: 1px 1px 3px #222222;
-	-webkit-box-shadow: 1px 1px 3px #222222;
+	border: 0;
+	border-bottom: 2px solid #222222;
+}
+input[type="number"]:focus {
+	border-bottom: 2px solid #340f31;
+}
+.description {
+	font-size: 11px;
+	font-style: italic;
+}
+.emoji {
+	font-weight: normal;
+}
+.options-title {
+	font-size: 18px;
+	color: #8ca5c4;
+	margin-bottom: 7px;
+}
+.options-categories {
+	display: flex;
+}
+.option-category {
+	cursor: pointer;
+	flex-grow: 1;
+	padding: 7px 9px;
+	font-size: 14px;
+	background-color: #412d40;
+    color: #bbb;
+	transition: all 0.2s;
+}
+.option-category:hover {
+	background-color: #4b3249;
+}
+.option-category-radio {
+	display: none;
+}
+.option-category-radio:checked + .option-category {
+	background-color: #313131;
+}
+.options {
+	display: none;
+	padding: 15px 17px 10px 17px;
+	background-color: #414141;
 }
 .option-container {
 	display: flex;
@@ -64,23 +113,42 @@ input[type="number"] {
 	align-items: center;
 	color: #aaaaaa;
 	margin-bottom: 5px;
+	font-size: 15px;
+}
+.buttons {
+	margin: 15px 0;
+	display: flex;
+	justify-content: space-evenly;
+}
+.button {
+	padding: 9px 21px;
+	cursor: pointer;
+	background: #372536;
+	border: 0;
+	color: #ccc;
+	transition: all 0.2s;
+	font-weight: bold;
 	font-size: 14px;
+	outline: none;
+}
+.button:hover {
+	background: #533051;
 }
 .footer {
-	position: relative;
 	display: flex;
 	justify-content: space-between;
-	padding: 7px 10px 0 10px;
-	bottom: 0;
+	padding: 0 10px;
 	color: #a7a7a7;
 	font-size: 13px;
 }
-.discord-link {
-	color: #7289DA;
+.footer-link {
+	color: #4276c3;
+	transition: color 0.1s;
+	text-decoration: none;
 }
-.discord-link:hover {
-	color: #ffffff;
-	transition: color 0.3s;
+.footer-link:hover {
+	text-decoration: underline;
+	color: #9eb0f1;
 }
 .version {
 	color: #888888;
@@ -88,90 +156,6 @@ input[type="number"] {
 .debug {
 	color: #d33b3b;
 }
-.buttons-container {
-	margin-top: 10px;
-	display: flex;
-	justify-content: space-between;
-}
-.description {
-	font-size: 11px;
-	font-style: italic;
-}
-.options-section {
-	color: #8e607c;
-	font-size: 15px;
-	font-weight: bold;
-}
-* {
-font-family: 'Roboto', sans-serif;
-}
-.container {
-	width: 50%;
-}
-.button {
-outline:none;
-height: 34px;
-text-align: center;
-width: 100px;
-border-radius:30px;
-background: #41133d;
-border: 2px solid #361634;
-color:#dfdfdf;
-letter-spacing:1px;
-text-shadow:0;
-font-size:12px;
-font-weight: bold;
-cursor: pointer;
-transition: all 0.3s ease;
-}
-.button:hover {
-color:white;
-background: #361634;
-}
-.button:active {
-letter-spacing: 2px ;
-}
-#saveButton:after {
-content:"Zapisz";
-}
-#resetButton:after {
-content:"Przywróć domyślne";
-}
-.onclick {
-width: 34px;
-border-color:#20081f;
-border-width:3px;
-font-size:0;
-border-left-color:#361634;
-animation: rotating 1s 0.25s linear infinite;
-}
-.onclick:after {
-content:"";
-}
-.onclick:hover {
-color:#361634;
-background: #52214e;
-}
-.validate {
-font-size:13px;
-color: white;
-background: #361634;
-}
-#saveButton.validate:after {
-content:"✓";
-}
-#resetButton.validate:after {
-content:"✓";
-}
-@keyframes rotating {
-from {
-	transform: rotate(0deg);
-}
-to {
-	transform: rotate(360deg);
-}
-}
-
 .tgl {
 	display: none;
 }
@@ -187,8 +171,8 @@ to {
 .tgl + .tgl-btn {
 	outline: 0;
 	display: block;
-	width: 2.5em;
-	height: 1.3em;
+	width: 2.8em;
+	height: 1.5em;
 	position: relative;
 	cursor: pointer;
 	-webkit-user-select: none;
@@ -233,125 +217,106 @@ to {
 .tgl-light + .tgl-btn.disabled:after {
 	background: #8b8b8b;
 }
-.emoji {
-	font-weight: normal;
-}
 </style>
 </head>
 <body>
-	<div class="logo-container">
-		<img src="img/icon.png" class="logo">
-		<div class="title">LibrusPro<div class="sub-title">Made with ❤️ by:<div class="author">Maks&nbsp;Kowalski</div></div></div>
+	<div>
+		<div class="logo-container">
+			<img src="img/icon.png" class="logo">
+			<div class="title">LibrusPro<div class="sub-title">Made with ❤️ by:<div class="author">Maks&nbsp;Kowalski</div></div></div>
+		</div>
+		<div class="quote">Ulepsz Librusa już dziś!</div>
 	</div>
-	<div class="quote">Ulepsz Librusa już dziś!</div>
 	<form id="form">
-		<div class="options-section">Ogólne <span class="emoji">🌙</span></div>
-		<div>
+		<h1 class="options-title">Ustawienia rozszerzenia</h1>
+		<div class="options-categories">
+			<input type="radio" name="option-selection" id="optionsGeneral" class="option-category-radio" checked>
+			<label for="optionsGeneral" class="option-category">Ogólne <span class="emoji">🌙</span></label>
+			<input type="radio" name="option-selection" id="optionsSchedule" class="option-category-radio">
+			<label for="optionsSchedule" class="option-category">Terminarz <span class="emoji">📆</span></label>
+			<input type="radio" name="option-selection" id="optionsGrades" class="option-category-radio">
+			<label for="optionsGrades" class="option-category">Oceny <span class="emoji">🎓</span></label>
+		</div>
+		<div class="options" id="optionsGeneralElement" style="display: block">
 			<label class="option-container">
 				Ciemny motyw
 				<input class="tgl tgl-light" id="darkTheme" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="darkTheme"></label>
 			</label>
-		</div>
-		<div>
+			<label class="option-container">
+				Modernizacja dymków
+				<input class="tgl tgl-light" id="modernizeTitles" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="modernizeTitles"></label>
+			</label>
 			<label class="option-container">
 				Wersja depresyjna
 				<input class="tgl tgl-light" id="depressionMode" type="checkbox"/>
 				<label class="tgl-btn" for="depressionMode"></label>
 			</label>
 		</div>
-		<div class="options-section">Terminarz <span class="emoji">📆</span></div>
-		<div>
+		<div class="options" id="optionsScheduleElement">
+			<label class="option-container">
+				Modernizacja kafelków
+				<input class="tgl tgl-light" id="modernizeSchedule" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="modernizeSchedule"></label>
+			</label>
 			<label class="option-container">
 				Dodawanie opisów
 				<input class="tgl tgl-light" id="addDescriptions" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="addDescriptions"></label>
 			</label>
-		</div>
-		<div>
 			<label class="option-container">
 				Usuwanie klasy
 				<input class="tgl tgl-light" id="removeClasses" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="removeClasses"></label>
 			</label>
 		</div>
-		<div>
-			<label class="option-container">
-				Modernizacja kafelków
-				<input class="tgl tgl-light" id="modernizeSchedule" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="modernizeSchedule"></label>
-			</label>
-		</div>
-		<div class="options-section">Oceny <span class="emoji">🎓</span></div>
-		<div>
-			<label class="option-container">
-				Modernizacja dymków
-				<input class="tgl tgl-light" id="modernizeTitles" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="modernizeTitles"></label>
-			</label>
-		</div>
-		<div>
-			<label class="option-container">
-				Ukrywanie przedmiotów
-				<input class="tgl tgl-light" id="hideSubjects" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="hideSubjects"></label>
-			</label>
-		</div>
-		<div>
+		<div class="options" id="optionsGradesElement">
 			<label class="option-container">
 				Liczenie średnich
 				<input class="tgl tgl-light" id="calculateAverages" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="calculateAverages"></label>
 			</label>
-		</div>
-		<div>
+			<label class="option-container">
+				Ukrywanie przedmiotów
+				<input class="tgl tgl-light" id="hideSubjects" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="hideSubjects"></label>
+			</label>
 			<label class="option-container">
 				Zera do średniej
 				<input class="tgl tgl-light" id="countZeros" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="countZeros"></label>
 			</label>
-		</div>
-		<div>
 			<label class="option-container">
 				Ukrywanie jedynek
 				<input class="tgl tgl-light" id="hideOnes" type="checkbox"/>
 				<label class="tgl-btn" for="hideOnes"></label>
 			</label>
-		</div>
-		<div>
 			<label class="option-container">
 				<div>Wymuś liczenie<div class="description">(Licz do średniej: nie)</div></div>
 				<input class="tgl tgl-light" id="countToAverage" type="checkbox"/>
 				<label class="tgl-btn" for="countToAverage"></label>
 			</label>
-		</div>
-		<div>
 			<label class="option-container">
 				<div>Wartość plusa<div class="description">np. 5+&nbsp;&nbsp;=&nbsp;&nbsp;5,50</div></div>
 				<input type="number" id="plusValue" name="plusValue" min="0" max="1" value="0.5" step="0.01">
 			</label>
-		</div>
-		<div>
 			<label class="option-container">
 				<div>Wartość minusa<div class="description">np. 5-&nbsp;&nbsp;=&nbsp;&nbsp;4,75</div></div>
 				<input type="number" id="minusValue" name="minusValue" min="0" max="1" value="0.25" step="0.01">
 			</label>
 		</div>
-		<div class="buttons-container">
-			<div class="container">
-				<button class="button" id="saveButton">
-			</div>
-			<div class="container">
-				<button class="button" id="resetButton">
-			</div>
+		<div class="buttons">
+			<button class="button" id="saveButton">Zapisz</button>
+			<button class="button" id="resetButton">Przywróć domyślne</button>
 		</div>
 	</form>
-</div>
-<div class="footer">
-	<a class="discord-link" target="_blank" href="https://discord.gg/e9EkVEvsDr">Discord</a>
-	<div class="copyright">© <span id="copyright-year"></span></div>
-	<div class="version" id="debugButton">v<span id="ver"></span></div>
-</div>
+	<div class="footer">
+		<div class="copyright">© <span id="copyrightYear"></span></div>
+		<a href="https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf" target="_blank" class="footer-link">Zostaw 5<span style="font-size: 11px;">⭐</span></a>
+		<a class="footer-link" target="_blank" href="https://discord.gg/e9EkVEvsDr">Discord</a>
+		<div class="version" id="debugButton">v<span id="ver"></span></div>
+	</div>
+	<script src="popup.js"></script>
 </body>
-<script src="popup.js"></script>
 </html>

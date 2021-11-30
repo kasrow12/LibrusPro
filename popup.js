@@ -3,18 +3,6 @@
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
 
-/*
-key: 'options'
-value: {
-  hideSubjects: true,
-  calculateAverages: true,
-  depressionMode: false,
-  hideOnes: false,
-  plusValue: 0.5,
-  minusValue: 0.25,
-}
-*/
-
 const DANE_DEFAULT = {
   nr: null,
   currentClass: null,
@@ -44,32 +32,21 @@ if (typeof chrome != null) {
   browserAPI = browser;
 }
 
-function clear() {
-  if (confirm('Na pewno?')) browserAPI.storage.sync.clear();
-}
+const boolOptions = ['hideSubjects', 'calculateAverages', 'depressionMode', 'modernizeSchedule', 'removeClasses', 'addDescriptions', 'darkTheme', 'hideOnes', 'countZeros', 'countToAverage', 'modernizeTitles', 'debug', 'averageWarn'];
+const valueOptions = ['plusValue', 'minusValue'];
+const extraOptions = ['debug', 'averageWarn'];
 
 function restoreDefaults() {
   browserAPI.storage.sync.set({
     ["options"]: OPTIONS_DEFAULT
+  }, function() {
+    browserAPI.storage.sync.remove(["aprilfools"], function() {
+      window.location.replace(window.location.href);
+    });
   });
-  browserAPI.storage.sync.remove(["aprilfools"]);
-  // Janusz, nie przeładowuję, żeby animacja przycisku się dokończyła
-  document.getElementById('hideSubjects').checked = OPTIONS_DEFAULT.hideSubjects;
-  document.getElementById('calculateAverages').checked = OPTIONS_DEFAULT.calculateAverages;
-  document.getElementById('depressionMode').checked = OPTIONS_DEFAULT.depressionMode;
-  document.getElementById('modernizeSchedule').checked = OPTIONS_DEFAULT.modernizeSchedule;
-  document.getElementById('removeClasses').checked = OPTIONS_DEFAULT.removeClasses;
-  document.getElementById('addDescriptions').checked = OPTIONS_DEFAULT.addDescriptions;
-  document.getElementById('darkTheme').checked = OPTIONS_DEFAULT.darkTheme;
-  document.getElementById('hideOnes').checked = OPTIONS_DEFAULT.hideOnes;
-  document.getElementById('countZeros').checked = OPTIONS_DEFAULT.countZeros;
-  document.getElementById('countToAverage').checked = OPTIONS_DEFAULT.countToAverage;
-  document.getElementById('plusValue').value = OPTIONS_DEFAULT.plusValue;
-  document.getElementById('minusValue').value = OPTIONS_DEFAULT.minusValue;
-  document.getElementById('modernizeTitles').checked = OPTIONS_DEFAULT.modernizeTitles;
 }
 
-// Prepare
+// Setup
 browserAPI.storage.sync.get(["options"], function (t) {
   let options = t["options"];
   if (!options) {
@@ -83,99 +60,39 @@ browserAPI.storage.sync.get(["options"], function (t) {
       }
     }
   }
-  document.getElementById('hideSubjects').checked = options.hideSubjects;
-  document.getElementById('calculateAverages').checked = options.calculateAverages;
-  document.getElementById('depressionMode').checked = options.depressionMode;
-  document.getElementById('modernizeSchedule').checked = options.modernizeSchedule;
-  document.getElementById('removeClasses').checked = options.removeClasses;
-  document.getElementById('addDescriptions').checked = options.addDescriptions;
-  document.getElementById('darkTheme').checked = options.darkTheme;
-  document.getElementById('hideOnes').checked = options.hideOnes;
-  document.getElementById('countZeros').checked = options.countZeros;
-  document.getElementById('countToAverage').checked = options.countToAverage;
-  document.getElementById('plusValue').value = options.plusValue;
-  document.getElementById('minusValue').value = options.minusValue;
-  document.getElementById('modernizeTitles').checked = options.modernizeTitles;
-
+  for (let e of boolOptions) {
+    let el = document.getElementById(e);
+    if (el) el.checked = options[e];
+  }
+  for (let e of valueOptions) {
+    let el = document.getElementById(e);
+    if (el) el.value = options[e];
+  }
   if (options.debug) document.getElementById("debugButton").classList.add("debug");
 });
 
-const resetButton = document.getElementById("resetButton");
-let resetButtonInUse = false;
-
-function validateReset() {
-  setTimeout(function () {
-    resetButton.classList.remove("onclick");
-    resetButton.classList.add("validate");
-    restoreDefaults();
-    setTimeout(callbackReset, 250);
-  }, 100);
-}
-
-function callbackReset() {
-  resetButton.classList.remove("validate");
-  resetButtonInUse = false;
-  setTimeout(function () {
-    window.location.replace(window.location.href);
-  }, 350);
-}
-resetButton.onclick = () => {
-  if (!resetButtonInUse) {
-    resetButton.classList.add("onclick");
-    resetButtonInUse = true;
-    setTimeout(validateReset, 150);
-  }
+// Restore default button
+document.getElementById("resetButton").onclick = () => {
+  restoreDefaults();
   return false;
 };
 
-// Saving logic
-let saveButtonInUse = false;
-const saveButton = document.getElementById("saveButton");
-
-function validate() {
-  setTimeout(function () {
-    saveButton.classList.remove("onclick");
-    saveButton.classList.add("validate");
-    browserAPI.storage.sync.set({
-      ["options"]: {
-        hideSubjects: document.getElementById('hideSubjects').checked,
-        calculateAverages: document.getElementById('calculateAverages').checked,
-        depressionMode: document.getElementById('depressionMode').checked,
-        modernizeSchedule: document.getElementById('modernizeSchedule').checked,
-        removeClasses: document.getElementById('removeClasses').checked,
-        addDescriptions: document.getElementById('addDescriptions').checked,
-        darkTheme: document.getElementById('darkTheme').checked,
-        hideOnes: document.getElementById('hideOnes').checked,
-        countZeros: document.getElementById('countZeros').checked,
-        countToAverage: document.getElementById('countToAverage').checked,
-        plusValue: document.getElementById('plusValue').value,
-        minusValue: document.getElementById('minusValue').value,
-        debug: false,
-        averageWarn: false,
-        modernizeTitles: document.getElementById('modernizeTitles').checked,
-      }
-    }, () => {
-      setTimeout(callback, 450);
-    });
-  }, 300);
-}
-
-function callback() {
-  setTimeout(function () {
-    saveButton.classList.remove("validate");
-    saveButtonInUse = false;
-  }, 750);
-}
-
-function updateOptions() {
-  if (!saveButtonInUse) {
-    saveButton.classList.add("onclick");
-    saveButtonInUse = true;
-    setTimeout(validate, 250);
+document.getElementById("form").onsubmit = () => {
+  const t = {};
+  for (let e of boolOptions) {
+    let el = document.getElementById(e);
+    if (el) t[e] = el.checked;
   }
+  for (let e of valueOptions) {
+    let el = document.getElementById(e);
+    if (el) t[e] = el.value;
+  }
+  for (let e of extraOptions) {
+    t[e] = OPTIONS_DEFAULT[e];
+  }
+  browserAPI.storage.sync.set({ ["options"]: t });
   return false;
-}
-document.getElementById('form').onsubmit = updateOptions;
+};
 
 // Update details
 browserAPI.storage.sync.get(["dane"], function (t) {
@@ -215,13 +132,12 @@ browserAPI.storage.sync.get(["dane"], function (t) {
   xhttpNr.send();
 });
 
-
-// Extras
+// Display version and copyright
 document.getElementById("ver").innerText = browserAPI.runtime.getManifest().version;
-document.getElementById('copyright-year').innerText = new Date().getFullYear();
+document.getElementById("copyrightYear").innerText = new Date().getFullYear();
 
+// Enable/disable debugging
 let counter = 0;
-
 function debugCounter() {
   counter++;
   if (counter >= 7) {
@@ -237,8 +153,28 @@ function debugCounter() {
 }
 document.getElementById("debugButton").addEventListener("click", debugCounter);
 
+// Handle options' pages in popup
+const optionsPages = {
+  "optionsGeneral": document.getElementById("optionsGeneralElement"),
+  "optionsSchedule": document.getElementById("optionsScheduleElement"),
+  "optionsGrades": document.getElementById("optionsGradesElement"),
+}
+for (let e in optionsPages) {
+  document.getElementById(e).addEventListener("click", () => {displayOptions(e)});
+}
+
+function displayOptions(name) {
+  for (let a in optionsPages) {
+    optionsPages[a].style.display = "none";
+  }
+  optionsPages[name].style.display = "block";
+}
 
 // ----------------------------- DEBUG -------------------------
+function clearStorageData() {
+  if (confirm('Na pewno?')) browserAPI.storage.sync.clear();
+}
+
 // browserAPI.storage.sync.get(null, function(result){
 // 	console.log(result);
 // 	for (var x in result)
