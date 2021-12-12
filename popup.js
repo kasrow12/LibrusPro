@@ -3,10 +3,6 @@
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
 
-const DANE_DEFAULT = {
-  nr: null,
-  currentClass: null,
-};
 const OPTIONS_DEFAULT = {
   hideSubjects: true,
   calculateAverages: true,
@@ -25,6 +21,9 @@ const OPTIONS_DEFAULT = {
   modernizeTitles: true,
   showTeacherFreeDays: true,
   enableGradeManager: true,
+  averageValue: 1.80,
+  insertTimetable: true,
+  keepBlinker: false,
 };
 
 let browserAPI;
@@ -34,8 +33,8 @@ if (typeof chrome != null) {
   browserAPI = browser;
 }
 
-const boolOptions = ['hideSubjects', 'calculateAverages', 'depressionMode', 'modernizeSchedule', 'removeClasses', 'addDescriptions', 'darkTheme', 'hideOnes', 'countZeros', 'countToAverage', 'modernizeTitles', 'debug', 'averageWarn', 'showTeacherFreeDays', 'enableGradeManager'];
-const valueOptions = ['plusValue', 'minusValue'];
+const boolOptions = ['hideSubjects', 'calculateAverages', 'depressionMode', 'modernizeSchedule', 'removeClasses', 'addDescriptions', 'darkTheme', 'hideOnes', 'countZeros', 'countToAverage', 'modernizeTitles', 'debug', 'averageWarn', 'showTeacherFreeDays', 'enableGradeManager', 'insertTimetable', 'keepBlinker'];
+const valueOptions = ['plusValue', 'minusValue', 'averageValue'];
 const extraOptions = ['debug', 'averageWarn'];
 
 function restoreDefaults() {
@@ -96,44 +95,6 @@ document.getElementById("form").onsubmit = () => {
   return false;
 };
 
-// Update details
-browserAPI.storage.sync.get(["dane"], function (t) {
-  const nrRegex = /<th class="big">Nr w dzienniku <\/th>\s*?<td>\s*?(\d*)\s*?<\/td>/;
-  const xhttpNr = new XMLHttpRequest();
-  xhttpNr.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      let nr = this.responseText.match(nrRegex);
-      if (nr != null) {
-        nr = nr[1];
-      }
-
-      const klasaRegex = /<b>Klasa: <\/b>(.*)&nbsp;<\/p>/;
-      const xhttpKlasa = new XMLHttpRequest();
-      xhttpKlasa.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          let klasa = this.responseText.match(klasaRegex);
-          if (klasa != null) {
-            klasa = klasa[1];
-          }
-
-          if (!t["dane"] || nr != t["dane"].nr || klasa != t["dane"].currentClass) {
-            let temp = DANE_DEFAULT;
-            if (klasa != null) temp.currentClass = klasa;
-            if (nr != null) temp.nr = nr;
-            browserAPI.storage.sync.set({
-              ["dane"]: temp
-            });
-          }
-        }
-      };
-      xhttpKlasa.open("GET", "https://synergia.librus.pl/przegladaj_oceny/uczen", true);
-      xhttpKlasa.send();
-    }
-  };
-  xhttpNr.open("GET", "https://synergia.librus.pl/informacja", true);
-  xhttpNr.send();
-});
-
 // Display version and copyright
 document.getElementById("ver").innerText = browserAPI.runtime.getManifest().version;
 document.getElementById("copyrightYear").innerText = new Date().getFullYear();
@@ -148,7 +109,7 @@ function debugCounter() {
       temp.debug = !temp.debug;
       browserAPI.storage.sync.set({
         ["options"]: temp
-      });
+      }, () => { window.location.reload(); });
     });
     counter = 0;
   }

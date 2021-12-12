@@ -71,7 +71,9 @@ input[type="number"]:focus {
 }
 .description {
 	font-size: 11px;
+	text-align: left;
 	font-style: italic;
+	margin-left: 5px;
 }
 .emoji {
 	font-weight: normal;
@@ -114,6 +116,9 @@ input[type="number"]:focus {
 	color: #aaaaaa;
 	margin-bottom: 5px;
 	font-size: 15px;
+}
+.option-container > div {
+	text-align: left;
 }
 .buttons {
 	margin: 15px 0;
@@ -271,6 +276,11 @@ input[type="number"]:focus {
 				<label class="tgl-btn" for="addDescriptions"></label>
 			</label>
 			<label class="option-container">
+				Dodawanie planu lekcji
+				<input class="tgl tgl-light" id="insertTimetable" type="checkbox" checked="true"/>
+				<label class="tgl-btn" for="insertTimetable"></label>
+			</label>
+			<label class="option-container">
 				Ukrywanie klasy
 				<input class="tgl tgl-light" id="removeClasses" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="removeClasses"></label>
@@ -303,6 +313,11 @@ input[type="number"]:focus {
 				<label class="tgl-btn" for="hideOnes"></label>
 			</label>
 			<label class="option-container">
+				Mruganie zagrożeń
+				<input class="tgl tgl-light" id="keepBlinker" type="checkbox"/>
+				<label class="tgl-btn" for="keepBlinker"></label>
+			</label>
+			<label class="option-container">
 				<div>Wymuś liczenie<div class="description">(Licz do średniej: nie)</div></div>
 				<input class="tgl tgl-light" id="countToAverage" type="checkbox"/>
 				<label class="tgl-btn" for="countToAverage"></label>
@@ -314,6 +329,10 @@ input[type="number"]:focus {
 			<label class="option-container">
 				<div>Wartość minusa<div class="description">np. 5-&nbsp;&nbsp;=&nbsp;&nbsp;4,75</div></div>
 				<input type="number" id="minusValue" name="minusValue" min="0" max="1" value="0.25" step="0.01">
+			</label>
+			<label class="option-container">
+				<div>Średnia na 2<div class="description">do liczenia jedynek</div></div>
+				<input type="number" id="averageValue" name="averageValue" min="1" max="6" value="1.80" step="0.01">
 			</label>
 		</div>
 		<div class="buttons">
