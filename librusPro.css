@@ -17,11 +17,6 @@ table.decorated tr.bolded td {
 .container.static.welcome-page {
 	display: none !important;
 }
-#body>form:nth-child(5)>div>div>table>tbody>tr.bolded.line1>td:nth-child(5) {
-	width: 50px !important;
-	padding: 2px 10px !important;
-	white-space: nowrap !important;
-}
 #graphic-menu>ul>li:nth-child(1) {
 	display: none;
 }

@@ -424,7 +424,7 @@ let gradeManager;
 let gradeManagerOverlay;
 
 function insertGradeManager() {
-  const gradeManagerParent = document.querySelector("#body > form:nth-child(5) > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p")?.parentElement;
+  const gradeManagerParent = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p")?.parentElement;
   if (!gradeManagerParent) return;
   gradeManagerParent.insertAdjacentHTML("afterend", `
   <td class="librusPro_grade-manager-icon">
@@ -498,7 +498,7 @@ const INDICES = {
 };
 
 // Pobranie indexów kolumn
-document.querySelectorAll("#body > form:nth-child(5) > div > div > table:first-of-type > thead > tr:nth-child(2) > td").forEach((e) => {
+document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > thead > tr:nth-child(2) > td").forEach((e) => {
   const index = [...e.parentElement.children].indexOf(e);
 
   if (e.innerText == "Śr.I") INDICES.sredniaI = index;
@@ -640,14 +640,14 @@ function insertNoGrades() {
   const noNewGrades = document.createElement("TR");
   noNewGrades.classList = "bolded line1";
   noNewGrades.innerHTML = `<td colspan="64" style="text-align: center;">Brak ocen <span class="emoji">😎</span></td>`;
-  const ref = document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody");
+  const ref = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody");
   if (ref) {
     ref.insertBefore(noNewGrades, ref.firstElementChild);
   }
 }
 
 function handleGrades(options, recalculate = false) {
-  if (!document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr:nth-child(1):not([name=przedmioty_all])")) {
+  if (!document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr:nth-child(1):not([name=przedmioty_all])")) {
     insertNoGrades();
     return;
   }
@@ -657,14 +657,14 @@ function handleGrades(options, recalculate = false) {
   if (recalculate) {
     srednieTr = document.getElementById("librusPro_average");
   } else {
-    srednieTr = document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr:nth-child(1)").cloneNode(true);
+    srednieTr = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr:nth-child(1)").cloneNode(true);
     if (srednieTr.classList.contains("bolded")) {
       insertNoGrades();
       return;
     }
   }
 
-  const tbody = document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody");
+  const tbody = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type:not(#tabSource) > tbody");
   const midtermGrades = {
     srodroczneI: tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.srodroczneI + OFFSET_CSS}) > span > a`),
     srodroczneII: tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.srodroczneII + OFFSET_CSS}) > span > a`),
@@ -675,7 +675,7 @@ function handleGrades(options, recalculate = false) {
   }
 
   const averages = [];
-  const rows = document.querySelectorAll('#body > form:nth-child(5) > div > div > table:first-of-type:not(#tabSource) > tbody > tr:not(.bolded, [id^="przedmioty"], .librusPro_average)');
+  const rows = document.querySelectorAll('form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type:not(#tabSource) > tbody > tr:not(.bolded, [id^="przedmioty"], .librusPro_average)');
 
   // Średnia z I i II okresu
   let avgI = {
@@ -771,7 +771,7 @@ function handleGrades(options, recalculate = false) {
   if (errors.length > 0) {
     const wrongAverageMessage = "[LibrusPro] » Przynajmniej jedna z obliczonych średnich przez LibrusaPro różni się od tej wyliczonej przez Librusa Synergię (poprawna znajduje się w nawiasach). W menu ustawień rozszerzenia możesz dostosować pewne parametry uwzględniane przy jej liczeniu do swojej konfiguracji szkoły. Aby uzyskać więcej informacji i pomóc w eliminacji potencjalnego błędu, skontaktuj się ze mną na Discordzie. (Link znajduje się w stopce na dole strony)";
     console.log(`%c${wrongAverageMessage}`, "color: #ff5555;");
-    const legend = document.querySelector("#body > form:nth-child(5) > div > div > div.legend.left.stretch > h3");
+    const legend = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > div.legend.left.stretch > h3");
     if (!options.averageWarn) {
       legend.innerText = wrongAverageMessage;
       legend.id = "error_legend";
@@ -995,7 +995,7 @@ adjustNavbar();
 insertFooter();
 disableAutoLogout();
 
-if (document.querySelector("#body > form:nth-child(5) > div > h2")?.innerText.includes("-")) {
+if (document.querySelector("form[name=\"PrzegladajOceny\"] > div > h2")?.innerText.includes("-")) {
   odOstLogowania = true;
 }
 
@@ -1082,10 +1082,10 @@ browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function (t) {
 // szósteczki - maybe kiedyś
 // document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = "6"});
 // document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = Math.floor(Math.random() * (7 - 4) + 4)});
-// document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach((e) => {e.innerText = "6.00"});
-// document.querySelectorAll("#body > form:nth-child(5) > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach((e) => {e.innerText = "6.00"});
-// document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerText = "wzorowe";
-// document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)").innerText = "wzorowe";
+// document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach((e) => {e.innerText = "6.00"});
+// document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach((e) => {e.innerText = "6.00"});
+// document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerText = "wzorowe";
+// document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)").innerText = "wzorowe";
 
 // ---------------------------------------- ZACHOWANIE ----------------------------------------
 
@@ -1108,8 +1108,8 @@ function insertProposedBehavior() {
   if (propZachSrodroczne && !propZachRoczne) propZachRoczne = NO_DATA;
 
   // Elementy zachowania (śród)rocznego (i proponowanego) [niezmienne od proponowanych ocen I, II i R]
-  const zachSrodroczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr.bolded > td:nth-child(4)");
-  const zachRoczneElement = document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr.bolded > td:nth-child(6)");
+  const zachSrodroczneElement = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr.bolded > td:nth-child(4)");
+  const zachRoczneElement = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr.bolded > td:nth-child(6)");
   const propZachSrodroczneElement = zachSrodroczneElement.cloneNode(true);
   const propZachRoczneElement = zachRoczneElement.cloneNode(true);
 
@@ -1128,7 +1128,7 @@ function insertProposedBehavior() {
   zachRoczneElement.parentElement.insertBefore(propZachRoczneElement, zachRoczneElement);
 
   // Zwężenie komórek, aby zrobić miejsce na nowe i wypełnić wiersz
-  document.querySelector("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr.bolded > td:nth-child(3)").colSpan = "1";
+  document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr.bolded > td:nth-child(3)").colSpan = "1";
   propZachSrodroczneElement.colSpan = INDICES.proponowaneI != -1 ? "2" : "1";
   zachSrodroczneElement.nextElementSibling.colSpan = "1";
   propZachRoczneElement.colSpan = INDICES.proponowaneII != -1 ? "3" : "2";
@@ -1141,7 +1141,7 @@ function insertProposedBehavior() {
 if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
   if (odOstLogowania) {
     // Ukryj całkowicie zachowanie
-    const zachowanieTr = document.querySelector("#body > form:nth-child(5) > div > div > table > tbody > tr.bolded");
+    const zachowanieTr = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded");
     let toRemove = true;
     zachowanieTr.querySelectorAll(".center:not(:first-child)").forEach((e) => {
       if (e.innerText != "-") toRemove = false;
@@ -1309,7 +1309,7 @@ function aprilfools() {
   if (odOstLogowania) {
     pp = 5;
   }
-  document.querySelectorAll("#body > form:nth-child(5) > div > div > table:first-of-type > tbody > tr > td:nth-child(2)").forEach((e) => {
+  document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr > td:nth-child(2)").forEach((e) => {
     if (e.innerText.toLowerCase().includes("polski") && !document.getElementById("polski")) {
       const n = document.createElement("SPAN");
       n.innerHTML = `<a id="polski" class="ocena librusPro_jqueryTitle" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">1</a>`;
@@ -1535,7 +1535,7 @@ const TITLE_MODERNIZATION = [
   [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
   [/(Nauczyciel:|Dodał:|Uczeń:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2</span>$3'],
   [/(Waga:) (\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
-  [/(Komentarz:|Temat zajęć:) ([\D\d]*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-comment">$2</span>$3'],
+  [/(Komentarz:|Temat zajęć:) ([\D\d]*?)($)/g, '<span class="librusPro_title-comment">$2</span>$3'],
   [/(Opis:) ([\D\d]*?)Data dodania:/g, '<span class="librusPro_title-comment">$2</span>Data dodania:'],
   [/(Poprawa oceny:) (.{0,2}) \((.*?)\)(<br ?\/?>|$)/g, '<b class="librusPro_title-improved">$2</b> <span class="librusPro_title-brackets">(<span class="librusPro_title-type">$3</span>)</span>$4'],
   [/(Godzina lekcyjna:) (\d+?)<\/b>(<br ?\/?>|$)/g, '<span class="librusPro_title-improved">$2</span>$3'],

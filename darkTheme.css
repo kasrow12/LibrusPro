@@ -58,20 +58,27 @@ img {
 	-webkit-filter: brightness(0.8) contrast(0.7) !important;
 	filter: brightness(0.8) contrast(0.7) !important;
 }
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:nth-child(4n + 1) > td,
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:nth-child(4n + 2) > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(4n + 1) > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(4n + 2) > td {
 	background: var(--line0) !important;
 	transition: background-color 0.1s;
 }
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:nth-child(4n + 3) > td,
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:nth-child(4n) > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(4n + 3) > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(4n) > td {
 	background: var(--line1) !important;
 	transition: background-color 0.1s;
 }
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:hover > th,
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:hover > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr:hover > th,
 #body > form:nth-child(5) > div > div > table > tbody > tr:hover > td {
 	background: var(--lightbackground) !important;
 }
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr > td,
 #przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr > td,
 #przedmioty_OP_zachowanie > td:nth-child(2) > table > tbody > tr > td {
@@ -100,9 +107,11 @@ img {
 [name="przedmioty_all"] > td {
 	background: var(--lightbackground) !important;
 }
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr.line0 > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr.line0 > td {
 	color: var(--textcolor3) !important;
 }
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr.line1 > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr.line1 > td {
 	color: var(--textcolor3) !important;
 }
@@ -112,6 +121,7 @@ img {
 #top-banner-container {
 	background: var(--darkbackground) !important;
 }
+#body > form[name="PrzegladajOceny"] > div > div,
 #body > form:nth-child(5) > div > div {
 	background: var(--lightbackground) !important;
 }
@@ -135,7 +145,8 @@ img {
 	> table
 	> tbody
 	> tr
-	> td:nth-child(1) {
+	> td:nth-child(1),
+#body > form[name="PrzegladajOceny"] > div > div > div:nth-child(8) > table > tbody > tr > td > table > tbody > tr > td:nth-child(1) {
 	color: #dcdcdc !important;
 }
 .legend ul li span:not([style*="wykres_zadania"]) {
@@ -215,6 +226,7 @@ select:not([name="rgbKoloru"]) > option {
 	background-color: #4a4a4a !important;
 	color: #dedede !important;
 }
+#body > form[name="PrzegladajOceny"] > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p,
 #body > form:nth-child(5) > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p {
 	color: var(--textcolor5) !important;
 }
@@ -433,6 +445,7 @@ img[src*="attachment.png"] {
 	> a:not(.selected) {
 	color: var(--line01color);
 }
+#body > form[name="PrzegladajOceny"] > div > div > table.decorated.medium.center > tbody > tr:nth-child(2n + 1) > *,
 #body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:nth-child(2n + 1) > *,
 #body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n + 1) > td,
 #body > form > div > div > table > tbody > tr > td,
@@ -449,6 +462,7 @@ img[src*="attachment.png"] {
 	color: var(--textcolor4);
 	transition: background-color 0.1s;
 }
+#body > form[name="PrzegladajOceny"] > div > div > table.decorated.medium.center > tbody > tr:nth-child(2n) > *,
 #body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:nth-child(2n) > *,
 #body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n) > td,
 #body > div > div > form > table > tbody > tr:nth-child(2n) > td,
@@ -461,6 +475,7 @@ img[src*="attachment.png"] {
 	background: var(--line1) !important;
 	transition: background-color 0.1s;
 }
+#body > form[name="PrzegladajOceny"] > div > div > table.decorated.medium.center > tbody > tr:hover > *,
 #body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:hover > *,
 #body > div > div > form > table > tbody > tr:hover > td,
 #body > div > div > form > table > tbody > tr:hover > th,
@@ -764,6 +779,7 @@ table.decorated {
 #timetableEntryBox .plan-lekcji-info {
 	background: #6e801e;
 }
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan="9"],
 #body > form:nth-child(5) > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan="9"] {
 	background-color: var(--line1);
 	color: var(--line01color);
@@ -812,6 +828,6 @@ table.decorated {
 #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(6), #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(7), .weekend {
 	background: #2d2d2d !important;
 }
-#body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr.librusPro_comment-yours > * {
+#body > form[name="PrzegladajOceny"] > div > div > table.decorated.medium.center > tbody > tr.librusPro_comment-yours > * {
 	background: #253a38 !important;
 }
