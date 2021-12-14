@@ -89,6 +89,18 @@ const jQscript = document.createElement('script');
 jQscript.appendChild(document.createTextNode(jQinjectedCode));
 (document.body || document.head || document.documentElement).appendChild(jQscript);
 
+function christmasBanner() {
+  const banner = document.getElementById("top-banner");
+  if (!banner) return;
+  banner.src = browserAPI.runtime.getURL('img/christmas_banner.png');
+  banner.style.setProperty("filter", "brightness(0.9) contrast(0.9)", "important");
+  banner.title = "<b style='color: #fff823'>Poczuj magię świąt razem z <b style='color: #a96fe3'>LibrusPro</b>!</b>";
+  banner.classList.add("librusPro_jqueryTitle");
+  location.href = "javascript: librusPro_jqueryTitle()";
+}
+let isChristmas = new Date();
+if ((isChristmas.getMonth() === 11 && isChristmas.getDate() >= 14) || (isChristmas.getMonth() === 0 && isChristmas.getDate() <= 14)) christmasBanner();
+
 async function getAttendanceLessonsStatistics() {
   try {
     let userID = await fetch(API + 'Me')
