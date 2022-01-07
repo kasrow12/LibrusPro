@@ -3,12 +3,48 @@
 // Author: Maks Kowalski
 // Contact: kasrow12 (at) gmail.com
 
+// Config
+const API = "https://synergia.librus.pl/gateway/api/2.0";
+const DISCORD_LINK = "https://discord.gg/e9EkVEvsDr";
+const CHROME_LINK = "https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf";
 const NO_DATA = "-";
-const DANE_DEFAULT = {
-  nr: null,
-  currentClass: null,
-};
-const OPTIONS_DEFAULT = {
+const ADD_EDIT_SYMBOL = "✎";
+const REMOVE_SYMBOL = "⨉";
+const TIMETABLE_SYMBOL = "≡";
+const PROXIMITY_COMMENTS_NUMBER = 100;
+const TYPE_SUBJECT_LENGTH = 30;
+const DESCRIPTION_LENGTH = 200;
+const REGEXS = Object.freeze({
+  gradeId: /https:\/\/synergia.librus.pl\/przegladaj_oceny\/szczegoly\/(\d*)/,
+  weight: /(<br>Waga: )(\d+?)(<br>)/,
+  grade: /[0-6][+-]?/,
+  countToAverage: /<br>Licz do średniej: (tak|nie)<br>/,
+  gradeImprovement: /<br \/>Poprawa oceny:(.*)/,
+  class: /^(([0-9\[\]](.+?))|([A-Za-z]{1,2}\d(.*?)))$/gm,
+  proximityComment: /<tr class="line1"><td >(.*?)<\/td>/,
+  homework: /(otworz_w_nowym_oknie\(\'\/moje_zadania\/podglad\/)(\d*?)(\',\'o1\',650,600\);)/,
+  cancelled: /Odwołane zajęcia(\n.*) na lekcji nr: (\d+) \((.*)\)$/,
+  substitution: /(Zastępstwo|Przesunięcie) z (.*) na lekcji nr: (\d+) \((.*)\)$/,
+  description: /Opis: (.+?)(<br>|<br \/>)Data/,
+  lastLogin: /(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}), IP: ((?:[0-9]{1,3}\.){3}[0-9]{1,3})<br \/>/g,
+  lastLoginHeader: /<b>ostatnie (udane|nieudane) logowania:<\/b><br \/>(brak)?/g,
+});
+const URLS = Object.freeze({
+  grades: "https://synergia.librus.pl/przegladaj_oceny/uczen",
+  attendance: "https://synergia.librus.pl/przegladaj_nb/uczen",
+  schedule: "https://synergia.librus.pl/terminarz",
+  scheduleDetails: "https://synergia.librus.pl/terminarz/szczegoly",
+  timetable: "https://synergia.librus.pl/przegladaj_plan_lekcji",
+  homework: "https://synergia.librus.pl/moje_zadania",
+  index: ["https://synergia.librus.pl/uczen/index", "https://synergia.librus.pl/rodzic/index"],
+  comment: "https://synergia.librus.pl/komentarz_oceny/1",
+  gradeDetails: "https://synergia.librus.pl/przegladaj_oceny/szczegoly",
+  gdpr: "https://synergia.librus.pl/wydruki/wydruk_danych_osobowych/2137.pdf",
+  newVersion: "https://synergia.librus.pl/gateway/ms/studentdatapanel/ui/",
+  refreshSession: "https://synergia.librus.pl/refreshToken",
+});
+const ONLINE_LESSON = 'a[href^="https://liblink.pl/"]';
+const OPTIONS_DEFAULT = Object.freeze({
   hideSubjects: true,
   calculateAverages: true,
   depressionMode: false,
@@ -26,8 +62,11 @@ const OPTIONS_DEFAULT = {
   modernizeTitles: true,
   showTeacherFreeDays: true,
   enableGradeManager: true,
-};
-const DEPRESSION_MODE_COLORS = {
+  averageValue: 1.80,
+  insertTimetable: true,
+  keepBlinker: false,
+});
+const DEPRESSION_MODE_COLORS = Object.freeze({
   proposed: "#aaad84",
   final: "#b0c4de",
   other: "#8592b1",
@@ -38,15 +77,43 @@ const DEPRESSION_MODE_COLORS = {
   weight5: "#ff6666",
   negativeBehavior: "#927265",
   positiveBehavior: "#98a987",
+});
+const COLORS = Object.freeze({
+  gradeManagerNewGrade: "#00ff00",
+  error: "#ff5555",
+});
+const TITLE_MODERNIZATION = Object.freeze([
+  [/(Ocena:|Lekcja:) ([\D\d]*?)(<br\/?>|$)/g, '<span class="librusPro_title-grade">$2</span>$3'],
+  [/(Kategoria:|Rodzaj:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-type">$2</span>$3'],
+  [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:| wystawienia:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
+  [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
+  [/(Nauczyciel:|Dodał:|Uczeń:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2</span>$3'],
+  [/(Waga:) (\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
+  [/(Komentarz:|Temat zajęć:) ([\D\d]*?)($)/g, '<span class="librusPro_title-comment">$2</span>$3'],
+  [/(Opis:) ([\D\d]*?)Data dodania:/g, '<span class="librusPro_title-comment">$2</span>Data dodania:'],
+  [/(Poprawa oceny:) (.{0,2}) \((.*?)\)(<br ?\/?>|$)/g, '<b class="librusPro_title-improved">$2</b> <span class="librusPro_title-brackets">(<span class="librusPro_title-type">$3</span>)</span>$4'],
+  [/(Godzina lekcyjna:) (\d+?)<\/b>(<br ?\/?>|$)/g, '<span class="librusPro_title-improved">$2</span>$3'],
+]);
+// Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest. Pozdro
+// JS liczy od 0, CSS od 1
+const OFFSET_JS = 2;
+const OFFSET_CSS = 3;
+const INDICES = {
+  ocenyI: -1,
+  sredniaI: -1,
+  proponowaneI: -1,
+  srodroczneI: -1,
+  ocenyII: -1,
+  sredniaII: -1,
+  proponowaneII: -1,
+  srodroczneII: -1,
+  sredniaR: -1,
+  proponowaneR: -1,
+  roczne: -1
 };
-const DEFAULT_COLORS = {
-  rocznopodobne: "#b0c4de",
-};
-const GRADE_MANAGER_DEFAULT_COLOR = "#00ff00";
-const ADD_SYMBOL = "✎";
-const REMOVE_SYMBOL = "⨉";
-const API = "https://synergia.librus.pl/gateway/api/2.0/";
-const COMMENTS_NUMBER = 100;
+
+let overlay;
+let gradeManager;
 
 // Kompatybilność
 let browserAPI;
@@ -56,39 +123,68 @@ if (typeof chrome != null) {
   browserAPI = browser;
 }
 
-console.log("%cDzięki za korzystanie z rozszerzenia LibrusPro!", "color:#ce84c8;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
-console.log("%cJeśli znajduje się tutaj cokolwiek czerwonego i coś nie działa, proszę zgłoś to:", "color:#d63d4a;font-size:1rem;font-weight:bold");
-console.log(" %cOficjalny Discord: https://discord.gg/e9EkVEvsDr", "color:#90e9f0;");
+// Od ostatniego logowania/w tym tygodniu
+const gradesSinceLastLoginView = document.querySelector("form[name=\"PrzegladajOceny\"] > div > h2")?.innerText.includes("-") ?? false;
 
-browserAPI.storage.onChanged.addListener((changes, namespace) => {
-  for (let key in changes) {
-    if (key === "options") {
+// Aktualizacja strony po zmianie ustawień
+function registerOnStorageChange(isSchedule = false) {
+  // Automatyczne odświeżanie po wszystkich zmianach (z pominięciem "Potwiedź ponowne przesłanie formularza")
+  if (isSchedule) {
+    browserAPI.storage.onChanged.addListener((changes, namespace) => {
       window.location.replace(window.location.href);
-    }
+    });
+    return;
   }
-});
+
+  // Tylko po zmianie opcji
+  browserAPI.storage.onChanged.addListener((changes, namespace) => {
+    for (let key in changes) {
+      if (key === "options") {
+        window.location.replace(window.location.href);
+      }
+    }
+  });
+}
 
 // Wyświetlanie charakterystycznych dymków po najechaniu na dane elementy
-const jQinjectedCode = `
-  function librusPro_jqueryTitle() {
-    $('.librusPro_jqueryTitle').tooltip({
-      track: true,
-      show: {
-        delay: 200,
-        duration: 200
-      },
-      hide: {
-        delay: 100,
-        duration: 200
-      }
-    });
-  }
-  setTimeout(librusPro_jqueryTitle, 1000);
-`;
-const jQscript = document.createElement('script');
-jQscript.appendChild(document.createTextNode(jQinjectedCode));
-(document.body || document.head || document.documentElement).appendChild(jQscript);
+function injectjQueryHook() {
+  const code = `
+    document.addEventListener('refreshjQueryTitles', () => {
+      $('.librusPro_jqueryTitle').tooltip({
+        track: true,
+        show: {
+          delay: 200,
+          duration: 200
+        },
+        hide: {
+          delay: 100,
+          duration: 200
+        }
+      }).removeClass("librusPro_jqueryTitle");
+    });`;
+  const script = document.createElement('script');
+  script.appendChild(document.createTextNode(code));
+  (document.body || document.head || document.documentElement).appendChild(script);
+}
 
+// Dodawanie dymka do nowych elementów
+function refreshjQueryTitles() {
+  document.dispatchEvent(new CustomEvent('refreshjQueryTitles'));
+}
+
+// Wiadomość w konsoli
+function printCreditsToConsole() {
+  const code = `
+    console.log("%cDzięki za korzystanie z rozszerzenia LibrusPro!", "color:#ce84c8;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
+    console.log("%cJeżeli znajduje się tutaj cokolwiek czerwonego, bądź nie działa coś związanego z wtyczką, proszę zgłoś to.", "color:#d63d4a;font-size:1rem;font-weight:bold");
+    console.log(" %cOficjalny Discord: ${DISCORD_LINK}", "color:#90e9f0;");
+  `;
+  const script = document.createElement('script');
+  script.appendChild(document.createTextNode(code));
+  (document.body || document.head || document.documentElement).appendChild(script);
+}
+
+// Świąteczne logo
 function christmasBanner() {
   const banner = document.getElementById("top-banner");
   if (!banner) return;
@@ -96,92 +192,83 @@ function christmasBanner() {
   banner.style.setProperty("filter", "brightness(0.9) contrast(0.9)", "important");
   banner.title = "<b style='color: #fff823'>Poczuj magię świąt razem z <b style='color: #a96fe3'>LibrusPro</b>!</b>";
   banner.classList.add("librusPro_jqueryTitle");
-  location.href = "javascript: librusPro_jqueryTitle()";
 }
-let isChristmas = new Date();
-if ((isChristmas.getMonth() === 11 && isChristmas.getDate() >= 14) || (isChristmas.getMonth() === 0 && isChristmas.getDate() <= 14)) christmasBanner();
 
-async function getAttendanceLessonsStatistics() {
+// Pobieranie wykazu uczęszczania
+async function getAttendanceLessonsStatistics(button) {
   try {
-    let userID = await fetch(API + 'Me')
+    await fetch(URLS.refreshSession);
+    let userID = await fetch(`${API}/Me`)
     .then(response => response.json())
     .then(data => {return data["Me"]["Account"]["UserId"]});
 
-    fetch(API + 'Lessons')
+    fetch(`${API}/Lessons`)
     .then(response => response.json())
-    .then(async function(lessons) {
+    .then(async (lessons) => {
       document.querySelector(".librusPro_tfoot-text").innerText = "Widok przedstawia aktualne dane pobrane z dziennika Librus Synergia.";
       const container = document.getElementById("librusPro_lessonsAttendance");
-      const tr = document.createElement("TR");
-      tr.classList.add("line0", "bolded");
-      const _spacer = document.createElement("td");
-      const totalTitle = document.createElement("td");
-      const totalAbsencesEl = document.createElement("td");
-      const totalAttendancesEl = document.createElement("td");
-      const totalAttendancePercentEl = document.createElement("td");
-      totalTitle.innerText = "Razem";
-      totalTitle.classList.add("right");
-      totalAbsencesEl.innerText = "0";
-      totalAttendancesEl.innerText = "0";
-      totalAttendancePercentEl.innerText = "%";
-      tr.appendChild(_spacer);
-      tr.appendChild(totalTitle);
-      tr.appendChild(totalAbsencesEl);
-      tr.appendChild(totalAttendancesEl);
-      tr.appendChild(totalAttendancePercentEl);
-      container.insertBefore(tr, container.firstElementChild);
+      const template = document.createElement("template");
+      const html = `
+        <tr class="line0 bolded">
+          <td></td>
+          <td class="right">Razem</td>
+          <td id="librusPro_totalAbsences">0</td>
+          <td id="librusPro_totalAttendances">0</td>
+          <td id="librusPro_totalAttendancePercent">%</td>
+        </tr>`
+      template.innerHTML = html.trim();
+      container.insertBefore(template.content.firstChild, container.firstElementChild);
+      const totalAbsencesEl = document.getElementById("librusPro_totalAbsences");
+      const totalAttendancesEl = document.getElementById("librusPro_totalAttendances");
+      const totalAttendancePercentEl = document.getElementById("librusPro_totalAttendancePercent");
+
       for (let lesson of lessons["Lessons"]) {
-        fetch(API + `Attendances/LessonsStatistics/${lesson["Id"]}`)
+        fetch(`${API}/Attendances/LessonsStatistics/${lesson["Id"]}`)
         .then(response => response.json())
-        .then(async function(data) {
+        .then(async (data) => {
           for (let lessonStats of data["LessonsStatistics"]) {
-            if (lessonStats["Student"]["Id"] == userID) {
-              const subjectName = await fetch(API + `Subjects/${lesson["Subject"]["Id"]}`)
-              .then(response => response.json())
-              .then(data => {return data["Subject"]["Name"]});
+            if (lessonStats["Student"]["Id"] !== userID) continue;
+            const subjectName = await fetch(`${API}/Subjects/${lesson["Subject"]["Id"]}`)
+            .then(response => response.json())
+            .then(data => {return data["Subject"]["Name"]});
 
-              const teacherName = await fetch(API + `Users/${lesson["Teacher"]["Id"]}`)
-              .then(response => response.json())
-              .then(data => {return `${data["User"]["FirstName"]} ${data["User"]["LastName"]}`});
+            const teacherName = await fetch(`${API}/Users/${lesson["Teacher"]["Id"]}`)
+            .then(response => response.json())
+            .then(data => {return `${data["User"]["FirstName"]} ${data["User"]["LastName"]}`});
 
-              const absences = lessonStats["Absences"];
-              const attendances = lessonStats["Attendances"];
-              const tr = document.createElement("TR");
-              tr.classList.add("line0");
-              const subjectNameEl = document.createElement("td");
-              const teacherNameEl = document.createElement("td");
-              const absencesEl = document.createElement("td");
-              const attendancesEl = document.createElement("td");
-              const percentageEl = document.createElement("td");
-              subjectNameEl.innerText = subjectName;
-              teacherNameEl.innerText = teacherName;
-              absencesEl.innerText = absences;
-              attendancesEl.innerText = attendances;
-              const percent = ((attendances - absences) / attendances * 100).toFixed(2);
-              percentageEl.innerText = percent + "%";
-              if (percent < 50) percentageEl.classList.add("librusPro_lessons-attendance-low");
-              tr.appendChild(subjectNameEl);
-              tr.appendChild(teacherNameEl);
-              tr.appendChild(absencesEl);
-              tr.appendChild(attendancesEl);
-              tr.appendChild(percentageEl);
-              container.insertBefore(tr, container.firstElementChild);
-              totalAbsencesEl.innerText = +totalAbsencesEl.innerText + absences;
-              totalAttendancesEl.innerText = +totalAttendancesEl.innerText + attendances;
-              const totalPercent = ((+totalAttendancesEl.innerText - +totalAbsencesEl.innerText) / +totalAttendancesEl.innerText * 100).toFixed(2);
-              totalAttendancePercentEl.innerText = totalPercent + "%";
-            }
+            const absences = lessonStats["Absences"];
+            const attendances = lessonStats["Attendances"];
+            const percent = ((attendances - absences) / attendances * 100).toFixed(2);
+
+            const rowTemplate = document.createElement("template");
+            const rowHtml = `
+              <tr class="line0">
+                <td>${subjectName}</td>
+                <td>${teacherName}</td>
+                <td>${absences}</td>
+                <td>${attendances}</td>
+                <td${percent < 50 ? ' class="librusPro_lessons-attendance-low"' : ""}>${percent}%</td$>
+              </tr>`
+            rowTemplate.innerHTML = rowHtml.trim();
+            container.insertBefore(rowTemplate.content.firstChild, container.firstElementChild);
+
+            totalAbsencesEl.innerText = +totalAbsencesEl.innerText + absences;
+            totalAttendancesEl.innerText = +totalAttendancesEl.innerText + attendances;
+            const totalPercent = ((+totalAttendancesEl.innerText - +totalAbsencesEl.innerText) / +totalAttendancesEl.innerText * 100).toFixed(2);
+            totalAttendancePercentEl.innerText = totalPercent + "%";
           }
         });
       }
     });
   } catch(error) {
-    console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu statystyk frekwencji!", "color: #ff5555;", error);
+    console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu statystyk frekwencji!", `color: ${COLORS.error};`);
+    console.log(error);
+    button.parentElement.parentElement.style.display = "table-row";
     const container = document.getElementById("librusPro_lessonsAttendance");
     const tr = document.createElement("TR");
     tr.classList.add("line0", "bolded");
     const errorMessage = document.createElement("td");
-    errorMessage.innerText = "Sesja wygasła! Zaloguj się ponownie, aby pobrać wykaz uczęszczania.";
+    errorMessage.innerText = "Wystąpił błąd!";
     errorMessage.colSpan = "5";
     errorMessage.classList.add("center");
     tr.appendChild(errorMessage);
@@ -190,6 +277,7 @@ async function getAttendanceLessonsStatistics() {
   }
 }
 
+// Wyświetlanie komentarzy w pobliżu
 function displayComments(comments) {
   // Pomijanie 'undefined' z początku i końca listy, ale pozostawienie ich w środku
   let start = comments.length;
@@ -224,78 +312,69 @@ function displayComments(comments) {
     </tfoot>
   </table>`
   template.innerHTML = html.trim();
-  const table = template.content.firstChild;
-  parent.appendChild(table);
-  const tbody = document.getElementById("librusPro_commentsBody");
+  parent.appendChild(template.content.firstChild);
   for (let i = start; i <= end; i++) {
-    const tr = document.createElement("TR");
-    tr.classList.add("line1");
-    const td1 = document.createElement("TD");
-    td1.classList.add("center");
-    const td2 = document.createElement("TD");
-    td1.innerText = `${(i - COMMENTS_NUMBER) > 0 ? "+" : ""}${i - COMMENTS_NUMBER}`;
-    td2.innerText = comments[i] ?? "";
-    if (i - COMMENTS_NUMBER === 0) {
-      tr.classList.add("librusPro_comment-yours");
-    }
-    tr.appendChild(td1);
-    tr.appendChild(td2);
-    tbody.appendChild(tr);
+    let pos = i - PROXIMITY_COMMENTS_NUMBER;
+    const rowTemplate = document.createElement("template");
+    const rowHtml = `
+    <tr class="line1 ${pos === 0 ? "librusPro_comment-yours" : ""}">
+      <td class="center">${(pos) > 0 ? "+" : ""}${pos}</td>
+      <td>${comments[i] ?? ""}</td>
+    </tr>`
+    rowTemplate.innerHTML = rowHtml.trim();
+    document.getElementById("librusPro_commentsBody").appendChild(rowTemplate.content.firstChild);
   }
 }
 
-function getCommentsInProximity() {
+// Pobieranie komentarzy w otoczeniu
+async function getCommentsInProximity() {
   try {
-    const regex = /https:\/\/synergia.librus.pl\/przegladaj_oceny\/szczegoly\/(\d*)/;
-    const id = window.location.href.match(regex)?.[1] ?? 0;
+    await fetch(URLS.refreshSession);
+    const id = window.location.href.match(REGEXS.gradeId)?.[1] ?? 0;
     const comments = [];
-    for (let i = 0; i <= 2 * COMMENTS_NUMBER; i++) {
-      fetch(`https://synergia.librus.pl/komentarz_oceny/1/${+id + i - COMMENTS_NUMBER}`)
+    for (let i = 0; i <= 2 * PROXIMITY_COMMENTS_NUMBER; i++) {
+      fetch(`${URLS.comment}/${+id + i - PROXIMITY_COMMENTS_NUMBER}`)
       .then(response => response.text())
       .then(data => {
-        comments[i] = data.match(/<tr class="line1"><td >(.*?)<\/td>/)?.[1];
+        comments[i] = data.match(REGEXS.proximityComment)?.[1];
 
         // Jeśli wykonały się wszystkie poprzednie żądania, a to jest ostatnie, wyświetlamy
-        if (Object.keys(comments).length > 2 * COMMENTS_NUMBER) {
+        if (Object.keys(comments).length > 2 * PROXIMITY_COMMENTS_NUMBER) {
           displayComments(comments);
         }
       });
     }
   } catch(error) {
-    console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu komentarzy w otoczeniu!", "color: #ff5555;", error);
+    console.log(error);
     return;
   }
 }
 
-if (window.location.href.indexOf("https://synergia.librus.pl/przegladaj_oceny/szczegoly/") > -1) {
+// Aktywacja komentarzy w pobliżu
+function initCommentsInProximity() {
   const template = document.createElement("template");
   const html = `
   <div class="center">
     <input type="submit" id="librusPro_commentsButton" class="librusPro_comments-button ui-button ui-widget ui-state-default ui-corner-all" value="Wyświetl komentarze innych">
-    <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article style='text-align: justify;'><b style='color: #a96fe3'>LibrusPro</b><br>Jeżeli Twój nauczyciel wstawił oceny kilku osobom jednocześnie np. ze sprawdzianu (dodawanie seryjne) i&nbsp;wpisał komentarze np. zawierające liczbę uzyskanych punktów przez każdego ucznia, bądź wynik procentowy, to korzystając z tego przycisku możesz podejrzeć te komentarze ocen wpisanych w tym samym czasie co Tobie.</article><br><i style='color: #999999'>Przykładowa sytuacja:</i><br><span style='color: #91b8a5'>Nauczyciel wstawia wszystkim oceny ze sprawdzianu z&nbsp;rozdziału I. W komentarzu zamieścił informację ile miałeś(-aś) punktów na 20. Twój komentarz wygląda przykładowo:</span><br><b>&nbsp;Rozdział I - 19/20 95%</b><br><span style='color: #91b8a5'>Gdy użyjesz tego przycisku, wyświetli Ci się lista komentarzy wraz z odpowiednimi ich numerami.<br><span style='color: #aaaaaa'>&nbsp;-1 | Rozdział I - 15/20 75%<br>&nbsp;0 | Rozdział I - 19/20 95%<br>&nbsp;+1 | Rozdział I - 20/20 100%</span><br>'0' to Twój komentarz, więc te przed nim są wynikami osób przed Tobą na liście, a analogicznie za nim (z&nbsp;plusami), po Tobie na liście.</span><br><b style='color: #6fa5e3'>Podejrzeć możesz jedynie <u>komentarze</u>!</b>" src="/images/pomoc_ciemna.png">
-  </div>
-  `
+    <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Podglądanie komentarzy</span></article><article style='text-align: justify;'>Jeżeli Twój nauczyciel wstawił oceny <span class='librusPro_lightgreen'>kilku osobom jednocześnie</span> np. ze sprawdzianu (dodawanie seryjne) i&nbsp;wpisał komentarze np. zawierające liczbę uzyskanych punktów przez każdego ucznia, bądź wynik procentowy, to korzystając z tego przycisku <span class='librusPro_water'>możesz podejrzeć te komentarze</span> ocen wpisanych w tym samym czasie co Tobie.</article><br><i class='librusPro_gray'>Przykładowa sytuacja:</i><article class='librusPro_seaweed librusPro_justify'>Nauczyciel wstawia wszystkim oceny ze sprawdzianu z&nbsp;rozdziału I. W komentarzu zamieścił informację ile miałeś(-aś) punktów na 20. Twój komentarz wygląda przykładowo:</article><b>&nbsp;Rozdział I - 19/20 95%</b><article class='librusPro_seaweed librusPro_justify'>Gdy użyjesz tego przycisku, wyświetli Ci się lista komentarzy wraz z odpowiednimi ich numerami.<br><span class='librusPro_lightgray'>&nbsp;-1 | Rozdział I - 15/20 75%<br>&nbsp;0 | Rozdział I - 19/20 95%<br>&nbsp;+1 | Rozdział I - 20/20 100%</span><br><span class='librusPro_white'>'0'</span> to Twój komentarz, więc te przed nim są wynikami osób <u>przed Tobą</u> na liście, a analogicznie za nim (z&nbsp;plusami), <u>po Tobie</u> na liście.</article><b class='librusPro_lightblue'>Podejrzeć możesz jedynie <u class='librusPro_greeno'>komentarze</u>!</b>" src="/images/pomoc_ciemna.png">
+  </div>`
   template.innerHTML = html.trim();
   document.querySelector(".container-background").appendChild(template.content.firstChild);
   document.getElementById("librusPro_commentsButton").addEventListener("click", function(event) {
     event.target.parentElement.remove() ;
     getCommentsInProximity();
   });
-  location.href = "javascript: librusPro_jqueryTitle()";
+
 }
 
-if (window.location.href === "https://synergia.librus.pl/przegladaj_nb/uczen") {
-  const parent = document.querySelector(".container-background");
-  const header = document.createElement("H3");
-  header.classList.add("center", "librusPro_header");
-  header.innerText = "Wykaz uczęszczania";
-  const subHeader = document.createElement("DIV");
-  subHeader.classList.add("librusPro_sub-header");
-  subHeader.innerText = "Dzięki LibrusPro!";
-  header.appendChild(subHeader);
-  parent.insertBefore(header, parent.firstElementChild);
+// Aktywacja wykazu uczęszczania
+function insertAttendanceStatistics() {
   let template = document.createElement('template');
   let html = `
+  <h3 class="center librusPro_header">
+    <div>Wykaz uczęszczania</div>
+    <div class="librusPro_sub-header">Dzięki LibrusPro!</div>
+  </h3>
   <table class="center big decorated" style="margin-bottom: 4em;">
     <thead>
       <tr>
@@ -311,7 +390,7 @@ if (window.location.href === "https://synergia.librus.pl/przegladaj_nb/uczen") {
     </thead>
     <tbody id="librusPro_lessonsAttendance">
     <tr class="line0">
-      <td colspan="5"><input type="submit" class="librusPro_attendance-statistics-button ui-button ui-widget ui-state-default ui-corner-all" value="Pobierz wykaz uczęszczania (Procenty frekwencji)"></td>
+      <td colspan="5"><input type="button" id="librusPro_attendanceButton" class="ui-button ui-widget ui-state-default ui-corner-all" value="Pobierz wykaz uczęszczania (Procenty frekwencji)"></td>
     </tr>
     </tbody>
     <tfoot>
@@ -322,332 +401,151 @@ if (window.location.href === "https://synergia.librus.pl/przegladaj_nb/uczen") {
   </table>`;
   html = html.trim();
   template.innerHTML = html;
-  parent.insertBefore(template.content.firstChild, header.nextSibling);
-  document.querySelector(".librusPro_attendance-statistics-button").onclick = (e) => {
-    getAttendanceLessonsStatistics();
-    e.target.parentElement.parentElement.remove();
-  }
-  location.href = "javascript: librusPro_jqueryTitle()";
-}
-
-// TO DO: yoink z API/Me
-// Aktualizacja numerku, klasy i planu lekcji [klasa z widoku ocen = 3a LO, a klasa z informacji = 3 a LO -> dlatego w taki sposób :)]
-function updateDetails(dane, href) {
-  const loading = document.createElement("DIV");
-  loading.innerText = "Ładowanie...";
-  loading.classList.add("librusPro_loading");
-  document.getElementById("body").appendChild(loading);
-  const nrRegex = /<th class="big">Nr w dzienniku <\/th>\s*?<td>\s*?(\d*)\s*?<\/td>/;
-  const xhttpNr = new XMLHttpRequest();
-  xhttpNr.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      let nr = this.responseText.match(nrRegex);
-      if (nr != null) {
-        nr = nr[1];
-      }
-      const klasaRegex = /<b>Klasa: <\/b>(.*)&nbsp;<\/p>/;
-      const xhttpKlasa = new XMLHttpRequest();
-      xhttpKlasa.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          let klasa = this.responseText.match(klasaRegex);
-          if (klasa != null) {
-            klasa = klasa[1];
-          }
-
-          if (!dane || nr != dane.nr || klasa != dane.currentClass) {
-            let temp = DANE_DEFAULT;
-            if (klasa != null) temp.currentClass = klasa;
-            if (nr != null) temp.nr = nr;
-            browserAPI.storage.sync.set({
-              ["dane"]: temp
-            });
-          }
-
-          const planLekcji = {
-            0: [],
-            1: [],
-            2: [],
-            3: [],
-            4: [],
-            "dzwonki": [],
-          };
-          const xhttpPlan = new XMLHttpRequest();
-          xhttpPlan.responseType = "document";
-          xhttpPlan.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
-              this.response.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr.line1").forEach((e) => {
-                const nr = e.firstElementChild.innerText;
-                const godz = e.childNodes[1].innerText;
-                e.querySelectorAll(".line1").forEach((el) => {
-                  planLekcji.dzwonki[nr] = godz;
-                  const b = el.querySelector(".text > b");
-                  if (!b) return;
-                  const dzienTyg = [...el.parentElement.children].indexOf(el) - 2;
-                  const lekcja = [b.innerText];
-                  const zast = el.querySelector(".plan-lekcji-info");
-                  if (zast) lekcja[1] = `(${zast.innerText})`;
-                  planLekcji[dzienTyg][nr] = lekcja;
-                });
-              });
-              browserAPI.storage.sync.set({
-                ["plan"]: planLekcji
-              });
-              document.location.replace(href);
-            }
-          };
-          xhttpPlan.open("GET", "https://synergia.librus.pl/przegladaj_plan_lekcji", true);
-          xhttpPlan.send();
-        }
-      };
-      xhttpKlasa.open("GET", "https://synergia.librus.pl/przegladaj_oceny/uczen", true);
-      xhttpKlasa.send();
-    }
-  };
-  xhttpNr.open("GET", "https://synergia.librus.pl/informacja", true);
-  xhttpNr.send();
-}
-
-// ---------------------------------------- GLOBALNA INICJALIZACJA ----------------------------------------
-
-// Klasa do wklejania do własnych wydarzeń np. XD LO
-let currentClass;
-
-// Co to po komu ta strona startowa?
-if (window.location.href == "https://synergia.librus.pl/uczen/index" || window.location.href == "https://synergia.librus.pl/rodzic/index") {
-  // Przekierowanie i aktualizacja danych (nr i klasa)
-  browserAPI.storage.sync.get(["dane"], function (t) {
-    let dane = t["dane"];
-    updateDetails(dane, "https://synergia.librus.pl/przegladaj_oceny/uczen");
-  });
-} else if (window.location.href == "https://synergia.librus.pl/terminarz") {
-  browserAPI.storage.sync.get(["dane"], function (t) {
-    let dane = t["dane"];
-    if (dane && dane.currentClass != null) {
-      currentClass = dane.currentClass;
-    } else {
-      updateDetails(dane, "https://synergia.librus.pl/terminarz");
-    }
+  const parent = document.querySelector(".container-background");
+  parent.insertBefore(template.content.children[1], parent.firstChild);
+  parent.insertBefore(template.content.firstChild, parent.firstChild);
+  const button = document.getElementById("librusPro_attendanceButton");
+  button.addEventListener("click", () => {
+    button.parentElement.parentElement.style.display = "none";
+    button.parentElement.parentElement.previousElementSibling?.remove();
+    getAttendanceLessonsStatistics(button);
   });
 }
-
-// Przełącznik modyfikacji ocen
-let gradeManagerEnabled = false;
-let gradeManager;
-let gradeManagerOverlay;
-
-function insertGradeManager() {
-  const gradeManagerParent = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p")?.parentElement;
-  if (!gradeManagerParent) return;
-  gradeManagerParent.insertAdjacentHTML("afterend", `
-  <td class="librusPro_grade-manager-icon">
-    <img src="${browserAPI.runtime.getURL('img/pen.png')}">
-  </td>
-  <td class="librusPro_grade-manager">
-    <label class="librusPro_grade-manager-label">
-      <span>Tymczasowa modyfikacja ocen:</span>
-      <input type="checkbox" id="librusPro_gradeManagerCheckbox">
-      <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article style='text-align: justify;'><b style='color: #a96fe3'>LibrusPro</b><br>Gdy to ustawienie jest <b class='librusPro_title-tak'>włączone</b>, możesz tymczasowo lokalnie dodawać nowe oceny, bądź edytować i usuwać bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.</article><i style='color: #a96fe3'>(Po odświeżeniu strony wszystko wraca do stanu sprzed modyfikacji! Wszystkie zmiany zachodzą jedynie lokalnie i nie mają wpływu na Twoje rzeczywiste oceny!)</i><br><b style='color: #6fa5e3'>Oceny możesz dodawać dzięki '${ADD_SYMBOL}',<br>a modyfikować po prostu klikając na daną ocenę.</b>" src="/images/pomoc_ciemna.png">
-    </label>
-    <div class="librusPro_grade-manager-advice">(Najedź, aby dowiedzieć się więcej)</div>
-  </td>
-  <div id="librusPro_gradeEditorOverlay" class="librusPro_grade-editor-overlay">
-    <div class="librusPro_grade-editor-body">
-          <div class="librusPro_text" id="librusPro_gradeManagerHeader">Dodaj ocenę</div>
-          <div class="librusPro_field">
-              <label class="librusPro_title" for="librusPro_grade">Ocena:</label>
-              <select id="librusPro_grade" class="librusPro_select">
-                  ${['0', '1', '1+', '2-', '2', '2+', '3-', '3', '3+', '4-', '4', '4+', '5-', '5', '5+', '6-', '6']
-                    .map(x => `<option value="${x}"${x === '1' ? 'selected' : ''}>${x}</option>`).join("")}
-              </select>
-          </div>
-          <div class="librusPro_field">
-              <label class="librusPro_title" for="librusPro_weight">Waga:</label>
-              <input placeholder="2" type="number" step="1" min="0" id="librusPro_weight" class="librusPro_input librusPro_inputNumber">
-          </div>
-          <div class="librusPro_field">
-              <label class="librusPro_title" for="librusPro_comment">Komentarz:</label>
-              <textarea placeholder="Rozdział 4" id="librusPro_comment" class="librusPro_input" rows="2"></textarea>
-          </div>
-          <div class="librusPro_button librusPro_button-add" id="librusPro_add">Dodaj</div>
-          <div class="librusPro_button librusPro_button-edit" id="librusPro_edit" style="display: none;">Edytuj</div>
-          <div class="librusPro_button librusPro_button-remove" id="librusPro_remove" style="display: none;">Usuń</div>
-          <div class="librusPro_button librusPro_button-close" id="librusPro_close">Zamknij</div>
-          <div class="librusPro_bottomText">LibrusPro © <span id="librusPro_currentYear"></span></div>
-      </div>
-  </div>`);
-  gradeManager = document.getElementById("librusPro_gradeManagerCheckbox");
-  gradeManagerOverlay = document.getElementById("librusPro_gradeEditorOverlay");
-  document.getElementById("librusPro_currentYear").innerText = new Date().getFullYear();
-  document.getElementById("librusPro_close").addEventListener("click", () => gradeManagerOverlay.style.display = "none");
-
-  gradeManager.onchange = (e) => {
-    gradeManagerEnabled = e.target.checked;
-    document.querySelectorAll(".librusPro_no-grade").forEach((el) => {
-      el.innerText = gradeManagerEnabled ? ADD_SYMBOL : NO_DATA;
-      el.classList.toggle("cursor-pointer");
-    });    
-    document.querySelectorAll(".librusPro_add-grade").forEach((el) => {
-      el.classList.toggle("librusPro_add-grade-enabled");
-    });    
-  }
-}
-// Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest. Pozdro
-// JS liczy od 0, CSS od 1
-const OFFSET_JS = 2;
-const OFFSET_CSS = 3;
-const INDICES = {
-  ocenyI: -1,
-  sredniaI: -1,
-  proponowaneI: -1,
-  srodroczneI: -1,
-  ocenyII: -1,
-  sredniaII: -1,
-  proponowaneII: -1,
-  srodroczneII: -1,
-  sredniaR: -1,
-  proponowaneR: -1,
-  roczne: -1
-};
 
 // Pobranie indexów kolumn
-document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > thead > tr:nth-child(2) > td").forEach((e) => {
-  const index = [...e.parentElement.children].indexOf(e);
+function getGradeColumns() {
+  document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > thead > tr:nth-child(2) > td").forEach((e) => {
+    const index = [...e.parentElement.children].indexOf(e);
 
-  if (e.innerText == "Śr.I") INDICES.sredniaI = index;
-  if (e.innerText == "(I)") INDICES.proponowaneI = index;
-  if (e.innerText == "I") INDICES.srodroczneI = index;
+    if (e.innerText === "Śr.I") INDICES.sredniaI = index;
+    else if (e.innerText === "(I)") INDICES.proponowaneI = index;
+    else if (e.innerText === "I") INDICES.srodroczneI = index;
 
-  if (e.innerText == "Śr.II") INDICES.sredniaII = index;
-  if (e.innerText == "(II)") INDICES.proponowaneII = index;
-  if (e.innerText == "II") INDICES.srodroczneII = index;
+    else if (e.innerText === "Śr.II") INDICES.sredniaII = index;
+    else if (e.innerText === "(II)") INDICES.proponowaneII = index;
+    else if (e.innerText === "II") INDICES.srodroczneII = index;
 
-  if (e.innerText == "Śr.R") INDICES.sredniaR = index;
-  if (e.innerText == "(R)") INDICES.proponowaneR = index;
-  if (e.innerText == "R") INDICES.roczne = index;
+    else if (e.innerText === "Śr.R") INDICES.sredniaR = index;
+    else if (e.innerText === "(R)") INDICES.proponowaneR = index;
+    else if (e.innerText === "R") INDICES.roczne = index;
 
-});
-// Oceny bieżące są zawsze jeden przed średnimi
-INDICES.ocenyI = INDICES.sredniaI - 1;
-INDICES.ocenyII = INDICES.sredniaII - 1;
+  });
+  // Oceny bieżące są zawsze jeden przed średnimi
+  INDICES.ocenyI = INDICES.sredniaI - 1;
+  INDICES.ocenyII = INDICES.sredniaII - 1;
+}
 
-// ----------------------------------------------- ŚREDNIE -----------------------------------------------
+// Średnie
+class Average {
+  constructor(sum = 0, weights = 0) {
+    this.sum = sum;
+    this.weights = weights;
+    this.calculate();
+  }
 
-// Liczenie średniej arytmetycznej np. do proponowanych
-function getAverage(elements, background, options) {
-  let sum = 0;
-  let count = 0;
-  elements.forEach((e) => {
-    if (options.depressionMode) e.parentElement.style.background = background;
-    e.parentElement.isFinal = true;
-    if (!e.dataset.title) {
-      e.dataset.title = btoa(unescape(encodeURIComponent(e.title)));
-      if (options.modernizeTitles) modernizeTitle(e);
-    }
-    if (!options.countZeros && e.innerText[0] === "0") return;
+  update() {
+    this.calculate();
+    return this;
+  }
 
-    if (/[0-6][+-]?/.test(e.innerText)) {
+  calculate() {
+    if (this.weights === 0) this.average = NO_DATA;
+    else this.average = (Math.round(this.sum / this.weights * 100 + Number.EPSILON) / 100).toFixed(2);
+  }
+
+  // Liczenie średniej ze średnich (roczna)
+  static combine(a, b) {
+    if (a.weights + b.weights === 0) return new Average();
+    return new Average(a.sum + b.sum, a.weights + b.weights);
+  }
+
+  // Liczenie średniej arytmetycznej np. do proponowanych
+  static getMean(elements, background, options) {
+    let sum = 0;
+    let count = 0;
+    elements.forEach((e) => {
+      if (options.depressionMode) e.parentElement.style.background = background;
+      e.parentElement.isFinal = true;
+      if (!e.dataset.title) {
+        e.dataset.title = btoa(encodeURIComponent(e.title));
+        if (options.modernizeTitles) modernizeTitle(e);
+      }
+      if (!options.countZeros && e.innerText[0] === "0") return;
+      if (!REGEXS.grade.test(e.innerText)) return;
+
       sum += +e.innerText[0];
       count++;
       if (e.innerText.length > 1) {
-        if (e.innerText[1] == "+") sum += +options.plusValue;
-        else if (e.innerText[1] == "-") sum -= +options.minusValue;
+        if (e.innerText[1] === "+") sum += +options.plusValue;
+        else if (e.innerText[1] === "-") sum -= +options.minusValue;
       }
-    }
-  });
-  if (count == 0) return NO_DATA;
-  return (Math.round(sum / count * 100 + Number.EPSILON) / 100).toFixed(2);
-}
+    });
+    if (count === 0) return new Average();
+    return new Average(sum, count);
+  }
 
-// Liczenie średniej ważonej, zwracając uwagę na parametr "Licz do średniej:"
-function getWeightedAverage(elements, options) {
-  if (elements.length < 1)
-    return {
-      average: NO_DATA,
-      sum: 0,
-      weights: 0,
-    };
-
-  let sum = 0;
-  let weights = 0;
-  elements.forEach((e) => {
-    let elementTitle;
-    if (e.dataset.title) {
-      elementTitle = decodeURIComponent(escape(atob(e.dataset.title)));
-    } else {
-      elementTitle = e.title;
-      e.dataset.title = btoa(unescape(encodeURIComponent(e.title)));
-      if (options.modernizeTitles) modernizeTitle(e);
-    }
-    if (/[0-6][+-]?/.test(e.innerText)) {
-      let regexp = /<br>Licz do średniej: (tak|nie)<br>/;
-      let liczDoSredniej = (elementTitle.match(regexp) != null) ? elementTitle.match(regexp)[1] : "nie";
-      if ((liczDoSredniej == "nie" && !options.countToAverage) || (!options.countZeros && e.innerText[0] == "0")) {
-        if (options.depressionMode) {
-          e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
-        }
-        return;
-      }
-
-      let weight;
-      if (liczDoSredniej == "nie" && options.countToAverage) {
-        weight = 1;
-        weights += +weight;
+  // Liczenie średniej ważonej, zwracając uwagę na parametr "Licz do średniej:"
+  static getWeighted(elements, options) {
+    if (elements.length < 1) return new Average();
+    let sum = 0;
+    let weights = 0;
+    elements.forEach((e) => {
+      let elementTitle;
+      if (e.dataset.title) {
+        elementTitle = decodeURIComponent(atob(e.dataset.title));
       } else {
-        regexp = /<br>Waga: (\d+?)<br>/;
-        if (elementTitle.match(regexp) != null) {
-          weight = elementTitle.match(regexp)[1];
-        } else {
+        elementTitle = e.title;
+        e.dataset.title = btoa(encodeURIComponent(e.title));
+        if (options.modernizeTitles) modernizeTitle(e);
+      }
+      if (REGEXS.grade.test(e.innerText)) {
+        let liczDoSredniej = elementTitle.match(REGEXS.countToAverage)?.[1] ?? "nie";
+        if ((liczDoSredniej === "nie" && !options.countToAverage) || (!options.countZeros && e.innerText[0] === "0")) {
           if (options.depressionMode) {
             e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
           }
           return;
         }
-        weights += +weight;
 
-        if (options.depressionMode) {
-          if (weight == 1) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight1;
-          else if (weight == 2) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight2;
-          else if (weight == 3) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight3, e.parentElement.style.filter = "brightness(0.8)";
-          else if (weight == 4) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight4;
-          else if (weight >= 5) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight5;
+        let weight;
+        if (liczDoSredniej === "nie" && options.countToAverage) {
+          weight = 1;
+          weights++;
+        } else {
+          weight = elementTitle.match(REGEXS.weight)?.[2] ?? 0;
+          if (weight === 0) {
+            if (options.depressionMode) {
+              e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
+            }
+            return;
+          }
+          weights += +weight;
+
+          if (options.depressionMode) {
+            if (weight == 1) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight1;
+            else if (weight == 2) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight2;
+            else if (weight == 3) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight3, e.parentElement.style.filter = "brightness(0.8)";
+            else if (weight == 4) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight4;
+            else if (weight >= 5) e.parentElement.style.background = DEPRESSION_MODE_COLORS.weight5;
+          }
         }
+
+        if (e.innerText.length === 1) sum += (+e.innerText) * weight;
+        else if (e.innerText[1] === "+") sum += (+e.innerText[0] + +options.plusValue) * weight;
+        else if (e.innerText[1] === "-") sum += (+e.innerText[0] - +options.minusValue) * weight;
+
+      } else if (options.depressionMode) {
+        e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
       }
+    });
 
-      if (e.innerText.length == 1) sum += (+e.innerText) * weight;
-      else if (e.innerText[1] == "+") sum += (+e.innerText[0] + +options.plusValue) * weight;
-      else if (e.innerText[1] == "-") sum += (+e.innerText[0] - +options.minusValue) * weight;
-
-    } else if (options.depressionMode) {
-      e.parentElement.style.setProperty("background", DEPRESSION_MODE_COLORS.other, "important");
-    }
-  });
-
-  if (sum < 0 || weights <= 0)
-    return {
-      average: NO_DATA,
-      sum: 0,
-      weights: 0,
-    };
-  return {
-    average: (Math.round(sum / weights * 100 + Number.EPSILON) / 100).toFixed(2),
-    sum,
-    weights,
-  };
+    if (sum < 0 || weights <= 0)
+      return new Average();
+    return new Average(sum, weights);
+  }
 }
 
-function getYearAverage(semI, semII) {
-  if (semI.weights == 0 && semII.weights == 0) return {
-      average: NO_DATA,
-      sum: 0,
-      weights: 0,
-    };
-  return {
-    average: (Math.round((semI.sum + semII.sum) / (semI.weights + semII.weights) * 100 + Number.EPSILON) / 100).toFixed(2),
-    sum: semI.sum + semII.sum,
-    weights: semI.weights + semII.weights,
-  };
-}
-
+// Wiersz Brak ocen
 function insertNoGrades() {
   const noNewGrades = document.createElement("TR");
   noNewGrades.classList = "bolded line1";
@@ -658,6 +556,7 @@ function insertNoGrades() {
   }
 }
 
+// System powiązanch modułów z ocenami
 function handleGrades(options, recalculate = false) {
   if (!document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr:nth-child(1):not([name=przedmioty_all])")) {
     insertNoGrades();
@@ -690,31 +589,25 @@ function handleGrades(options, recalculate = false) {
   const rows = document.querySelectorAll('form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type:not(#tabSource) > tbody > tr:not(.bolded, [id^="przedmioty"], .librusPro_average)');
 
   // Średnia z I i II okresu
-  let avgI = {
-    sum: 0,
-    weights: 0,
-  };
-  let avgII = {
-    sum: 0,
-    weights: 0,
-  };
+  let avgI = new Average();
+  let avgII = new Average();
   let errors = [];
-  // Średnie dla poszczególnych przedmiotów oraz możliwość dodawania nowych ocen
+  // Średnie dla poszczególnych przedmiotów 
   for (let i = 0; i < rows.length; i++) {
-    if (!recalculate) {
+    // Możliwość dodawania nowych ocen
+    if (!recalculate && gradeManager) {
       // (Proponowane) (śród)roczne
       for (let u of Object.keys(midtermGrades).filter((e) => { return INDICES[e] >= 0})) {
         const td = rows[i].children[INDICES[u] + OFFSET_JS];
         // Jeśli nie ma oceny, dodajemy po kliknięciu nową
         if (!td.firstElementChild) {
-          td.addEventListener("click", function addGrade(e) {
-            if (!gradeManagerEnabled) {
-              gradeManager?.focus();
+          td.onclick = (e) => {
+            if (gradeManager && !gradeManager.enabled) {
+              gradeManager.switch.focus();
               return;
             };
-            displayGradeManagerOverlay(e.target, options, true, true);
-            td.removeEventListener("click", addGrade);
-          });
+            gradeManager.showOverlay(e.target, true, true);
+          };
           td.classList.add("librusPro_no-grade");
         }
       }
@@ -722,27 +615,29 @@ function handleGrades(options, recalculate = false) {
       for (let u of ["ocenyI", "ocenyII"]) {
         const td = rows[i].children[INDICES[u] + OFFSET_JS];
         const plus = document.createElement("DIV");
-        plus.innerText = ADD_SYMBOL;
-        plus.title = "Dodaj tymczasowo";
+        plus.innerText = ADD_EDIT_SYMBOL;
+        plus.title = '<article class="librusPro_timetable-header">LibrusPro <span class="librusPro_white">|</span> <span class="librusPro_greeno">Dodaj tymczasowo</span></article>';
         plus.addEventListener("click", (e) => {
-          if (!gradeManagerEnabled) {
-            gradeManager?.focus();
+          if (gradeManager && !gradeManager.enabled) {
+            gradeManager.switch.focus();
             return;
           };
-          displayGradeManagerOverlay(e.target.parentElement, options);
+          gradeManager.showOverlay(e.target.parentElement);
         });
         td.appendChild(plus);
         plus.classList.add("librusPro_add-grade", "librusPro_jqueryTitle");
       }
     }
-    const averageI = getWeightedAverage(rows[i].querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`), options);
-    const averageII = getWeightedAverage(rows[i].querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`), options);
-    const averageR = getYearAverage(averageI, averageII);
+    const averageI = Average.getWeighted(rows[i].querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`), options);
+    const averageII = Average.getWeighted(rows[i].querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`), options);
+    const averageR = Average.combine(averageI, averageII);
     averages[i] = [averageI, averageII, averageR];
     avgI.sum += averageI.sum;
     avgI.weights += averageI.weights;
     avgII.sum += averageII.sum;
     avgII.weights += averageII.weights;
+    rows[i].children[INDICES.ocenyI + OFFSET_JS].librusPro_avg = averageI;
+    rows[i].children[INDICES.ocenyII + OFFSET_JS].librusPro_avg = averageII;
 
     // Wyświetlanie średnich dla poszczególnych przedmiotów
     if (options.calculateAverages) {
@@ -782,14 +677,14 @@ function handleGrades(options, recalculate = false) {
   }
   if (errors.length > 0) {
     const wrongAverageMessage = "[LibrusPro] » Przynajmniej jedna z obliczonych średnich przez LibrusaPro różni się od tej wyliczonej przez Librusa Synergię (poprawna znajduje się w nawiasach). W menu ustawień rozszerzenia możesz dostosować pewne parametry uwzględniane przy jej liczeniu do swojej konfiguracji szkoły. Aby uzyskać więcej informacji i pomóc w eliminacji potencjalnego błędu, skontaktuj się ze mną na Discordzie. (Link znajduje się w stopce na dole strony)";
-    console.log(`%c${wrongAverageMessage}`, "color: #ff5555;");
+    console.log(`%c${wrongAverageMessage}`, `color: ${COLORS.error};`);
     const legend = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > div.legend.left.stretch > h3");
     if (!options.averageWarn) {
       legend.innerText = wrongAverageMessage;
       legend.id = "error_legend";
-      const cl = document.createElement("DIV");
-      cl.innerText = REMOVE_SYMBOL;
-      cl.addEventListener("click", function()  {
+      const closeButton = document.createElement("DIV");
+      closeButton.innerText = REMOVE_SYMBOL;
+      closeButton.addEventListener("click", function()  {
         document.getElementById("error_legend").style.display = "none";
         browserAPI.storage.sync.get(["options"], function (t) {
           let temp = t["options"];
@@ -799,27 +694,24 @@ function handleGrades(options, recalculate = false) {
           });
         });
       });
-      cl.classList.add("librusPro_error-close");
-      legend.appendChild(cl);
-    }
-    if (options.debug) {
-      errors.forEach((e) => {
-        e.style.setProperty("color", "#ff5555", "important");
-      });
+      closeButton.classList.add("librusPro_error-close");
+      legend.appendChild(closeButton);
     }
   }
   if (!recalculate) {
     // Możliwość modyfikacji ocen
-    document.querySelectorAll(".grade-box:not(#Ocena0, .positive-behaviour, .negative-behaviour) > a").forEach((e) => {
-      e.addEventListener("click", (event) => {
-        if (!gradeManagerEnabled) {
-          gradeManager?.focus();
-          return;
-        };
-        event.preventDefault();
-        displayGradeManagerOverlay(event.target, options, false);
+    if (gradeManager) {
+      document.querySelectorAll(".grade-box:not(#Ocena0, .positive-behaviour, .negative-behaviour) > a").forEach((e) => {
+        e.addEventListener("click", (event) => {
+          if (!gradeManager.enabled) {
+            gradeManager.switch.focus();
+            return;
+          };
+          event.preventDefault();
+          gradeManager.showOverlay(event.target, false);
+        });
       });
-    });
+    }
     // Wstawienie średnich w wierszu tabeli
     srednieTr.children[0].innerText = "";
     srednieTr.children[1].innerText = "Średnia";
@@ -831,20 +723,20 @@ function handleGrades(options, recalculate = false) {
       srednieTr.children[INDICES[u] + OFFSET_JS].classList.add("right");
     }
   }
-  srednieTr.children[INDICES.sredniaI + OFFSET_JS].innerText = avgI.weights > 0 ? (Math.round(avgI.sum / avgI.weights * 100 + Number.EPSILON) / 100).toFixed(2) : NO_DATA;
-  srednieTr.children[INDICES.sredniaII + OFFSET_JS].innerText = avgII.weights > 0 ? (Math.round(avgII.sum / avgII.weights * 100 + Number.EPSILON) / 100).toFixed(2) : NO_DATA;
-  srednieTr.children[INDICES.sredniaR + OFFSET_JS].innerText = getYearAverage(avgI, avgII).average;
+  srednieTr.children[INDICES.sredniaI + OFFSET_JS].innerText = avgI.update().average;
+  srednieTr.children[INDICES.sredniaII + OFFSET_JS].innerText = avgII.update().average;
+  srednieTr.children[INDICES.sredniaR + OFFSET_JS].innerText = Average.combine(avgI, avgII).average;
 
   // Wypisanie średnich z proponowanych i (śród)rocznych
   for (let u in midtermGrades) {
     if (INDICES[u] > 0) {
       const proposedOrFinal = u[0] === "p" ? "proposed" : "final";
-      srednieTr.children[INDICES[u] + OFFSET_JS].innerText = getAverage(midtermGrades[u], DEPRESSION_MODE_COLORS[proposedOrFinal], options);
+      srednieTr.children[INDICES[u] + OFFSET_JS].innerText = Average.getMean(midtermGrades[u], DEPRESSION_MODE_COLORS[proposedOrFinal], options).average;
     }
   }
 
   // Poświetlenie średniej zaliczającej się na czerwony pasek
-  if (!odOstLogowania) {
+  if (!gradesSinceLastLoginView) {
     for (const type of ["proponowaneR", "roczne"]) {
       const node = srednieTr.children[INDICES[type] + OFFSET_JS];
       if (+node.innerText >= 4.75) {
@@ -879,8 +771,7 @@ function handleGrades(options, recalculate = false) {
   }
 }
 
-// ---------------------------------------- DODATKI ----------------------------------------
-
+// Obrazki i bordery w css ustawione przez librusa na important
 function finalizeDarkTheme() {
   // Zamiany obrazków na ich ciemne wersje
   const darkThemeAccents = {
@@ -917,7 +808,7 @@ function finalizeDarkTheme() {
     e.style.setProperty("border-left", "1px #222222 solid", "important");
   });
 
-  if (window.location.href == "https://synergia.librus.pl/przegladaj_plan_lekcji") {
+  if (window.location.href.indexOf(URLS.timetable) > -1) {
     document.querySelectorAll(".border-top").forEach((e) => {
       e.style.setProperty("border-top", "1px #222222 solid", "important");
       e.style.setProperty("border-left", "1px #222222 solid", "important");
@@ -928,6 +819,15 @@ function finalizeDarkTheme() {
     document.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr > td").forEach((e) => {
       e.style.setProperty("border-bottom", "0", "important");
     });
+
+    // Ukrywanie soboty i niedzieli
+    const saturdaysSundays = document.querySelectorAll("#timetableEntryBox:nth-child(8), #timetableEntryBox:nth-child(9)");
+    if ([...saturdaysSundays].every((e) => e.children.length <= 0)) {
+      saturdaysSundays.forEach((e) => e.remove());
+      // Ukrywanie nagłówków
+      document.querySelector("#body > div > div > form > table.decorated.plan-lekcji > thead > tr > td:nth-child(8)").remove();
+      document.querySelector("#body > div > div > form > table.decorated.plan-lekcji > thead > tr > td:nth-child(8)").remove();
+    }
   }
 
   document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach((e) => {
@@ -962,10 +862,9 @@ function hideOnes() {
   // Oceny poprawione (w dodatkowym spanie)
   document.querySelectorAll("span > .grade-box > a:not(#ocenaTest)").forEach((e) => {
     if (/[0-1][+-]?/.test(e.innerText)) {
-      [...e.parentElement.parentElement.childNodes].forEach(elm => elm.nodeType != 1 && elm.parentNode.removeChild(elm));
-      const regex = /<br \/>Poprawa oceny:(.*)/;
+      [...e.parentElement.parentElement.childNodes].forEach(elm => elm.nodeType !== 1 && elm.parentNode.removeChild(elm));
       const b = e.parentElement.nextElementSibling;
-      if (b) b.firstElementChild.title = b.firstElementChild.title.replace(regex, "");
+      if (b) b.firstElementChild.title = b.firstElementChild.title.replace(REGEXS.gradeImprovement, "");
       e.parentElement.remove();
     }
   });
@@ -980,144 +879,171 @@ function hideOnes() {
   // (Proponowane) (śród)roczne [obsługa mrugania]
   document.querySelectorAll('td.center > .grade-box > a:not(#ocenaTest)').forEach((e) => {
     if (/[0-1][+-]?/.test(e.innerText)) {
-      const el = e.parentElement.cloneNode(true);
-      e.parentElement.parentElement.appendChild(el);
-      el.children[0].innerText = "2";
-      el.children[0].classList.add("librusPro_jqueryTitle");
-
-      const other = document.querySelectorAll(`td.center:nth-child(${Array.from(e.parentNode.parentNode.parentNode.children).indexOf(e.parentNode.parentNode) + 1}) > .grade-box > a:not(#ocenaTest)`);
-      let color;
-      other.forEach((x) => {
-        if (x.parentElement.parentElement.querySelectorAll("script").length > 0) return;
-        if (color == undefined) color = x.parentElement.style.backgroundColor;
-      })
-      if (color != undefined) el.style.backgroundColor = color;
-      else el.style.backgroundColor = DEFAULT_COLORS.rocznopodobne;
-      e.parentElement.remove();
+      e.innerText = "2";
     }
   });
+  removeBlinker();
 }
 
-// ---------------------------------------- INICJALIZACJA C.D. ----------------------------------------
+// Wyłączenie mrugania zagrożeń
+function removeBlinker() {
+  document.querySelectorAll('span.grade-box + script').forEach((e) => {
+    let gradeBox = e.previousElementSibling;
+    e.parentElement.appendChild(gradeBox.cloneNode(true));
+    gradeBox.remove();
+  })
+}
 
 // Od ostatniego logowania/w tym tygodniu
-let odOstLogowania = false;
+const gradesSinceLastLoginView = document.querySelector("form[name=\"PrzegladajOceny\"] > div > h2")?.innerText.includes("-") ?? false;
 
-adjustNavbar();
-insertFooter();
-disableAutoLogout();
+function main() {
+  registerOnStorageChange(window.location.href.indexOf(SCHEDULE_URL) > -1);
+  injectjQueryHook();
 
-if (document.querySelector("form[name=\"PrzegladajOceny\"] > div > h2")?.innerText.includes("-")) {
-  odOstLogowania = true;
-}
-
-browserAPI.storage.sync.get(["dane", "options", "aprilfools"], function (t) {
-  if (t["aprilfools"] == undefined) {
-    const d = new Date();
-    if (d.getMonth() == 3 && d.getDate() == 1) aprilfools();
-  }
-
-  let options = t["options"];
-  if (!options) {
-    browserAPI.storage.sync.set({
-      ["options"]: OPTIONS_DEFAULT
-    });
+  // Co to po komu ta strona startowa?
+  if (INDEX_URLS.some((e) => window.location.href.indexOf(e) > -1)) {
+    // Przekierowanie i aktualizacja danych
+    updateDetails(GRADES_URL);
     return;
-  } else {
-    for (let p in OPTIONS_DEFAULT) {
-      if (!options.hasOwnProperty(p)) {
-        let t = OPTIONS_DEFAULT;
-        for (let u in options) {
-          t[u] = options[u];
-        }
-        browserAPI.storage.sync.set({
-          ["options"]: t
-        });
+  }
+  
+  // Terminarz
+  if (window.location.href.indexOf(SCHEDULE_URL) > -1) {
+    browserAPI.storage.sync.get(["student"], (data) => {
+      let student = data["student"];
+      if (student && student.class !== null) {
+        currentClass = student.class;
+      } else {
+        updateDetails(SCHEDULE_URL);
         return;
       }
-    }
-  }
-
-  if (options.enableGradeManager) {
-    insertGradeManager();
-  }
-
-  if (options.darkTheme) {
-    finalizeDarkTheme();
-  }
-
-  // Jeśli w widoku ocen
-  if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
-    // Ukrywanie przedmiotów bez ocen
-    if (options.hideSubjects) {
-      hideSubjects();
-    }
-
-    // Ukrywanie jedynek
-    if (options.hideOnes) {
-      hideOnes();
-    }
-
-    // Wstawianie średnich i dostosowanie kolorów w wersji depresyjnej
-    handleGrades(options);
-  }
-
-  // Modernizacja dymków w widoku frekwencji
-  if (options.modernizeTitles && window.location.href == "https://synergia.librus.pl/przegladaj_nb/uczen") {
-    document.querySelectorAll(".box > .ocena").forEach(e => modernizeTitle(e));
-  }
-
-  let dane = t["dane"];
-  if (dane != undefined) {
-    adjustHeader(dane);
-  } else {
-    updateDetails(dane, "https://synergia.librus.pl/przegladaj_oceny/uczen");
-  }
-
-  if (options.debug) {
-    console.log("[LibrusPro] » Debugging enabled.");
-    browserAPI.storage.sync.get(null, function (result) {
-      console.log("[LibrusPro] » Chrome storage data:", result);
-      // console.log("[LibrusPro] » Chrome storage data:", JSON.stringify(result));
     });
   }
 
-  // Inne rozszerzenia
-  if (document.getElementById(atob("TGlicGx1cw==")))
-    alert(decodeURIComponent(escape(atob("W0xpYnJ1c1Byb10gV3lrcnl0byBpbm5lIHJvenN6ZXJ6ZW5pZSB6d2nEhXphbmUgeiBmdW5rY2pvbm93YW5pZW0gZHppZW5uaWthIExpYnJ1cyAoTGliUGx1cykuIEFieSB1bmlrbsSFxIcgcG90ZW5jamFsbnljaCBwcm9ibGVtw7N3IGkga29uZmxpa3TDs3cgeiBMaWJydXNQcm8sIHd5xYLEhWN6IHBvem9zdGHFgmUgcm96c3plcnplbmlhIGRvIExpYnJ1c2Eu"))));
+  getGradeColumns();
 
-  location.href = "javascript: librusPro_jqueryTitle()";
-});
+  // Nie wymagające opcji
+  printCreditsToConsole();
+  adjustHeader();
+  adjustNavbar();
+  insertFooter();
+  disableAutoLogout();
 
-// --------------------------------------------------------------------------------------------
+  // Oceny
+  if (window.location.href.indexOf(GRADES_URL) > -1) {
+    collapseBehavior();
+    insertProposedBehavior();
+  }
 
-// szósteczki - maybe kiedyś
-// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = "6"});
-// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = Math.floor(Math.random() * (7 - 4) + 4)});
-// document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach((e) => {e.innerText = "6.00"});
-// document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach((e) => {e.innerText = "6.00"});
-// document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerText = "wzorowe";
-// document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)").innerText = "wzorowe";
+  // Prace domowe
+  if (window.location.href.indexOf(HOMEWORKS_URL) > -1) {
+    adjustHomeworks();
+  }
 
-// ---------------------------------------- ZACHOWANIE ----------------------------------------
+  // Szczegóły oceny
+  if (window.location.href.indexOf(GRADE_DETAILS_URL) > -1) {
+    initCommentsInProximity();
+  }
+
+  // Frekwencja
+  if (window.location.href.indexOf(ATTENDANCE_URL) > -1) {
+    insertAttendanceStatistics();
+  }
+
+  // Pobranie opcji i danych
+  browserAPI.storage.sync.get(["student", "options", "aprilfools"], function (t) {
+    if (!t["aprilfools"]) {
+      const d = new Date();
+      if (d.getMonth() == 3 && d.getDate() == 1) aprilfools();
+    }
+
+    let options = t["options"];
+    if (!options) {
+      browserAPI.storage.sync.set({
+        ["options"]: OPTIONS_DEFAULT
+      });
+      return;
+    } else {
+      for (let p in OPTIONS_DEFAULT) {
+        if (!options.hasOwnProperty(p)) {
+          let t = OPTIONS_DEFAULT;
+          for (let u in options) {
+            t[u] = options[u];
+          }
+          browserAPI.storage.sync.set({
+            ["options"]: t
+          });
+          return;
+        }
+      }
+    }
+
+    if (options.darkTheme) {
+      finalizeDarkTheme();
+    }
+
+    // Oceny
+    if (window.location.href.indexOf(GRADES_URL) > -1) {
+      // Tymczasowa modyfikacja ocen
+      if (options.enableGradeManager) {
+        insertGradeManager();
+      }
+
+      // Ukrywanie jedynek
+      if (options.hideOnes) hideOnes();
+
+      // Ukrywanie przedmiotów bez ocen
+      if (options.hideSubjects) hideSubjects();
+
+      // Wstawianie średnich i dostosowanie kolorów w wersji depresyjnej
+      handleGrades(options);
+    }
+
+    // Frekwencja
+    if (window.location.href.indexOf(ATTENDANCE_URL) > -1) {
+      // Modernizacja dymków
+      if (options.modernizeTitles) document.querySelectorAll(".box > .ocena").forEach(e => modernizeTitle(e));
+    }
+
+    let student = t["student"];
+    if (student && student.number !== null && student.class !== null) {
+      displayStudentNumber(student);
+    } else {
+      browserAPI.runtime.sendMessage('fetchStudentInfo', displayStudentNumber);
+    }
+
+    if (options.debug) {
+      console.log("[LibrusPro] » Debugging enabled.");
+      browserAPI.storage.sync.get(null, function (result) {
+        console.log("[LibrusPro] » Chrome storage data:", result);
+        // console.log("[LibrusPro] » Chrome storage data:", JSON.stringify(result));
+      });
+    }
+
+    otherAddons();
+    refreshjQueryTitles();
+  });
+  refreshjQueryTitles();
+}
+
+main();
+
+// Inne rozszerzenia - kompatybilność (a raczej jej brak)
+function otherAddons() {
+  if (document.getElementById(atob("TGlicGx1cw=="))) {
+    alert(decodeURIComponent(atob("JTVCTGlicnVzUHJvJTVEJTIwJUMyJUJCJTIwV3lrcnl0byUyMGlubmUlMjByb3pzemVyemVuaWUlMjB6d2klQzQlODV6YW5lJTIweiUyMGZ1bmtjam9ub3dhbmllbSUyMGR6aWVubmlrYSUyMExpYnJ1cyUyMChMaWJQbHVzKS4lMjBBYnklMjB1bmlrbiVDNCU4NSVDNCU4NyUyMHBvdGVuY2phbG55Y2glMjBwcm9ibGVtJUMzJUIzdyUyMGklMjBrb25mbGlrdCVDMyVCM3clMjB6JTIwTGlicnVzUHJvJTJDJTIwd3klQzUlODIlQzQlODVjeiUyMHByb3N6JUM0JTk5JTIwcG96b3N0YSVDNSU4MmUlMjByb3pzemVyemVuaWElMjBkbyUyMExpYnJ1c2Eu")));
+  }
+}
 
 // Proponowane zachowanie do tabeli głównej
 function insertProposedBehavior() {
+  const proposedBehaviors = document.querySelector("#przedmioty_zachowanie > td:nth-child(2) > table:first-of-type > tbody")?.querySelectorAll("[colspan='3']");
 
-  // Pobranie elementów z proponowanym zachowaniem z rozwinięcia
-  let propZachSrodroczne = document.querySelector("#przedmioty_zachowanie > td:nth-child(2) > table:first-of-type > tbody");
-  let propZachRoczne = document.querySelector("#przedmioty_zachowanie > td:nth-child(2) > table:first-of-type > tbody");
-
-  if (!propZachSrodroczne || !propZachRoczne) return;
-  propZachSrodroczne = propZachSrodroczne.querySelectorAll("[colspan='3']")[0];
-  propZachRoczne = propZachRoczne.querySelectorAll("[colspan='3']")[2];
-  if (!propZachSrodroczne || !propZachRoczne) return;
-
-  // Pobranie wartości proponowanego zachowania
-  propZachSrodroczne = propZachSrodroczne.innerText.split(': ')[1];
-  propZachRoczne = propZachRoczne.innerText.split(': ')[1];
-  if (!propZachSrodroczne) return;
-  if (propZachSrodroczne && !propZachRoczne) propZachRoczne = NO_DATA;
+  // Wartości proponowanego zachowania
+  propZachSrodroczne = proposedBehaviors?.[0]?.innerText.split(': ')[1];
+  propZachRoczne = proposedBehaviors?.[2]?.innerText.split(': ')[1];
+  if (!propZachSrodroczne && !propZachRoczne) return;
 
   // Elementy zachowania (śród)rocznego (i proponowanego) [niezmienne od proponowanych ocen I, II i R]
   const zachSrodroczneElement = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr.bolded > td:nth-child(4)");
@@ -1126,8 +1052,8 @@ function insertProposedBehavior() {
   const propZachRoczneElement = zachRoczneElement.cloneNode(true);
 
   // "-", bądź ocena z zachowania
-  propZachSrodroczneElement.innerText = propZachSrodroczne || NO_DATA;
-  propZachRoczneElement.innerText = propZachRoczne || NO_DATA;
+  propZachSrodroczneElement.innerText = propZachSrodroczne;
+  propZachRoczneElement.innerText = propZachRoczne;
 
   // Stylizacja proponowanych zachowań
   propZachSrodroczneElement.style.fontStyle = "italic";
@@ -1147,114 +1073,128 @@ function insertProposedBehavior() {
   zachRoczneElement.colSpan = INDICES.proponowaneR != -1 ? "3" : "2";
 }
 
-// ---------------------------------------- WIZUALNE ----------------------------------------
-
-// Schowanie paska z zachowaniem i wywołanie funkcji go dodającej, jeśli znajdujemy się na odpowiedniej stronie
-if (window.location.href == "https://synergia.librus.pl/przegladaj_oceny/uczen") {
-  if (odOstLogowania) {
-    // Ukryj całkowicie zachowanie
+// Schowanie paska z zachowaniem
+function collapseBehavior() {
+  if (gradesSinceLastLoginView) {
+    // Ukrycie zachowania, jeśli nie zostało zmienione
     const zachowanieTr = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded");
-    let toRemove = true;
+    let toHide = true;
     zachowanieTr.querySelectorAll(".center:not(:first-child)").forEach((e) => {
-      if (e.innerText != "-") toRemove = false;
+      if (e.innerText !== "-") toHide = false;
     })
-    if (toRemove) zachowanieTr.style.display = "none";
+    if (toHide) zachowanieTr.style.display = "none";
   } else {
-    // Zwiń zachowanie
+    // Zwinięcie zachowania
     let injectedCode = 'showHide.ShowHide("zachowanie")';
     if (document.getElementById("przedmioty_OP_zachowanie_node")) injectedCode += ',showHideOP.ShowHide("zachowanie");';
     const script = document.createElement('script');
     script.appendChild(document.createTextNode(injectedCode));
     (document.body || document.head || document.documentElement).appendChild(script);
-
-    // Dodaj proponowane
-    insertProposedBehavior();
   }
 }
 
-// Plan lekcji do navbara
 function adjustNavbar() {
-  const navBarElement = document.querySelector("#main-menu > ul > li:nth-child(3)");
-  if (!navBarElement) return;
-  const planLekcji = navBarElement.cloneNode();
-  // planLekcji.children[0].href = "javascript:otworz_w_nowym_oknie('/przegladaj_plan_lekcji','plan_u',0,0)";
-  // planLekcji.children[0].href = "https://synergia.librus.pl/przegladaj_plan_lekcji";
-  // planLekcji.children[0].setAttribute("target", "_blank");
-  const planLekcjiElement = document.createElement("A");
-  planLekcjiElement.innerText = "Plan lekcji";
-  planLekcjiElement.style.cursor = "pointer";
-  planLekcjiElement.addEventListener("mouseup", function () {
-    window.open("https://synergia.librus.pl/przegladaj_plan_lekcji");
-  });
-  planLekcji.appendChild(planLekcjiElement);
-  navBarElement.parentElement.appendChild(planLekcji);
+  const ref = document.querySelector("#icon-oceny")?.parentElement;
+  if (!ref) return;
+  
+  // Plan lekcji z Organizacji do głównego menu
+  const timetableIcon = document.createElement("template");
+  const html = `
+  <li>
+    <a href="javascript:void(window.open('${URLS.timetable}'))" id="icon-planlekcji">
+      <span class="circle"></span>
+      Plan lekcji
+    </a>
+  </li>`
+  timetableIcon.innerHTML = html.trim();
+  ref.parentElement.insertBefore(timetableIcon.content.firstChild, ref);
 
+  // Ankiety zamiast planu lekcji w Organizaci, usunięcie pomocy i książęk
   document.querySelectorAll("#main-menu > ul > li > a").forEach((e) => {
     if (e.innerText == "Ankiety") e.parentElement.style.display = "none";
     if (e.innerText == "Pomoc") e.parentElement.style.display = "none";
     if (e.innerText == "Książki") e.parentElement.style.display = "none";
-    if (e.innerText == "Organizacja") e.parentElement.children[1].children[0].style.display = "none";
+    if (e.innerText == "Organizacja") {
+      const oldTimetable = e.parentElement.children[1].firstElementChild.firstElementChild;
+      oldTimetable.href = "/ankiety_admin_ankiety";
+      oldTimetable.innerText = "Ankiety";
+    }
   })
 }
 
 // Wyświetlanie numeru z dziennika obok szczęśliwego + informacja gdy nim jest Twój
-function adjustHeader(dane) {
-  const numerek = document.querySelector("#user-section > span.luckyNumber");
-  const numerekDisabled = document.querySelector("#user-section > a > span.luckyNumber");
+function displayStudentNumber(student) {
+  const luckyNumber = document.querySelector("#user-section > span.luckyNumber");
+  const luckyNumberDisabled = document.querySelector("#user-section > a > span.luckyNumber");
 
-  let yourNumber = document.createElement("SPAN");
-  yourNumber.innerText = "Twój numerek w dzienniku: ";
-  const number = document.createElement("B");
-  number.classList.add("librusPro_yourNumber");
-  yourNumber.appendChild(number);
+  let studentNumberWrapper = document.createElement("SPAN");
+  studentNumberWrapper.innerText = "Twój numerek w dzienniku: ";
+  const studentNumberEl = document.createElement("B");
+  studentNumberEl.classList.add("librusPro_yourNumber");
+  studentNumberWrapper.appendChild(studentNumberEl);
   
-  number.innerText = dane.nr;
-  if (numerek) {
-    if (document.querySelector("#user-section > span.luckyNumber > b").innerText == dane.nr) {
-      const gratulacje = document.createElement("SPAN");
-      gratulacje.classList.add("librusPro_congratulations")
-      gratulacje.innerText = "GRATULACJE!";
-      yourNumber.appendChild(gratulacje);
+  studentNumberEl.innerText = student.number ?? "?";
+  if (luckyNumber) {
+    if (+document.querySelector("#user-section > span.luckyNumber > b").innerText === student.number) {
+      const congratulations = document.createElement("SPAN");
+      congratulations.classList.add("librusPro_congratulations")
+      congratulations.innerText = "GRATULACJE!";
+      studentNumberWrapper.appendChild(congratulations);
     }
-    numerek.parentElement.insertBefore(yourNumber, numerek.nextSibling);
-  } else if (numerekDisabled) {
-    yourNumber.style.marginLeft = "5px";
-    numerekDisabled.parentElement.parentElement.insertBefore(yourNumber, numerekDisabled.parentElement.nextSibling);
+    luckyNumber.parentElement.insertBefore(studentNumberWrapper, luckyNumber.nextSibling);
+  } else if (luckyNumberDisabled) {
+    studentNumberWrapper.style.marginLeft = "5px";
+    luckyNumberDisabled.parentElement.parentElement.insertBefore(studentNumberWrapper, luckyNumberDisabled.parentElement.nextSibling);
   }
 
-  yourNumber.classList.add("librusPro_jqueryTitle");
-  yourNumber.title = "<b style='color: #b6dc3f'>Podgląd numerka z dziennika tylko z <b style='color: #a96fe3'>LibrusPro</b>!</b>";
-  const hakerzy = document.querySelector("#user-section > img");
-  if (hakerzy) {
-    hakerzy.title += "<br>❗❗ <b style='color: #ee9999'>HAKERZY ATAKUJĄ!</b> ❗❗"
+  studentNumberWrapper.classList.add("librusPro_jqueryTitle");
+  studentNumberWrapper.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Twój numerek</span></article><b style='color: #b6dc3f'>Funkcja dostępna tylko z rozszerzeniem <b class='librusPro_accent'>LibrusPro</b>!</b>";
+  if (student.number === null) {
+    studentNumberWrapper.title = `<b class="librusPro_error">Nie udało się pobrać Twojego numerka!</b>`;
+  }
+  refreshjQueryTitles();
+}
+
+// GDPR, delikatne zmiany headera oraz zmiana tytułu i ikony strony
+function adjustHeader() {
+  let lastLogin = document.querySelectorAll("#user-section > .tooltip");
+  if (lastLogin.length > 0) {
+    let title = lastLogin[0].title;
+    const locations = ['Zimbabwe', 'Rosja', 'Afganistan', 'Białoruś', 'Czechy', 'Rumunia', 'Meksyk', 'Kuwejt', 'Indie', 'Niemcy', 'Czad', 'Bhutan', 'Sri Lanka', 'Somalia', 'Wietnam', 'Boliwia', 'Etiopia', 'Kanada', 'Lesotho', 'Mozambik', 'Peru', 'Sudan', 'Ukraina', 'Palestyna'];
+    title = title.replaceAll(REGEXS.lastLoginHeader, '<b class="librusPro_title-$1">ostatnie $1 logowania:</b><article class="librusPro_last-login-header"><span class="librusPro_title-user">data</span> <span class="librusPro_title-type">godzina</span> <span class="librusPro_title-nie">adres IP</span> <span class="librusPro_greeno">lokalizacja</span></article>');
+    title = title.replaceAll(REGEXS.lastLogin, '<article class="librusPro_last-login-row"><span class="librusPro_title-user">$1</span><span class="librusPro_title-type">$2</span><span class="librusPro_title-nie">$3</span><span class="librusPro_greeno">ajcazilakol</span></article>');
+    title += '<article class="librusPro_last-login-row"><span class="librusPro_title-user">2005-04-02</span><span class="librusPro_title-type">21:37:00</span><span class="librusPro_title-nie">127.0.0.1</span><span class="librusPro_greeno">Watykan</span></article>';
+    title = title.replace('ajcazilakol', 'Polska').replace('ajcazilakol', 'Polska');
+    for (let i = 0; i < 9; i++) {
+      title = title.replace('ajcazilakol', locations[Math.floor(Math.random()*locations.length)]);
+    }
+    lastLogin[0].title = title;
+    lastLogin[1].title = title;
   }
 
-  const uczen = document.querySelector("#user-section > b");
-  if (uczen) {
-    uczen.onclick = () => window.open("https://synergia.librus.pl/wydruki/wydruk_danych_osobowych/2137.pdf", '_blank').focus();
+  const gdprLink = document.querySelector("#user-section > b");
+  if (gdprLink) {
+    gdprLink.onclick = () => window.open(URLS.gdpr, '_blank').focus();
   }
 
-  const uczenHelp = document.querySelector("#user-section > b > img");
-  if (uczenHelp) {
-    uczenHelp.title = "<b style='color: #8debe3'>Dzięki za korzystanie z rozszerzenia <b style='color: #a96fe3'>LibrusPro</b>!</b><br><b style='color: #ffd128'>Jeżeli Ci się spodobało, nie zapomnij zostawić<br>5 gwiazdek w sklepie oraz polecić znajomym!</b><br><b style='color: #ff7ca0'><i>Jedz Buraczki!</i></b>"
+  const loggedInAs = document.querySelector("#user-section > b > img");
+  if (loggedInAs) {
+    loggedInAs.title = `<b class="librusPro_lightgreen">Dzięki za korzystanie z rozszerzenia <b class='librusPro_accent'>LibrusPro</b>!</b><br><b class="librusPro_yellow">Jeżeli Ci się spodobało, nie zapomnij zostawić<br>5 gwiazdek w sklepie oraz polecić znajomym!</b><br><b class="librusPro_salmon"><i>Jedz Buraczki!</i></b>`;
   }
 
-  const bezpiecznyUczen = document.querySelector('a[title="Bezpieczny Uczeń"]');
-  if (bezpiecznyUczen) {
-    bezpiecznyUczen.parentElement.remove();
-  }
+  document.querySelector('a[title="Bezpieczny Uczeń"]')?.parentElement?.remove();
 
   // Zmiana title
-  let tityl = "LibrusPro | ";
+  let pageTitle = "LibrusPro | ";
 
   // Ilość nowych rzeczy
-  let num = 0;
-  document.querySelectorAll(".button.counter").forEach((e) => {
-    num += +e.innerText;
-  })
-  if (num > 0) tityl = `(${num}) ${tityl}`;
+  let num = [...document.querySelectorAll(".button.counter")].reduce((total, e) => total + +e.innerText, 0);
+  if (num > 0) {
+    pageTitle = `(${num}) ${pageTitle}`;
+  }
 
-  const titels = {
+  // W zależności od podstrony
+  const pageTypes = {
     "przegladaj_oceny": "Oceny",
     "przegladaj_nb": "Frekwencja",
     "wiadomosci": "Wiadomości",
@@ -1263,11 +1203,11 @@ function adjustHeader(dane) {
     "moje_zadania": "Zadania domowe",
     "plan_lekcji": "Plan lekcji",
   }
-  let typTityl = "Synergia";
-  for (const e in titels) {
-    if (location.href.includes(e)) typTityl = titels[e];
+  let pageType = "Synergia";
+  for (const e in pageTypes) {
+    if (location.href.includes(e)) pageType = pageTypes[e];
   }
-  document.title = tityl + typTityl;
+  document.title = pageTitle + pageType;
 
   // Zamiana favicon
   let link = document.querySelector("link[rel~='icon']");
@@ -1281,18 +1221,18 @@ function adjustHeader(dane) {
 
 // Copyright
 function insertFooter() {
-  const footer = document.querySelector("#footer");
+  const footer = document.getElementById("footer");
   if (!footer) return;
   footer.innerHTML = `
   <hr>
   <span id="bottom-logo"></span>
   <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="librusPro_icon" style="background: url(&quot;${browserAPI.runtime.getURL('img/icon.png')}&quot;);"></a>
   <div class="librusPro_footer">
-    <span style="color: #96c5b4;">» Podoba się wtyczka? <a href="https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf" target="_blank" class="librusPro_link">Zostaw 5<span style="font-size: 11px;">⭐</span></a></span>
-    <div style="color: #94cae4;">» Wbijaj na oficjalny <a href="https://discord.gg/e9EkVEvsDr" target="_blank" class="librusPro_link">Discord</a>!</div>
+    <span class="librusPro_greeno">» Podoba się wtyczka? <a href="https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf" target="_blank" class="librusPro_link">Zostaw 5<span style="font-size: 11px;">⭐</span></a></span>
+    <div class="librusPro_water">» Wbijaj na oficjalny <a href="${DISCORD_LINK}" target="_blank" class="librusPro_link">Discord</a>!</div>
     
     <div>» <span style="font-style: italic">LibrusPro © ${new Date().getFullYear()} Maks Kowalski</span></div>
-  </div>`
+  </div>`;
 }
 
 // KEKW
@@ -1318,7 +1258,7 @@ function aprilfools() {
   }
 
   let pp = INDICES.ocenyII + OFFSET_JS;
-  if (odOstLogowania) {
+  if (gradesSinceLastLoginView) {
     pp = 5;
   }
   document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr > td:nth-child(2)").forEach((e) => {
@@ -1352,10 +1292,11 @@ function aprilfools() {
       ["aprilfools"]: false
     });
   });
+  refreshjQueryTitles();
 }
 
 // Prace domowe
-if (window.location.href == "https://synergia.librus.pl/moje_zadania") {
+function adjustHomeworks() {
   document.querySelectorAll('tr[id^="homework_"] > td.bold:first-child').forEach((e) => {
     e.parentElement.classList.add("librusPro_new");
   });
@@ -1380,15 +1321,16 @@ if (window.location.href == "https://synergia.librus.pl/moje_zadania") {
 
   // Otwieranie prac domowych w nowej karcie, a nie oknie
   document.querySelectorAll(`input[onclick*="otworz_w_nowym_oknie('/moje_zadania/podglad/"]`).forEach((e) => {
-    const regex = /(otworz_w_nowym_oknie\(\'\/moje_zadania\/podglad\/)(\d*?)(\',\'o1\',650,600\);)/;
-    e.outerHTML = e.outerHTML.replace(regex, `window.open('https://synergia.librus.pl/moje_zadania/podglad/$2');`);
+    e.outerHTML = e.outerHTML.replace(REGEXS.homework, `window.open('https://synergia.librus.pl/moje_zadania/podglad/$2');`);
   });
 }
 
+// Automatyczne ładowanie strony w tle co 20 min, aby utrzymać sesję
 function disableAutoLogout() {
   // Załadowanie strony w tle co 20 minut, aby nie wylogowywało
   const code = `function refreshLibrus() {
     fetch('https://synergia.librus.pl/wiadomosci', { cache: 'no-cache', credentials: 'same-origin' });
+    fetch(REFRESH_URL);
   }
   setInterval(refreshLibrus, 20*60*1000);`;
   const refreshScript = document.createElement('script');
@@ -1396,163 +1338,7 @@ function disableAutoLogout() {
   (document.body || document.head || document.documentElement).appendChild(refreshScript);
 }
 
-// Otwieranie overlaya do dodawania/edycji ocen
-function displayGradeManagerOverlay(element, options, isNew = true, isFinal = false) {
-  const gradeManagerHeader = document.getElementById("librusPro_gradeManagerHeader");
-  const weightInput = document.getElementById("librusPro_weight");
-  const addButton = document.getElementById("librusPro_add");
-  const editButton = document.getElementById("librusPro_edit");
-  const removeButton = document.getElementById("librusPro_remove");
-  const commentInput = document.getElementById("librusPro_comment");
-  const gradeInput = document.getElementById("librusPro_grade");
-  gradeManagerOverlay.style.display = "block";
-  element.librusPro_options = options;
-  gradeManagerHeader.innerText = isNew ? "Dodaj ocenę" : "Edytuj ocenę";
-  weightInput.value = isFinal ? "0" : "1";
-  weightInput.parentElement.style.display = (isFinal || element.parentElement.isFinal) ? "none" : "block";
-  addButton.style.display = isNew ? "block" : "none";
-  editButton.style.display =  isNew ? "none" : "block";
-  removeButton.style.display =  isNew ? "none" : "block";
-  if (isNew) {
-    commentInput.parentElement.style.display = isFinal ? "none" : "block";
-    gradeInput.value = "1";
-    addButton.onclick = (e) => {
-      gradeManagerOverlay.style.display = "none";
-      // Usuwanie "Brak ocen"
-      if (element.firstElementChild?.tagName == "SCRIPT") {
-        element.firstElementChild?.remove();
-        element.childNodes.forEach(n => n.remove());
-      } else if (element.childNodes[0]?.nodeType === 3) element.childNodes[0].remove();
-      addCustomGrade(element, isFinal);
-    }
-  } else {
-    commentInput.parentElement.style.display = "none";
-    let title = decodeURIComponent(escape(atob(element.dataset.title)));
-    const regexp = /(<br>Waga: )(\d+?)(<br>)/;
-    weightInput.value = title.match(regexp)?.[2] ?? weightInput.value;
-    // Oceny inne niż liczbowe, np. bz
-    if (document.querySelectorAll(`#librusPro_grade option[value="${element.innerText}"]`).length === 0) {
-      const option = document.createElement("OPTION");
-      option.value = element.innerText;
-      option.innerText = element.innerText;
-      gradeInput.appendChild(option);
-    }
-    gradeInput.value = element.innerText;
-    editButton.onclick = (e) => {
-      gradeManagerOverlay.style.display = "none";
-      modifyGrade(element, title);
-    }
-    removeButton.onclick = (e) => {
-      gradeManagerOverlay.style.display = "none";
-      removeGrade(element, options);
-    }
-  }
-}
-
-// Tymczasowe dodawanie oceny
-function addCustomGrade(element, isFinal) {
-  gradeManagerOverlay.style.display = "none";
-  const gradeBox = document.createElement("SPAN");
-  gradeBox.classList.add("grade-box");
-  gradeBox.style.backgroundColor = GRADE_MANAGER_DEFAULT_COLOR;
-  const grade = document.createElement("A");
-  grade.classList.add("ocena", "librusPro_jqueryTitle");
-  grade.innerText = document.getElementById("librusPro_grade").value;
-  grade.style.cursor = "pointer";
-  let weight = Number(document.getElementById("librusPro_weight").value);
-  if (weight < 0) weight = 0;
-  let comment = document.getElementById("librusPro_comment").value;
-  grade.title = `Kategoria: LibrusPro<br>Data: 2137-02-30 (nd.)<br>Nauczyciel: Maks Kowalski<br>Licz do średniej: ${isFinal ? "nie" : "tak"}<br>${weight > 0 ? `Waga: ${weight}<br>` : ""}Dodał: Maks Kowalski<br>${comment.length > 0 ? `<br>Komentarz: ${comment}` : ""}`;
-  gradeBox.appendChild(grade);
-  element.insertBefore(gradeBox, element.lastElementChild);
-  location.href = "javascript: librusPro_jqueryTitle()";
-  gradeBox.isFinal = isFinal;
-  grade.addEventListener("click", (event) => {
-    if (!gradeManagerEnabled) {
-      gradeManager.focus();
-      return;
-    };
-    event.preventDefault();
-    displayGradeManagerOverlay(event.target, element.librusPro_options, false);
-  });
-  element.classList.remove("cursor-pointer", "librusPro_no-grade");
-  handleGrades(element.librusPro_options, true);
-}
-
-// Tymczasowa modyfikacja oceny
-function modifyGrade(element, title) {
-  element.innerText = document.getElementById("librusPro_grade").value;
-  if (!element.parentElement.isFinal) {
-    let weight = Number(document.getElementById("librusPro_weight").value).toFixed(0);
-    if (weight < 0) weight = 0;
-    const regexp = /(<br>Waga: )(\d+?)(<br>)/;
-    const countToAverageRegExp = /<br>Licz do średniej: (tak|nie)<br>/;
-    let newTitle = title.replace(regexp, "$1" + weight + "$3");
-    if (!title.match(countToAverageRegExp)) {
-      newTitle += `<br>Licz do średniej: tak<br>`;
-    }
-    if (!title.match(regexp)) {
-      newTitle += `<br>Waga: ${weight}<br>`;
-    }
-    newTitle = newTitle.replace(/(<br(\/?)>){2,}/g, "<br>")
-    element.title = newTitle;
-    if (element.librusPro_options.modernizeTitles) modernizeTitle(element);
-    element.dataset.title = btoa(unescape(encodeURIComponent(newTitle)));
-  }
-  handleGrades(element.librusPro_options, true);
-}
-
-// Tymczasowe usuwanie oceny
-function removeGrade(element) {
-  const grade = element.parentElement;
-  let gradeParent = grade.parentElement;
-  // Regeneracja dodania nowej oceny
-  if (grade.isFinal) {
-    const noGradesPlaceholder = document.createTextNode(ADD_SYMBOL);
-    gradeParent.addEventListener("click", function addGrade(e) {
-      if (!gradeManagerEnabled) {
-        gradeManager.focus();
-        return;
-      }
-      displayGradeManagerOverlay(e.target, element.librusPro_options, true, true);
-      gradeParent.removeEventListener("click", addGrade);
-    });
-    gradeParent.appendChild(noGradesPlaceholder);
-    gradeParent.classList.add("librusPro_no-grade", "cursor-pointer");
-  // Poprawione znajdują się w dodatkowym spanie z []
-} else if (gradeParent.tagName == "SPAN") {
-    for (let u of gradeParent.childNodes) {
-      if (u.nodeType === Node.TEXT_NODE) u.remove();
-    }
-    if (gradeParent.children.length <= 1) {
-      if (gradeParent.parentElement.children.length <= 2) {
-        const noGradesPlaceholder = document.createTextNode("Brak ocen");
-        gradeParent.parentElement.insertBefore(noGradesPlaceholder, gradeParent.parentElement.firstElementChild);
-      }
-      gradeParent.remove();
-    }
-  // // Wstawianie "Brak ocen"
-  } else if (gradeParent.children.length <= 2) {
-    const noGradesPlaceholder = document.createTextNode("Brak ocen");
-    gradeParent.insertBefore(noGradesPlaceholder, gradeParent.firstElementChild);
-  }
-  grade.remove();
-  handleGrades(element.librusPro_options, true);
-}
-
-const TITLE_MODERNIZATION = [
-  [/(Ocena:|Lekcja:) ([\D\d]*?)(<br\/?>|$)/g, '<span class="librusPro_title-grade">$2</span>$3'],
-  [/(Kategoria:|Rodzaj:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-type">$2</span>$3'],
-  [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:| wystawienia:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
-  [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
-  [/(Nauczyciel:|Dodał:|Uczeń:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2</span>$3'],
-  [/(Waga:) (\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
-  [/(Komentarz:|Temat zajęć:) ([\D\d]*?)($)/g, '<span class="librusPro_title-comment">$2</span>$3'],
-  [/(Opis:) ([\D\d]*?)Data dodania:/g, '<span class="librusPro_title-comment">$2</span>Data dodania:'],
-  [/(Poprawa oceny:) (.{0,2}) \((.*?)\)(<br ?\/?>|$)/g, '<b class="librusPro_title-improved">$2</b> <span class="librusPro_title-brackets">(<span class="librusPro_title-type">$3</span>)</span>$4'],
-  [/(Godzina lekcyjna:) (\d+?)<\/b>(<br ?\/?>|$)/g, '<span class="librusPro_title-improved">$2</span>$3'],
-]
-
+// Modernizacja dymka
 function modernizeTitle(element) {
   let title = element.title;
   for (let i of TITLE_MODERNIZATION) {
@@ -1561,538 +1347,943 @@ function modernizeTitle(element) {
   element.title = title;
 }
 
-// Terminarz
-if (window.location.href == "https://synergia.librus.pl/terminarz") {
-  /*
-    key: 'yyyy-mm-dd'
-    key: '2019-10-17'
-    value: {
-      lesson: '',
-      time: '',
-      subject: '',
-      type: '',
-      description: '',
-      background: '',
-      color: '',
-      url: '',
-      dateAdded: '',
-      dateModified: '',
+// szósteczki - maybe kiedyś
+// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = "6"});
+// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = Math.floor(Math.random() * (7 - 4) + 4)});
+// document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach((e) => {e.innerText = "6.00"});
+// document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach((e) => {e.innerText = "6.00"});
+// document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerText = "wzorowe";
+// document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded.line1 > td:nth-child(4)").innerText = "wzorowe";
+
+class GradeManager {
+  constructor(parent, options) {
+    this.options = options;
+    parent.insertAdjacentHTML("afterend", `
+    <td class="librusPro_grade-manager-icon">
+      <img src="${browserAPI.runtime.getURL('img/pen.png')}">
+    </td>
+    <td class="librusPro_grade-manager">
+      <label class="librusPro_grade-manager-label">
+        <span>Tymczasowa modyfikacja ocen:</span>
+        <input type="checkbox" id="librusPro_gradeManagerCheckbox">
+        <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Modifykacja ocen</span></article><article class='librusPro_justify'>Gdy to ustawienie jest <b class='librusPro_title-tak'>włączone</b>, możesz tymczasowo <u>lokalnie</u> <span class='librusPro_lightgreen'>dodawać</span> nowe oceny, bądź <span class='librusPro_lightblue'>edytować</span> i <span class='librusPro_salmon'>usuwać</span> bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.</article><article class='librusPro_seaweed librusPro_justify librusPro_italic'>(Po odświeżeniu strony <span class='librusPro_yellow'>wszystko wraca</span> do stanu sprzed modyfikacji! Wszystkie zmiany zachodzą jedynie lokalnie i <span class='librusPro_salmon'>nie mają wpływu na Twoje rzeczywiste oceny!</span>)</article><article class='librusPro_lightgreen librusPro_justify'>W menu dodawania ocen cząstkowych możesz zobaczyć <span class='librusPro_white'>ile jeszcze jedynek</span> możesz zdobyć, aby uzyskać daną średnią.</article><article class='librusPro_water librusPro_justify librusPro_italic'>Domyślną średnią dla tego widoku możesz zmienić w&nbsp;<u>ustawieniach rozszerzenia</u>, jak i całkowicie wyłączyć tymczasową modyfikację ocen.</article><b class='librusPro_lightblue'>Oceny możesz dodawać dzięki '<span class='librusPro_white'>${ADD_EDIT_SYMBOL}</span>',<br>a modyfikować po prostu <span class='librusPro_white'>klikając na daną ocenę</span>.</b>" src="/images/pomoc_ciemna.png">
+      </label>
+      <div class="librusPro_grade-manager-advice">(Najedź, aby dowiedzieć się więcej)</div>
+    </td>
+    <div class="librusPro_overlay-body" id="librusPro_gradeManagerOverlay">
+      <div class="librusPro_overlay-container">
+          <div class="librusPro_header-container">
+            <img src="${browserAPI.runtime.getURL('img/icon.png')}" class="librusPro_overlay-logo">
+            <div class="librusPro_overlay-header-column">
+              <div class="librusPro_overlay-header librusPro_overlay-header-adding">Dodaj ocenę</div>
+              <div class="librusPro_overlay-header librusPro_overlay-header-editting">Edytuj ocenę</div>
+            </div>
+          </div>
+          <label class="librusPro_overlay-input-label">
+            <div class="librusPro_overlay-input-title">Ocena:</div>
+            <select class="librusPro_overlay-input" id="librusPro_grade">
+              ${['0', '1', '1+', '2-', '2', '2+', '3-', '3', '3+', '4-', '4', '4+', '5-', '5', '5+', '6-', '6']
+                .map(x => `<option value="${x}"${x === '1' ? 'selected' : ''}>${x}</option>`).join("")}
+            </select>
+          </label>
+          <label class="librusPro_overlay-input-label" id="librusPro_weightLabel">
+            <div class="librusPro_overlay-input-title">Waga:</div>
+            <input placeholder="2" type="number" step="1" min="0" max="999" id="librusPro_weight" class="librusPro_overlay-input">
+          </label>
+          <label class="librusPro_overlay-input-label" id="librusPro_commentLabel">
+            <div class="librusPro_overlay-input-title">Komentarz:</div>
+            <textarea placeholder="Rodział 4" id="librusPro_comment"
+              class="librusPro_overlay-input librusPro_overlay-input-textarea" rows="2"></textarea>
+          </label>
+          <div class="librusPro_overlay-button-container">
+            <button type="button" class="librusPro_overlay-button librusPro_overlay-button-add"
+              id="librusPro_addGrade">Dodaj</button>
+            <button type="button" class="librusPro_overlay-button librusPro_overlay-button-edit"
+              id="librusPro_editGrade">Edytuj</button>
+            <button type="button" class="librusPro_overlay-button librusPro_overlay-button-remove"
+              id="librusPro_removeGrade">Usuń</button>
+            <button type="button" class="librusPro_overlay-button librusPro_overlay-button-close"
+              id="librusPro_closeButton">Zamknij</button>
+          </div>
+          <div class="librusPro_overlay-input-two-label" id="librusPro_onesContainer">
+            <label class="librusPro_overlay-input-label">
+              <div class="librusPro_overlay-input-title">Ile jedynek:</div>
+              <input placeholder="16" type="number" step="1" min="0" max="999" id="librusPro_ones" class="librusPro_overlay-input">
+            </label>
+            <label class="librusPro_overlay-input-label">
+              <div class="librusPro_overlay-input-title">Średnia:</div>
+              <input value="1.80" placeholder="1.80" type="number" step="0.01" min="1" max="6" id="librusPro_onesAverage" class="librusPro_overlay-input">
+            </label>
+          </div>
+          <div class="librusPro_overlay-footer">
+            <div class="librusPro_overlay-footer-text">© <span id="librusPro_currentYear"></span></div>
+            <a href="${CHROME_LINK}"
+              target="_blank" class="librusPro_overlay-footer-link">Zostaw 5<span style="font-size: 11px;">⭐</span></a>
+            <a class="librusPro_overlay-footer-link" target="_blank" href="${DISCORD_LINK}">Discord</a>
+            <div class="librusPro_overlay-footer-text">v <span id="librusPro_currentVersion"></span></div>
+          </div>
+        </div>
+      </div>`);
+    this.switch = document.getElementById("librusPro_gradeManagerCheckbox");
+    this.overlay = document.getElementById("librusPro_gradeManagerOverlay");
+    this.gradeInput = document.getElementById("librusPro_grade");
+    this.weightInput = document.getElementById("librusPro_weight");
+    this.commentInput = document.getElementById("librusPro_comment");
+    this.addButton = document.getElementById("librusPro_addGrade");
+    this.editButton = document.getElementById("librusPro_editGrade");
+    this.removeButton = document.getElementById("librusPro_removeGrade");
+    this.onesInput = document.getElementById("librusPro_ones");
+    this.onesAverageInput = document.getElementById("librusPro_onesAverage");
+    document.getElementById("librusPro_currentYear").innerText = new Date().getFullYear();
+    document.getElementById("librusPro_currentVersion").innerText = browserAPI.runtime.getManifest().version;
+  
+    document.addEventListener("click", (event) => {
+      // Jeśli nie jest przyciskiem dodawania/edycji oraz kliknięte poza overlayem, bądź na przycisk zamknij
+      if (!event.target.matches(".librusPro_add-grade, .librusPro_no-grade, .ocena, .grade-box") 
+        && (event.target.matches("#librusPro_closeButton") 
+        || !event.target.closest(".librusPro_overlay-container"))) {
+          this.overlay.style.display = "none";
+          this.overlay.classList.remove("librusPro_overlay-adding");
+          this.overlay.classList.remove("librusPro_overlay-editting");
+          this.overlay.classList.remove("librusPro_overlay-gradeFinal");
+        }
+    }, false);
+  
+    this.switch.onchange = (e) => {
+      this.enabled = this.switch.checked;
+      document.querySelectorAll(".librusPro_no-grade").forEach((el) => {
+        el.innerText = this.enabled ? ADD_EDIT_SYMBOL : NO_DATA;
+        el.classList.toggle("cursor-pointer");
+      });    
+      document.querySelectorAll(".librusPro_add-grade").forEach((el) => {
+        el.classList.toggle("librusPro_add-grade-enabled");
+      });    
     }
+  }
+
+  showOverlay(element, isNew = true, isFinal = false) {
+    this.overlay.style.display = "block";
+    this.overlay.classList.remove("librusPro_overlay-adding", "librusPro_overlay-editting", "librusPro_overlay-gradeFinal");
+    this.overlay.classList.add(`librusPro_overlay-${isNew ? "adding" : "editting"}`);
+    if (isFinal || element.parentElement.isFinal) this.overlay.classList.add("librusPro_overlay-gradeFinal");
+    this.weightInput.value = isFinal ? "0" : "1";
+    this.commentInput.value = "";
+    if (isNew) {
+      this.gradeInput.value = "1";
+      this.addButton.onclick = (e) => {
+        if (isFinal) {
+          element.onclick = null;
+        }
+        // Usuwanie "Brak ocen"
+        if (element.firstElementChild?.tagName == "SCRIPT") {
+          element.firstElementChild?.remove();
+          element.childNodes.forEach(n => n.remove());
+        } else if (element.childNodes[0]?.nodeType === 3) {
+          element.childNodes[0].remove();
+        }
+        this.addGrade(element, isFinal);
+        this.overlay.style.display = "none";
+      }
+
+      // Liczenie ile jedynek
+      if (element.librusPro_avg) {
+        this.onesAverageInput.value = this.options.averageValue;
+        const ones = GradeManager.calculateOnesAverage(element.librusPro_avg, this.onesAverageInput.value);
+        this.onesInput.value = ones.ones;
+        this.onesAverageInput.value = ones.avg ?? 0;
+
+        this.onesInput.onchange = () => {
+          const ones = GradeManager.calculateOnesAverage(element.librusPro_avg, null, this.onesInput.value);
+          this.onesAverageInput.value = ones.avg;
+        }
+
+        this.onesAverageInput.onchange = () => {
+          const ones = GradeManager.calculateOnesAverage(element.librusPro_avg, this.onesAverageInput.value);
+          this.onesInput.value = ones.ones;
+        }
+      }
+    } else {
+      let title = decodeURIComponent(atob(element.dataset.title));
+      this.weightInput.value = title.match(REGEXS.weight)?.[2] ?? this.weightInput.value;
+      // Oceny inne niż liczbowe, np. bz
+      if (document.querySelectorAll(`#librusPro_grade option[value="${element.innerText}"]`).length === 0) {
+        const option = document.createElement("OPTION");
+        option.value = element.innerText;
+        option.innerText = element.innerText;
+        this.gradeInput.appendChild(option);
+      }
+      this.gradeInput.value = element.innerText;
+      this.editButton.onclick = (e) => {
+        this.modifyGrade(element, title);
+        this.overlay.style.display = "none";
+      }
+      this.removeButton.onclick = (e) => {
+        this.removeGrade(element);
+        this.overlay.style.display = "none";
+      }
+    }
+  }
+
+  addGrade(element, isFinal) {
+    const gradeBox = document.createElement("SPAN");
+    gradeBox.classList.add("grade-box");
+    gradeBox.style.backgroundColor = COLORS.gradeManagerNewGrade;
+    const grade = document.createElement("A");
+    grade.classList.add("ocena", "librusPro_jqueryTitle");
+    grade.innerText = this.gradeInput.value;
+    grade.style.cursor = "pointer";
+    let weight = Number(this.weightInput.value);
+    if (weight < 0) weight = 0;
+    let comment = this.commentInput.value;
+    grade.title = `Kategoria: LibrusPro<br>Data: 2137-02-30 (nd.)<br>Nauczyciel: Maks Kowalski<br>Licz do średniej: ${isFinal ? "nie" : "tak"}<br>${weight > 0 ? `Waga: ${weight}<br>` : ""}Dodał: Maks Kowalski<br>${comment.length > 0 ? `<br>Komentarz: ${comment}` : ""}`;
+    gradeBox.appendChild(grade);
+    element.insertBefore(gradeBox, element.lastElementChild);
+    refreshjQueryTitles();
+    gradeBox.isFinal = isFinal;
+    grade.addEventListener("click", (event) => {
+      if (!this.enabled) {
+        this.switch.focus();
+        return;
+      };
+      event.preventDefault();
+      this.showOverlay(event.target, false);
+    });
+    element.classList.remove("cursor-pointer", "librusPro_no-grade");
+    handleGrades(this.options, true);
+  }
+
+  modifyGrade(element, title) {
+    element.innerText = this.gradeInput.value;
+    if (!element.parentElement.isFinal) {
+      let weight = Number(this.weightInput.value).toFixed(0);
+      if (weight < 0) weight = 0;
+      let newTitle = title.replace(REGEXS.weight, "$1" + weight + "$3");
+      let countToAverage = title.match(REGEXS.countToAverage);
+      if (!countToAverage) {
+        newTitle += `<br>Licz do średniej: tak<br>`;
+      } else if (countToAverage?.[1] === "nie") {
+        newTitle = newTitle.replace(REGEXS.countToAverage, "<br>Licz do średniej: tak<br>");
+      }
+      if (!title.match(REGEXS.weight)) {
+        newTitle += `<br>Waga: ${weight}<br>`;
+      }
+      newTitle = newTitle.replace(/(<br(\/?)>){2,}/g, "<br>");
+      element.title = newTitle;
+      if (this.options.modernizeTitles) modernizeTitle(element);
+      element.dataset.title = btoa(encodeURIComponent(newTitle));
+    }
+    handleGrades(this.options, true);
+  }
+
+  removeGrade(element) {
+    const grade = element.parentElement;
+    let gradeParent = grade.parentElement;
+    // Regeneracja dodania nowej oceny (śród)rocznej
+    if (grade.isFinal) {
+      const noGradesPlaceholder = document.createTextNode(ADD_EDIT_SYMBOL);
+      gradeParent.onclick = (e) => {
+        if (!this.enabled) {
+          this.switch.focus();
+          return;
+        }
+        this.showOverlay(e.target, true, true);
+      };
+      gradeParent.appendChild(noGradesPlaceholder);
+      gradeParent.classList.add("librusPro_no-grade", "cursor-pointer");
+    // Poprawione znajdują się w dodatkowym spanie z []
+  } else if (gradeParent.tagName == "SPAN") {
+      for (let u of gradeParent.childNodes) {
+        if (u.nodeType === Node.TEXT_NODE) u.remove();
+      }
+      if (gradeParent.children.length <= 1) {
+        if (gradeParent.parentElement.children.length <= 2) {
+          const noGradesPlaceholder = document.createTextNode("Brak ocen");
+          gradeParent.parentElement.insertBefore(noGradesPlaceholder, gradeParent.parentElement.firstElementChild);
+        }
+        gradeParent.remove();
+      }
+    // Wstawianie "Brak ocen"
+    } else if (gradeParent.children.length <= 2) {
+      const noGradesPlaceholder = document.createTextNode("Brak ocen");
+      gradeParent.insertBefore(noGradesPlaceholder, gradeParent.firstElementChild);
+    }
+    grade.remove();
+    handleGrades(this.options, true);
+  }
+
+  static calculateOnesAverage(avg, wantedAvg, ones) {
+    if (!ones && wantedAvg <= "1") {
+      return {
+        ones: 0,
+        avg: +wantedAvg,
+      };
+    }
+    if (wantedAvg > avg.average || ones < 0) {
+      return {
+        ones: 0,
+        avg: avg.average === NO_DATA ? 0 : avg.average,
+      };
+    }
+    let t = new Average(avg.sum, avg.weights);
+    if (wantedAvg) {
+      let n = 0;
+      let lastAvg = avg.average;
+      while (t.average > wantedAvg) {
+        lastAvg = t.average;
+        n++;
+        t.sum++;
+        t.weights++;
+        t.calculate();
+      }
+      return {
+        ones: n - 1,
+        avg: lastAvg,
+      };
+    } else {
+      t.sum += +ones;
+      t.weights += +ones;
+      t.calculate();
+      return {
+        ones: ones,
+        avg: t.average === NO_DATA ? 0 : t.average,
+      };
+    }
+  }
+}
+
+
+// --------------------------------- TERMINARZ ---------------------------------
+
+// Czy biała czcionka dla danego tła
+function isLightFontColorForBackground(bgColor) {
+  const color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+  const r = parseInt(color.substring(0, 2), 16);
+  const g = parseInt(color.substring(2, 4), 16);
+  const b = parseInt(color.substring(4, 6), 16);
+  const uicolors = [r / 255, g / 255, b / 255];
+  const c = uicolors.map((col) => {
+    if (col <= 0.03928) {
+      return col / 12.92;
+    }
+    return Math.pow((col + 0.055) / 1.055, 2.4);
+  });
+  const l = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
+  return (l > 0.179) ? false : true;
+}
+
+class CustomScheduleEvent {
+  constructor() {
+    const [background, color] = document.querySelector('input[name="librusPro_color"]:checked').value.split("|");
+    this.lesson = overlay.lesson.value;
+    this.time = overlay.time.value;
+    this.subject = overlay.subject.value;
+    this.type = overlay.type.value;
+    this.description = overlay.description.value;
+    this.url = overlay.imageUrl.value;
+    this.background = background;
+    this.color = color;
+    this.dateAdded = new Date().toLocaleString();
+  }
+  updateDate(dateAdded) {
+    this.dateAdded = dateAdded;
+    this.dateModified = new Date().toLocaleString();
+  }
+}
+
+class ScheduleOverlay {
+  constructor() {
+    this.insert();
+
+    // Pola
+    this.date = document.getElementById("librusPro_date");
+    this.lesson = document.getElementById("librusPro_lesson");
+    this.time = document.getElementById("librusPro_time");
+    this.subjectSelect = document.getElementById("librusPro_subjectSelect");
+    this.subject = document.getElementById("librusPro_subject");
+    this.otherSubject = document.getElementById("librusPro_otherSubject");
+    this.typeSelect = document.getElementById("librusPro_typeSelect");
+    this.type = document.getElementById("librusPro_type");
+    this.otherType = document.getElementById("librusPro_otherType");
+    this.description = document.getElementById("librusPro_description");
+    this.imageUrl = document.getElementById("librusPro_imageUrl");
+    this.firstColor = document.getElementById("librusPro_firstColor");
+    this.customColorPreview = document.getElementById("librusPro_customColorPreview");
+    this.customColor = document.getElementById("librusPro_customColor");
+    this.customColorInput = document.getElementById("librusPro_customColorInput");
+    this.addCustomEventButton = document.getElementById("librusPro_addCustomEventButton");
+    this.editCustomEventButton = document.getElementById("librusPro_editCustomEventButton");
     
-    i.e. {
-      lesson: "5"
-      time: "21:37"
-      subject: "Matematyka"
-      type: "Sprawdzian"
-      description: "Dział 1"
-      background: "#6a9604"
-      color: "#ffffff"
-      url: ""
-      dateAdded: "10.02.2021, 19:51:12"
-      dateModified: "10.02.2021, 19:59:11"
-    }
-  */
-
-  // Automatyczne odświeżanie po zmianach (z pominięciem "Potwiedź ponowne przesłanie formularza")
-  browserAPI.storage.onChanged.addListener(function (changes, namespace) {
-    window.location.replace(window.location.href);
-  });
-
-  // ---------------------- ISEMPTY FUNCTION --------------------------
-  function isEmpty(obj) {
-    for (let emptiness in obj) {
-      return false;
-    }
-    return true;
+    this.addLogic();
   }
 
-  // ---------------------- CREATE OVERLAY --------------------------
-  const overlay = document.createElement("div");
-  overlay.classList = "librusPro_body";
-  overlay.innerHTML = `
-      <div class="librusPro_container">
-          <div class="librusPro_text" id="librusPro_header">Dodaj zdarzenie</div>
-          <div class="librusPro_error" id="librusPro_error"></div>
-          <div class="librusPro_date"><input id="librusPro_datePicker" type="date"></div>
-          <div class="librusPro_twoFieldContainer">
-              <div class="librusPro_twoField" id="twoField1" style="width: 45%">
-                  <label class="librusPro_title" style="margin-top: 5px;" for="librusPro_lesson">Nr lekcji:</label>
-                  <input placeholder="3" type="text" id="librusPro_lesson" class="librusPro_input">
-              </div>
-              <div class="librusPro_twoField" id="twoField2">
-                  <label class="librusPro_title" style="margin-top: 5px;" for="librusPro_time">Godzina:</label>
-                  <input type="time" id="librusPro_time" class="librusPro_input librusPro_inputTime">
-              </div> 
-          </div>
-          <div class="librusPro_field">
-              <label class="librusPro_title" for="librusPro_subject"  id="librusPro_subjectSelectLabel">Przedmiot:</label>
-              <select id="librusPro_subjectSelect" class="librusPro_select" onchange="librusPro_onSelectChange('subject')">
-                  <option value="">-- wybierz --</option>                  
-                  <option value="Inny" id="librusPro_subjectSelect-other">Inny (Jaki?)</option>
-              </select>
-              <label id="librusPro_subjectTitle" class="librusPro_title" style="display: none" for="librusPro_subject">Przedmiot:</label>
-              <input placeholder="Matematyka" type="text" id="librusPro_subject" class="librusPro_input" style="display: none;">
-          </div>
-          <div class="librusPro_field">
-              <label class="librusPro_title" for="librusPro_typeSelect">Typ:</label>
-              <select id="librusPro_typeSelect" class="librusPro_select" onchange="librusPro_onSelectChange('type')">
-                  <option value="">-- wybierz --</option>
-                  <option value="Sprawdzian" style="background-color: #ebebeb; color: #333333">Sprawdzian</option>
-                  <option value="Kartkówka">Kartkówka</option>
-                  <option value="Praca domowa" style="background-color: #ebebeb; color: #333333">Praca domowa</option>
-                  <option value="Odpowiedź ustna">Odpowiedź ustna</option>
-                  <option value="Inny" style="background-color: #ebebeb; color: #333333">Inny (Jaki?)</option>
-              </select>
-              <label id="librusPro_typeTitle" class="librusPro_title" style="display: none" for="librusPro_type">Typ:</label>
-              <input placeholder="Zaliczenie" type="text" id="librusPro_type" class="librusPro_input" style="display: none;">
-          </div>
-          <div class="librusPro_field">
-              <label class="librusPro_title" for="librusPro_description">Opis:</label>
-              <textarea placeholder="Rozdział 2" id="librusPro_description" class="librusPro_input" rows="3"></textarea>
-          </div>
-          <div class="librusPro_field">
-              <label class="librusPro_title" for="librusPro_imageUrl">URL obrazka:</label>
-              <input placeholder="https://www.google.com/logo.png" type="text" id="librusPro_imageUrl" class="librusPro_input">
-          </div>
-          <div class="librusPro_colorContainer kalendarz-dzien">
-              <label class="librusPro_radioContainer">
-                  <input type="radio" id="librusPro_firstRadio" name="librusPro_color" value="#ff0000|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #ff0000"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#e67e22|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #e67e22"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#ff7777|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #ff7777"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#d4af37|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #d4af37"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#ffff11|#333333">
-                  <span class="librusPro_radioSpan librusPro_darkDot librusPro_colorBorder" style="background: #ffff11"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#d0ff00|#333333">
-                  <span class="librusPro_radioSpan librusPro_darkDot librusPro_colorBorder" style="background: #d0ff00"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#8af542|#333333">
-                  <span class="librusPro_radioSpan librusPro_darkDot " style="background: #8af542"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#00aa00|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #00aa00"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#6a9604|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #6a9604"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#66cdaa|#505050">
-                  <span class="librusPro_radioSpan librusPro_darkDot" style="background: #66cdaa"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#22dddd|#444444">
-                  <span class="librusPro_radioSpan librusPro_darkDot" style="background: #22dddd"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#3498db|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #3498db"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#3333ff|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #3333ff"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#ee22ff|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #ee22ff"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#8e44ad|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #8e44ad"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#ffffff|#333333">
-                  <span class="librusPro_radioSpan librusPro_darkDot librusPro_colorBorder" style="background: #ffffff"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="radio" name="librusPro_color" value="#aaaaaa|#ffffff">
-                  <span class="librusPro_radioSpan" style="background: #aaaaaa"></span>
-              </label>
-              <label class="librusPro_radioContainer">
-                  <input type="color" name="librusPro_colorHex" style="visibility: hidden;" onchange="librusPro_eventHexColor(this.value)" id="librusPro_inputColor" value="#010101">
-                  <input type="radio" name="librusPro_color" value="#aaaaaa|#ffffff" id="librusPro_hexRadio">
-                  <span class="librusPro_radioSpan librusPro_darkDot" style="background: linear-gradient(216deg, rgba(255,0,0,1) 0%, rgba(255,115,0,1) 23%, rgba(249,255,0,1) 43%, rgba(0,255,115,1) 64%, rgba(0,35,255,1) 85%)" id="librusPro_colorHexSpan"></span>
-              </label>
-          </div>
-          <div class="librusPro_button librusPro_button-add" id="librusPro_add">Dodaj</div>
-          <div class="librusPro_button librusPro_button-close" id="librusPro_close">Zamknij</div>
-          <div class="librusPro_bottomText">LibrusPro © <span id="librusPro_currentYear"></span></div>
+  insert() {
+    this.overlay = document.createElement("div");
+    this.overlay.classList = "librusPro_overlay-body";
+    this.overlay.innerHTML = `
+    <div class="librusPro_overlay-container">
+      <div class="librusPro_header-container">
+        <img src="${browserAPI.runtime.getURL('img/icon.png')}" class="librusPro_overlay-logo">
+        <div class="librusPro_overlay-header-column">
+          <div class="librusPro_overlay-header librusPro_overlay-header-adding">Dodaj wydarzenie</div>
+          <div class="librusPro_overlay-header librusPro_overlay-header-editting">Edytuj wydarzenie</div>
+          <input class="librusPro_overlay-input" id="librusPro_date" type="date">
+        </div>
       </div>
-  `;
-  document.body.appendChild(overlay);
-  document.getElementById("librusPro_currentYear").innerText = new Date().getFullYear();
+      <div class="librusPro_overlay-input-two-label">
+        <label class="librusPro_overlay-input-label">
+          <div class="librusPro_overlay-input-title">Nr lekcji:</div>
+          <input placeholder="3" type="text" id="librusPro_lesson" class="librusPro_overlay-input">
+        </label>
+        <label class="librusPro_overlay-input-label">
+          <div class="librusPro_overlay-input-title">Godzina:</div>
+          <input type="time" id="librusPro_time" class="librusPro_overlay-input">
+        </label>
+      </div>
+      <label class="librusPro_overlay-input-label" id="librusPro_subjectLabel">
+        <div class="librusPro_overlay-input-title">Przedmiot:</div>
+        <select class="librusPro_overlay-input" id="librusPro_subjectSelect">
+          <option value="">-- wybierz --</option>
+          <option value="Inny">Inny (Jaki?)</option>
+        </select>
+      </label>
+      <label class="librusPro_overlay-input-label" id="librusPro_otherSubject">
+        <div class="librusPro_overlay-input-title">Przedmiot:</div>
+        <input placeholder="Matematyka" type="text" id="librusPro_subject" class="librusPro_overlay-input">
+      </label>
+      <label class="librusPro_overlay-input-label">
+        <div class="librusPro_overlay-input-title">Typ:</div>
+        <select class="librusPro_overlay-input" id="librusPro_typeSelect">
+          <option value="">-- wybierz --</option>
+          <option value="Sprawdzian">Sprawdzian</option>
+          <option value="Kartkówka">Kartkówka</option>
+          <option value="Praca domowa">Praca domowa</option>
+          <option value="Odpowiedź ustna">Odpowiedź ustna</option>
+          <option value="Projekt">Projekt</option>
+          <option value="Inny">Inny (Jaki?)</option>
+        </select>
+      </label>
+      <label class="librusPro_overlay-input-label" id="librusPro_otherType">
+        <div class="librusPro_overlay-input-title">Typ:</div>
+        <input placeholder="Zaliczenie" type="text" id="librusPro_type" class="librusPro_overlay-input">
+      </label>
+      <label class="librusPro_overlay-input-label">
+        <div class="librusPro_overlay-input-title">Opis:</div>
+        <textarea placeholder="Rozdział 2" id="librusPro_description"
+          class="librusPro_overlay-input librusPro_overlay-input-textarea" rows="3"></textarea>
+      </label>
+      <label class="librusPro_overlay-input-label">
+        <div class="librusPro_overlay-input-title">URL obrazka/GIFa:</div>
+        <input placeholder="https://www.google.com/logo.png" type="text" id="librusPro_imageUrl"
+          class="librusPro_overlay-input">
+      </label>
+      <div class="librusPro_overlay-color-container">
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" id="librusPro_firstColor" name="librusPro_color" value="#ae3737|#ffffff" checked>
+          <span class="librusPro_overlay-color-preview" style="background: #ae3737"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#ff0000|#ffffff">
+          <span class="librusPro_overlay-color-preview" style="background: #ff0000"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#ff4d00|#ffffff">
+          <span class="librusPro_overlay-color-preview" style="background: #ff4d00"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#ff9529|#ffffff">
+          <span class="librusPro_overlay-color-preview" style="background: #ff9529"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#fff700|#333333">
+          <span class="librusPro_overlay-color-preview librusPro_overlay-dark-dot" style="background: #fff700"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#a9ff00|#333333">
+          <span class="librusPro_overlay-color-preview librusPro_overlay-dark-dot" style="background: #a9ff00"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#007009|#ffffff">
+          <span class="librusPro_overlay-color-preview" style="background: #007009"></span>
+        </label>
 
-  // ----------------------------------------------------
-  const pageScript = document.createElement("script");
-  pageScript.innerHTML = `
-      function librusPro_onSelectChange(kind) {
-        const select = document.getElementById("librusPro_" + kind + "Select").value;
-        const inputTitle = document.getElementById("librusPro_" + kind + "Title");
-        const input = document.getElementById("librusPro_" + kind);
-        if (select == "Inny") {
-          inputTitle.style.display = "block";
-          input.style.display = "block";
-          input.value = "";
-        } else {
-          inputTitle.style.display = "none";
-          input.style.display = "none";
-          input.value = select;
-        }
-      }
-      function librusPro_eventHexColor(color) {
-        document.getElementById("librusPro_colorHexSpan").style.background = color;
-        if (color != "#ff0000") {
-          if (librusPro_isLightFontColorForBackground(color)) document.getElementById("librusPro_colorHexSpan").classList.remove("librusPro_darkDot");
-          else document.getElementById("librusPro_colorHexSpan").classList.add("librusPro_darkDot");
-          document.getElementById("librusPro_hexRadio").value = color + "|" + (librusPro_isLightFontColorForBackground(color) ? "#ffffff" : "#222222");
-        } else {
-          document.getElementById("librusPro_hexRadio").value = color + "|#ffffff";
-        }
-        document.getElementById("librusPro_hexRadio").checked = true;
-      }
-      function librusPro_isLightFontColorForBackground(bgColor) {
-        var color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
-        var r = parseInt(color.substring(0, 2), 16);
-        var g = parseInt(color.substring(2, 4), 16);
-        var b = parseInt(color.substring(4, 6), 16);
-        var uicolors = [r / 255, g / 255, b / 255];
-        var c = uicolors.map((col) => {
-          if (col <= 0.03928) {
-            return col / 12.92;
-          }
-          return Math.pow((col + 0.055) / 1.055, 2.4);
-        });
-        var L = (0.2126 * c[0]) + (0.7152 * c[1]) + (0.0722 * c[2]);
-        return (L > 0.179) ? false : true;
-      }
-  `;
-  document.body.appendChild(pageScript);
-
-  // ---------------------- CLOSE BUTTON LISTENER --------------------------
-  const overlayCloseButton = document.getElementById("librusPro_close");
-  overlayCloseButton.addEventListener("click", function () {
-    overlay.style.display = "none";
-    document.body.classList.toggle("librusPro_pageBody");
-  });
-
-  // ---------------- CREATE MONTH VARIABLE --------------------
-  let month = document.getElementsByName("miesiac")[0];
-  const monthId = month.selectedIndex;
-  month = month.options[month.selectedIndex].innerText;
-
-  // ---------------- CREATE YEAR VARIABLE --------------------
-  let year = document.getElementsByName("rok")[0];
-  year = year.options[year.selectedIndex].innerText.replaceAll(" ", "");
-
-  // ---------------- "[+]" BUTTON LISTENER --------------------
-  function addListenerToAddButton(button, targetKey) {
-    button.addEventListener("click", function () {
-      displayOverlayForAdding(`${targetKey}`);
-    });
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#00ffb8|#333333">
+          <span class="librusPro_overlay-color-preview librusPro_overlay-dark-dot" style="background: #00ffb8"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#00f3ff|#333333">
+          <span class="librusPro_overlay-color-preview librusPro_overlay-dark-dot" style="background: #00f3ff"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#0043bc|#ffffff">
+          <span class="librusPro_overlay-color-preview" style="background: #0043bc"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#6200cd|#ffffff">
+          <span class="librusPro_overlay-color-preview" style="background: #6200cd"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#ff00d4|#ffffff">
+          <span class="librusPro_overlay-color-preview" style="background: #ff00d4"></span>
+        </label>
+        <label class="librusPro_overlay-color-label">
+          <input type="radio" name="librusPro_color" value="#ffffff|#333333">
+          <span class="librusPro_overlay-color-preview librusPro_overlay-dark-dot" style="background: #ffffff"></span>
+        </label>
+        <label class="librusPro_overlay-color-label" for="librusPro_customColorInput">
+          <input type="color" id="librusPro_customColorInput" value="#010101">
+          <input type="radio" name="librusPro_color" value="#aaaaaa|#333333" id="librusPro_customColor">
+          <span class="librusPro_overlay-color-preview "
+            style="background: linear-gradient(216deg, #f00 0%, #ff7300 23%, #f9ff00 43%, #00ff73 64%, #0023ff 85%)"
+            id="librusPro_customColorPreview"></span>
+        </label>
+      </div>
+      <div class="librusPro_overlay-button-container">
+        <button class="librusPro_overlay-button librusPro_overlay-button-add"
+          id="librusPro_addCustomEventButton">Dodaj</button>
+        <button class="librusPro_overlay-button librusPro_overlay-button-edit"
+          id="librusPro_editCustomEventButton">Edytuj</button>
+        <button class="librusPro_overlay-button librusPro_overlay-button-close"
+          id="librusPro_closeButton">Zamknij</button>
+      </div>
+      <div class="librusPro_overlay-footer">
+        <div class="librusPro_overlay-footer-text">© <span id="librusPro_currentYear"></span></div>
+        <a href="${CHROME_LINK}"
+          target="_blank" class="librusPro_overlay-footer-link">Zostaw 5<span style="font-size: 11px;">⭐</span></a>
+        <a class="librusPro_overlay-footer-link" target="_blank" href="${DISCORD_LINK}">Discord</a>
+        <div class="librusPro_overlay-footer-text">v <span id="librusPro_currentVersion"></span></div>
+      </div>
+    </div>`;
+    document.body.appendChild(this.overlay);
+    document.getElementById("librusPro_currentYear").innerText = new Date().getFullYear();
+    document.getElementById("librusPro_currentVersion").innerText = browserAPI.runtime.getManifest().version;
   }
 
-  // ---------------- "[+]" CLICKED --------------------
-  const overlayHeader = document.getElementById("librusPro_header");
-  const overlayConfirmButton = document.getElementById("librusPro_add");
-  const overlayDate = document.getElementById("librusPro_datePicker");
-  let listenerLambdaFunction;
-
-  function displayOverlayForAdding(cellKey) {
-    document.body.classList.toggle("librusPro_pageBody");
-    overlay.style.display = "block";
-    overlayDate.value = cellKey;
-    overlayHeader.innerText = "Dodaj zdarzenie";
-    overlayConfirmButton.innerText = "Dodaj";
-    overlayConfirmButton.classList.remove("librusPro_button-edit");
-    overlayConfirmButton.classList.add("librusPro_button-add");
-    time.value = 0;
-    lesson.value = "";
-    subjectSelect.value = "";
-    subject.value = "";
-    if (subjectSelectLabel.style.display === "none") {
-      subjectInputTitle.style.display = "block";
-      subjectInput.style.display = "block";
-    }
-    typeSelect.value = "";
-    type.value = "";
-    typeInputTitle.style.display = "none";
-    typeInput.style.display = "none";
-    description.value = "";
-    imageUrl.value = "";
-    firstRadioElement.checked = "true";
-    if (listenerLambdaFunction) {
-      overlayConfirmButton.removeEventListener("click", listenerLambdaFunction);
-    }
-    listenerLambdaFunction = function () {
-      addCustomCell();
-    };
-    overlayConfirmButton.addEventListener("click", listenerLambdaFunction);
-  }
-
-  // ---------------- "ADD" CLICKED INSIDE "[+]" / CREATE CUSTOM EVENT --------------------
-  const lesson = document.getElementById("librusPro_lesson");
-  const time = document.getElementById("librusPro_time");
-  const subjectSelectLabel = document.getElementById("librusPro_subjectSelectLabel");
-  const subjectSelect = document.getElementById("librusPro_subjectSelect");
-  const subjectSelectOther = document.getElementById("librusPro_subjectSelect-other");
-  const subject = document.getElementById("librusPro_subject");
-  const subjectInputTitle = document.getElementById("librusPro_subjectTitle");
-  const subjectInput = document.getElementById("librusPro_subject");
-  const typeSelect = document.getElementById("librusPro_typeSelect");
-  const type = document.getElementById("librusPro_type");
-  const typeInputTitle = document.getElementById("librusPro_typeTitle");
-  const typeInput = document.getElementById("librusPro_type");
-  const description = document.getElementById("librusPro_description");
-  const imageUrl = document.getElementById("librusPro_imageUrl");
-  const firstRadioElement = document.getElementById("librusPro_firstRadio");
-
-  function addCustomCell(dateAdded = "") {
-    const colorRadioValue = document
-      .querySelector("input[name=librusPro_color]:checked")
-      .value.split("|");
-    if (overlayDate.value == "") {
-      document.getElementById("librusPro_error").innerText = "Wybierz datę";
-      return;
-    }
-    if (colorRadioValue == "") {
-      document.getElementById("librusPro_error").innerText = "Wybierz kolor";
-      return;
-    }
-
-    overlay.style.display = "none";
-
-    let _dateAdded = new Date().toLocaleString();
-    let _dateModified = "";
-    if (dateAdded != "") {
-      _dateAdded = dateAdded;
-      _dateModified = new Date().toLocaleString();
-    }
-
-    browserAPI.storage.sync.get([overlayDate.value], function (temp) {
-      // Czy już są jakieś wydarzenia dla tego dnia
-      if (isEmpty(temp)) {
-        browserAPI.storage.sync.set({
-          [overlayDate.value]: [{
-            lesson: lesson.value,
-            time: time.value,
-            subject: subject.value,
-            type: type.value,
-            description: description.value,
-            background: colorRadioValue[0],
-            color: colorRadioValue[1],
-            url: imageUrl.value,
-            dateAdded: _dateAdded,
-            dateModified: _dateModified,
-          }, ]
-        });
-      } else {
-        let t = temp[overlayDate.value];
-        t.push({
-          lesson: lesson.value,
-          time: time.value,
-          subject: subject.value,
-          type: type.value,
-          description: description.value,
-          background: colorRadioValue[0],
-          color: colorRadioValue[1],
-          url: imageUrl.value,
-          dateAdded: _dateAdded,
-          dateModified: _dateModified,
-        });
-        browserAPI.storage.sync.set({
-          [overlayDate.value]: t
-        });
-      }
-    });
-  }
-
-  // ------------------------ DISPLAYING CUSTOM CELLS (AND "[+]") --------------------
-  const days = document.getElementsByClassName("kalendarz-numer-dnia");
-  const date = new Date();
-
-  // Przyciemnianie przeszłych wydarzeń
-  let setOpacity = false;
-  if (year < date.getFullYear()) setOpacity = true;
-  else if (monthId <= date.getMonth() && year == date.getFullYear()) setOpacity = true;
-
-  browserAPI.storage.sync.get(["options"], function (t) {
-    let options = t["options"];
-    if (options) {
-      for (const day of days) {
-        const key = `${year}-${(monthId + 1) < 10 ? "0" + (monthId + 1) : monthId + 1}-${day.innerText < 10 ? "0" + day.innerText : day.innerText}`;
-        day.style.width = "initial";
-        day.style.float = "right";
-        day.style.marginBottom = "10px";
-
-        const addButton = document.createElement("a");
-        addButton.innerText = "[+]";
-        addButton.title = 'Dodaj nowe wydarzenie';
-        addButton.classList.add("librusPro_addButton", "librusPro_jqueryTitle");
-        addListenerToAddButton(addButton, key);
-        day.parentElement.insertBefore(addButton, day);
-
-        if (day.parentElement.parentElement.classList.contains("today")) {
-          setOpacity = false;
-        }
-        if (setOpacity) {
-          day.parentElement.style.opacity = "0.5";
-          day.parentElement.classList.add("past");
-        }
-
-        const clear = document.createElement("span");
-        clear.style.clear = "both";
-        clear.style.display = "none";
-        day.parentElement.appendChild(clear);
-
-        createCell(day, key, options);
-      }
-    }
-  });
-
-  // -------------------- CREATE CELL FUNCTION  ----------------
-  function createCell(cellDay, cellKey, options) {
-    browserAPI.storage.sync.get([cellKey], function (result) {
-      const events = result[cellKey];
-      if (!events) {
+  addLogic() {
+    // Logika overlaya: eventy do przycisków
+    this.addCustomEventButton.addEventListener("click", () => {
+      if (!this.date.value) {
+        alert("Wybierz datę!");
         return;
       }
-      for (let i = 0; i < cellDay.parentElement.childNodes.length; i++) {
-        if (cellDay.parentElement.childNodes[i].tagName == "TABLE") {
-          cellDay.parentElement.childNodes[i].style.marginBottom = "0px";
-          break;
+      CustomSchedule.addCustomEvent(this.date.value);
+    });
+
+    this.editCustomEventButton.addEventListener("click", () => {
+      if (!this.date.value) {
+        alert("Wybierz datę!");
+        return;
+      }
+      CustomSchedule.editCustomEvent();
+    });
+
+    document.addEventListener("click", (event) => {
+      // Jeśli nie jest przyciskiem dodawania/edycji oraz kliknięte poza overlayem, bądź na przycisk zamknij
+      if (!event.target.matches(".librusPro_new-event-button, .librusPro_edit-event-button") 
+        && (event.target.matches("#librusPro_closeButton") 
+        || !event.target.closest(".librusPro_overlay-container"))) {
+          this.overlay.style.display = "none";
+          this.overlay.classList.remove("librusPro_overlay-adding");
+          this.overlay.classList.remove("librusPro_overlay-editting");
+          document.body.classList.remove("librusPro_overlay");
+      }
+    }, false);
+
+    // Ukrywanie/Pokazywanie inputa dla "Inny" w select
+    this.typeInputHidden = true;
+    this.subjectInputHidden = true;
+    this.customColorInput.addEventListener("change", () => this.updateOverlayColorValue());
+    this.subjectSelect.addEventListener("change", () => this.displayInputIfOtherSelected());
+    this.typeSelect.addEventListener("change", () => this.displayInputIfOtherSelected());
+  }
+
+    // Ukrywanie/Pokazywanie inputa dla "Inny" w select
+  displayInputIfOtherSelected() {
+    if (!this.noSubjectSelect) {
+      if (this.subjectSelect.value === "Inny" && this.subjectInputHidden) {
+        this.otherSubject.style.display = "block";
+        this.subject.value = "";
+        this.subjectInputHidden = false;
+      } else if (this.subjectSelect.value !== "Inny") {
+        if (!this.subjectInputHidden) {
+          this.otherSubject.style.display = "none";
+          this.subjectInputHidden = true;
         }
+        this.subject.value = this.subjectSelect.value;
+      }
+    }
+
+    if (this.typeSelect.value === "Inny" && this.typeInputHidden) {
+      this.otherType.style.display = "block";
+      this.type.value = "";
+      this.typeInputHidden = false;
+    } else if (this.typeSelect.value !== "Inny") {
+      if (!this.typeInputHidden) {
+        this.otherType.style.display = "none";
+        this.typeInputHidden = true;
+      }
+      this.type.value = this.typeSelect.value;
+    }
+  }
+
+  // Logika wybierania dowolnego koloru
+  updateOverlayColorValue() {
+    const color = this.customColorInput.value;
+    this.customColorPreview.style.background = color;
+    if (color !== "#ff0000") {
+      let useLight = isLightFontColorForBackground(color);
+      if (useLight) {
+        this.customColorPreview.classList.remove("librusPro_overlay-dark-dot");
+        this.customColor.value = color + "|#ffffff";
+      } else {
+        this.customColorPreview.classList.add("librusPro_overlay-dark-dot");
+        this.customColor.value = color + "|#222222";
+      }
+    } else {
+      this.customColor.value = color + "|#ffffff";
+    }
+    this.customColor.checked = true;
+  }
+
+  // Otwieranie overlaya i jego reset
+  openForAdding(date) {
+    document.body.classList.add("librusPro_overlay");
+    this.overlay.classList.add("librusPro_overlay-adding");
+    this.date.value = date;
+    this.lesson.value = "";
+    this.time.value = "";
+    this.subjectSelect.value = "";
+    this.subject.value = "";
+    this.typeSelect.value = "";
+    this.type.value = "";
+    this.description.value = "";
+    this.imageUrl.value = "";
+    this.firstColor.checked = "true";
+    this.customColor.value = "#aaaaaa|#ffffff";
+    this.customColorInput.value = "#010101";
+    this.customColorPreview.style.background = "linear-gradient(225deg, #f00 0%, #ff7300 23%, #f9ff00 43%, #00ff73 64%, #0023ff 85%)";
+    this.displayInputIfOtherSelected();
+
+    this.overlay.style.display = "block";
+  }
+
+  // Otwieranie overlaya, ustawianie na wartości wydarzenia
+  openForEditting(date, event, index) {
+    this.edittingIndex = index;
+    this.edittingDate = date;
+    this.edittingDateAdded = event.dateAdded;
+    document.body.classList.add("librusPro_overlay");
+    this.overlay.classList.add("librusPro_overlay-editting");
+    this.date.value = date;
+    this.lesson.value = event?.lesson;
+    this.time.value = event?.time;
+    this.subjectSelect.value = "Inny";
+    for (let option of this.subjectSelect.options) {
+      if (option.value === event?.subject) {
+        this.subjectSelect.value = event?.subject;
+        this.subjectInputHidden = false;
+      }
+    }
+    this.typeSelect.value = "Inny";
+    for (let option of this.typeSelect.options) {
+      if (option.value === event?.type) {
+        this.typeSelect.value = event?.type;
+        this.typeInputHidden = false;
+      }
+    }
+    this.displayInputIfOtherSelected();
+    this.subject.value = event?.subject;
+    this.type.value = event?.type;
+    this.description.value = event?.description;
+    this.imageUrl.value = event?.url;
+
+    const color = event.background + "|" + event.color;
+    const colorInput = document.querySelector(`input[value="${color}"]`);
+    if (colorInput) {
+      colorInput.checked = true;
+    } else {
+      this.customColor.checked = true;
+      this.customColor.value = color;
+      this.customColorInput.value = event.background;
+      this.customColorPreview.style.background = event.background;
+      this.customColorPreview.style.color = event.color;
+      this.updateOverlayColorValue();
+    }
+
+    this.overlay.style.display = "block";
+  }
+
+  // Dodanie przedmiotów do listy wybierania przy tworzeniu wydarzeń
+  insertSubjects(subjects) {
+    if (subjects.size > 0) {
+      [...subjects].sort().forEach((e) => {
+        const o = document.createElement("OPTION");
+        o.value = e;
+        o.innerText = e;
+        this.subjectSelect.insertBefore(o, this.subjectSelect.lastElementChild);
+      })
+    } else {
+      this.noSubjectSelect = true;
+      this.subjectSelect.parentElement.style.display = "none";
+      this.otherSubject.style.display = "block";
+    }
+  }
+}
+
+// Terminarz
+class CustomSchedule {
+  constructor(options, studentClass) {
+    this.options = options;
+    this.studentClass = studentClass;
+    this.month = document.getElementsByName("miesiac")[0].value;
+    this.year = document.getElementsByName("rok")[0].value;
+
+    const daysIds = document.getElementsByClassName("kalendarz-numer-dnia");
+
+    // Przyciemnianie przeszłych wydarzeń
+    let setOpacity = false;
+    const now = new Date();
+    if (this.year < now.getFullYear()) {
+      setOpacity = true;
+    }
+    else if ((this.month - 1) <= now.getMonth() && this.year == now.getFullYear()) {
+      setOpacity = true;
+    }
+
+    // Wersja depresyjna terminarza
+    if (this.options.depressionMode) {
+      document.querySelector(".kalendarz").classList.add("librusPro_depression-mode");
+    }
+
+    // Modernizacja terminarza
+    if (this.options.modernizeSchedule) {
+      document.querySelector(".kalendarz").classList.add("librusPro_modernized-schedule");
+    }
+
+    // Plan lekcji do overlaya oraz kafelków
+    if (this.options.insertTimetable) {
+      this.insertTimetable(daysIds);
+    }
+
+    // [+] template
+    const newEventButton = document.createElement("a");
+    newEventButton.innerText = "[+]";
+    newEventButton.title = 'Dodaj nowe wydarzenie';
+    newEventButton.classList.add("librusPro_new-event-button", "librusPro_jqueryTitle");
+
+    for (const dayId of daysIds) {
+      const events = dayId.parentElement.querySelectorAll("td");
+      events.forEach((event) => {
+        // Ukrywanie nieobecności nauczycieli
+        if (!this.options.showTeacherFreeDays && event.innerText.includes("Nieobecność:")) {
+          event.remove();
+          return;
+        }
+
+        // Zaciemnianie dni wolnych
+        if (this.options.darkTheme && event.outerHTML.indexOf(`onclick="location.href='/terminarz/szczegoly_wolne/`) > -1 && !event.innerText.includes("Nieobecność:")) {
+          dayId.parentElement.parentElement.classList.add("weekend");
+        }
+
+        // Modernizacja i dodawanie opisów
+        this.adjustEventContent(event);
+
+        // Modernizacja dymków
+        if (this.options.modernizeTitles) modernizeTitle(event);
+      });
+
+      // Klucz
+      const date = `${this.year}-${String(this.month).padStart(2, '0')}-${dayId.innerText.padStart(2, '0')}`;
+
+      // [+]
+      const _newEventButton = dayId.parentElement.insertBefore(newEventButton.cloneNode(true), dayId);
+      _newEventButton.addEventListener("click", () => {
+        CustomSchedule.openOverlayForAdding(date);
+      });
+
+      // Zaciemnianie przeszłych dni
+      if (dayId.parentElement.parentElement.classList.contains("today")) {
+        setOpacity = false;
+      }
+      if (setOpacity) {
+        dayId.parentElement.classList.add("librusPro_past");
       }
 
-      const table = document.createElement("table");
-      table.style.marginTop = "0px";
+      this.displayEvents(dayId, date);
+    }
+  }
 
+  static openOverlayForAdding(date) {
+    overlay.openForAdding(date);
+  }
+
+  static openOverlayForEditting(date, index) {
+    browserAPI.storage.sync.get([date], (data) => {
+      const event = data[date][index];
+      overlay.openForEditting(date, event, index);
+    });
+  }
+
+  static addCustomEvent(date, dateAdded = null) {
+    browserAPI.storage.sync.get(date, (data) => {
+      let events = data[date];
+      const event = new CustomScheduleEvent();
+      if (dateAdded) {
+        event.updateDate(dateAdded);
+      }
+      if (!events) {
+        browserAPI.storage.sync.set({ [date]: [event] });
+      } else {
+        events.push(event);
+        browserAPI.storage.sync.set({ [date]: events });
+      }
+    });
+    
+  }
+
+  static removeCustomEvent(date, index) {
+    browserAPI.storage.sync.get([date], (data) => {
+      if (data[date].length <= 1) {
+        browserAPI.storage.sync.remove([date]);
+      } else {
+        data[date].splice(index, 1);
+        browserAPI.storage.sync.set({ [date]: data[date] });
+      }
+  });
+  }
+
+  static editCustomEvent() {
+    const event = new CustomScheduleEvent();
+    event.updateDate(overlay.edittingDateAdded);
+    const date = overlay.date.value;
+
+    // Jeśli wydarzenie nie zostało przeniesione
+    if (date === overlay.edittingDate) {
+      browserAPI.storage.sync.get([date], (data) => {
+        data[date][overlay.edittingIndex] = event;
+        browserAPI.storage.sync.set({ [date]: data[date] });
+      });
+    } else {
+      CustomSchedule.addCustomEvent(date, overlay.edittingDateAdded);
+      CustomSchedule.removeCustomEvent(overlay.edittingDate, overlay.edittingIndex);
+    }
+  }
+
+  displayEvents(day, date) {
+    browserAPI.storage.sync.get(date, (data) => {
+      const events = data[date];
+      if (!events) return;
+
+      const table = document.createElement("table");
+      table.classList.add("librusPro_events-table");
+
+      // Nazwa do title
       const uczen = document.querySelector("#user-section > b").innerText.split("(")[0];
 
-      for (let i = 0; i < events.length; i++) {
-        const row = table.insertRow();
-        const cell = document.createElement("td");
-        row.appendChild(cell);
-        const event = events[i];
-        cell.style.background = event.background;
-        cell.style.color = event.color;
-        cell.style.overflowWrap = "break-word";
-        cell.style.wordWrap = "break-word";
-        cell.style.animation = "blinking 4s infinite ease-in-out";
-        cell.style.wordBreak = "break-word";
-        cell.classList.add("no-border-left", "no-border-right", "librusPro_custom", "librusPro_jqueryTitle");
+      // ✎ template
+      const editEventButton = document.createElement("a");
+      editEventButton.innerText = ADD_EDIT_SYMBOL;
+      editEventButton.classList += "librusPro_edit-event-button";
 
-        cell.title = "Uczeń: " + uczen + "<br />";
+      // ⨉ template
+      const removeEventButton = document.createElement("a");
+      removeEventButton.innerText = REMOVE_SYMBOL;
+      removeEventButton.classList += "librusPro_remove-event-button";
+
+      for (let i = 0; i < events.length; i++) {
+        let event = events[i];
+        const row = table.insertRow();
+        const eventEl = document.createElement("td");
+        row.appendChild(eventEl);
+        eventEl.style.background = event.background;
+        eventEl.style.color = event.color;
+        eventEl.classList.add("no-border-left", "no-border-right", "librusPro_custom-event", "librusPro_jqueryTitle");
+
+        eventEl.title = "Uczeń: " + uczen + "<br />";
 
         let temp = [];
         // Nr lekcji
-        if (event.lesson != "") {
-          if (event.lesson.length > 30) {
-            temp.push(`Nr lekcji: ${event.lesson.slice(0, 30)} [...]`);
+        if (event.lesson) {
+          if (event.lesson.length > TYPE_SUBJECT_LENGTH) {
+            temp.push(`Nr lekcji: ${event.lesson.slice(0, TYPE_SUBJECT_LENGTH)} [...]`);
           } else {
             temp.push(`Nr lekcji: ${event.lesson}`);
           }
         }
 
         // Godzina
-        if (event.time != "") {
+        if (event.time) {
           temp.push(`Godz: ${event.time}`);
         }
 
-        if (options.modernizeSchedule) {
-          cell.innerText = temp.join("\n");
+        if (this.options.modernizeSchedule) {
+          eventEl.innerText = temp.join("\n");
 
           // Przedmiot
-          if (event.subject != "") {
-            const s = document.createElement("SPAN");
-            if (event.subject.length > 30) {
-              s.innerText = event.subject.slice(0, 30) + ' [...]';
+          if (event.subject) {
+            const s = document.createElement("ARTICLE");
+            if (event.subject.length > TYPE_SUBJECT_LENGTH) {
+              s.innerText = event.subject.slice(0, TYPE_SUBJECT_LENGTH) + ' [...]';
             } else {
               s.innerText = event.subject;
             }
-            s.style.fontWeight = "bold";
-            s.style.fontSize = "13px";
-            s.style.display = "block";
-            cell.appendChild(s);
+            s.classList.add("librusPro_event-subject");
+            eventEl.appendChild(s);
           }
 
           // Typ
-          if (event.type != "") {
-            const s = document.createElement("SPAN");
-            if (event.type.length > 30) {
-              s.innerText = event.type.slice(0, 30) + '[...]';
+          if (event.type) {
+            const s = document.createElement("ARTICLE");
+            if (event.type.length > TYPE_SUBJECT_LENGTH) {
+              s.innerText = event.type.slice(0, TYPE_SUBJECT_LENGTH) + '[...]';
             } else {
               s.innerText = event.type;
             }
-            s.style.textDecoration = "underline";
-            s.style.fontSize = "13px";
-            s.style.display = "block";
-            s.style.marginBottom = "3px";
-            cell.appendChild(s);
+            s.classList.add("librusPro_event-type");
+            eventEl.appendChild(s);
           }
 
           // Klasa
-          if (currentClass != undefined && (((cell.innerText == "" && (event.description == "" || !options.addDescriptions)) && event.url == "") || !options.removeClasses)) {
-            const s = document.createElement("SPAN");
-            s.innerText = currentClass;
-            s.style.display = "block";
-            cell.appendChild(s);
+          if (((!eventEl.innerText && (!event.description || !this.options.addDescriptions)) && !event.url) || !this.options.removeClasses) {
+            const s = document.createElement("ARTICLE");
+            s.innerText = this.studentClass ?? NO_DATA;
+            eventEl.appendChild(s);
           }
 
           // Opis
-          if (event.description != "" && options.addDescriptions) {
-            const s = document.createElement("SPAN");
-            if (event.description.length > 200) {
-              s.innerText = `Opis: ${event.description.replaceAll("<br />", "\n").slice(0, 250)}\n[...]`;
+          if (event.description && this.options.addDescriptions) {
+            const s = document.createElement("ARTICLE");
+            if (event.description.length > DESCRIPTION_LENGTH) {
+              s.innerText = `Opis: ${event.description.replaceAll("<br />", "\n").slice(0, DESCRIPTION_LENGTH)}\n[...]`;
             } else {
               s.innerText = `Opis: ${event.description.replaceAll("<br />", "\n")}`;
             }
-            s.style.display = "block";
-            cell.appendChild(s);
+            eventEl.appendChild(s);
           }
-
-          cell.style.padding = "6px 9px";
-
         } else {
-          let pp = false;
           // Przedmiot
-          if (event.subject != "") {
-            if (event.subject.length > 30) {
-              temp.push(`${event.subject.slice(0, 30)} [...]`);
+          if (event.subject) {
+            if (event.subject.length > TYPE_SUBJECT_LENGTH) {
+              temp.push(`${event.subject.slice(0, TYPE_SUBJECT_LENGTH)} [...]`);
             } else {
               temp.push(`${event.subject}`);
             }
 
-            if (event.type != "") {
+            if (event.type) {
               temp[temp.length - 1] += ", ";
             }
-            pp = true;
           }
 
           // Typ
-          if (event.type != "") {
-            if (event.type.length > 30) {
-              if (!pp) {
-                temp.push(`${event.type.slice(0, 30)} [...]`);
+          if (event.type) {
+            if (event.type.length > TYPE_SUBJECT_LENGTH) {
+              if (!event.subject) {
+                temp.push(`${event.type.slice(0, TYPE_SUBJECT_LENGTH)} [...]`);
               } else {
-                temp[temp.length - 1] += `${event.type.slice(0, 30)} [...]`;
+                temp[temp.length - 1] += `${event.type.slice(0, TYPE_SUBJECT_LENGTH)} [...]`;
               }
             } else {
-              if (!pp) {
+              if (!event.subject) {
                 temp.push(`${event.type}`);
               } else {
                 temp[temp.length - 1] += `${event.type}`;
@@ -2101,401 +2292,381 @@ if (window.location.href == "https://synergia.librus.pl/terminarz") {
           }
 
           // Klasa
-          if (currentClass != undefined && ((temp.length == 0 && event.description == "") || !options.removeClasses)) {
-            temp.push(currentClass);
+          if ((temp.length === 0 && !event.description) || !this.options.removeClasses) {
+            temp.push(this.studentClass ?? NO_DATA);
           }
 
           // Opis
-          if (event.description != "" && options.addDescriptions) {
-            if (event.description.length > 200) {
-              temp.push(`Opis: ${event.description.replaceAll("<br />", "\n").slice(0, 250)}` + "\n[...]");
+          if (event.description && this.options.addDescriptions) {
+            if (event.description.length > DESCRIPTION_LENGTH) {
+                temp.push(`Opis: ${event.description.replaceAll("<br />", "\n").slice(0, DESCRIPTION_LENGTH)}` + "\n[...]");
             } else {
-              temp.push(`Opis: ${event.description.replaceAll("<br />", "\n")}`);
+                temp.push(`Opis: ${event.description.replaceAll("<br />", "\n")}`);
             }
           }
-          cell.innerText = temp.join("\n");
+          eventEl.innerText = temp.join("\n");
         }
 
-        if (event.url != "" && event.url !== undefined) {
+        if (event.url) {
           const image = document.createElement("IMG");
           image.src = event.url;
-          image.style.width = "85%";
-          image.style.display = "block";
-          image.style.margin = "5px auto";
-          image.style.filter = "drop-shadow(2px 2px 1px #333333)";
-          image.style.borderRadius = "5px";
-          cell.appendChild(image);
+          image.classList.add("librusPro_event-image");
+          eventEl.appendChild(image);
         }
 
-        if (event.description != "") cell.title += "Opis: " + event.description + "<br />";
-        cell.title += "Data dodania: " + event.dateAdded;
-        if (event.dateModified != "") cell.title += "<br />Data ostatniej modyfikacji: " + event.dateModified;
-        if (options.modernizeTitles) modernizeTitle(cell);
+        if (event.description) eventEl.title += "Opis: " + event.description + "<br />";
+        eventEl.title += "Data dodania: " + event.dateAdded;
+        if (event.dateModified) eventEl.title += "<br />Data ostatniej modyfikacji: " + event.dateModified;
 
-        const removeButton = document.createElement("a");
-        removeButton.innerText = REMOVE_SYMBOL;
-        removeButton.classList += "librusPro_removeButton";
-        addListenerToRemoveButton(removeButton, cellKey, i);
+        if (this.options.modernizeTitles) modernizeTitle(eventEl);
 
-        const editButton = document.createElement("a");
-        editButton.innerText = ADD_SYMBOL;
-        editButton.classList += "librusPro_editButton";
-        addListenerToEditButton(editButton, cellKey, i);
-
-        cell.appendChild(removeButton);
-        cell.appendChild(editButton);
-        cellDay.parentElement.appendChild(table);
-
-        cell.onmouseenter = function () {
-          this.style.background = "#666666";
-          this.style.color = "#ffffff";
-        };
-        cell.onmouseleave = function () {
-          this.style.background = `${event.background}`;
-          this.style.color = `${event.color}`;
-        };
-      }
-      location.href = "javascript: librusPro_jqueryTitle()";
-    });
-  }
-
-  // ---------------- REMOVE BUTTON LISTENER --------------------
-  function addListenerToRemoveButton(removeButton, targetKey, index) {
-    removeButton.addEventListener("click", function () {
-      removeCustomCell(`${targetKey}`, `${index}`);
-    });
-  }
-
-  // ---------------- REMOVE CUSTOM CELL --------------------
-  function removeCustomCell(targetKey, removeIndex) {
-    browserAPI.storage.sync.get([targetKey], function (tempResult) {
-      if (tempResult[targetKey].length == 1) {
-        browserAPI.storage.sync.remove([targetKey]);
-      } else {
-        const t = tempResult[targetKey];
-        t.splice(removeIndex, 1);
-        browserAPI.storage.sync.set({
-          [targetKey]: t
+        // ✎
+        const _editEventButton = eventEl.appendChild(editEventButton.cloneNode(true));
+        _editEventButton.addEventListener("click", () => {
+          CustomSchedule.openOverlayForEditting(date, i);
         });
+
+        // ⨉
+        const _removeEventButton = eventEl.appendChild(removeEventButton.cloneNode(true));
+        _removeEventButton.addEventListener("click", () => {
+          CustomSchedule.removeCustomEvent(date, i);
+        });
+
+        day.parentElement.appendChild(table);
       }
+      refreshjQueryTitles();
     });
   }
 
-  // ---------------- EDIT BUTTON LISTENER --------------------
-  function addListenerToEditButton(addTo, targetKey, index) {
-    addTo.addEventListener("click", function () {
-      displayOverlayForEditingCell(`${targetKey}`, `${index}`);
-    });
-  }
-
-  // ---------------- DISPLAY OVERLAY FOR EDITING CUSTOM CELL --------------------
-  function displayOverlayForEditingCell(targetKey, editIndex) {
-    document.body.classList.toggle("librusPro_pageBody");
-    overlay.style.display = "block";
-    overlayHeader.innerText = "Edytuj zdarzenie";
-    overlayConfirmButton.innerText = "Edytuj";
-    overlayConfirmButton.classList.remove("librusPro_button-add");
-    overlayConfirmButton.classList.add("librusPro_button-edit");
-    overlayDate.value = targetKey;
-
-    browserAPI.storage.sync.get([targetKey], function (r) {
-      const event = r[targetKey][editIndex];
-      lesson.value = event.lesson
-      time.value = event.time;
-      subject.value = event.subject;
-      subjectSelect.value = "Inny";
-      if (subjectSelectLabel.style.display === "none") {
-        subjectInputTitle.style.display = "block";
-        subjectInput.style.display = "block";
-      } else {
-        for (let i = 0; i < subjectSelect.options.length; i++) {
-          if (subjectSelect.options[i].value === event.subject) {
-            subjectSelect.value = event.subject;
-          }
-        }
-        if (subjectSelect.value == "Inny") {
-          subjectInputTitle.style.display = "block";
-          subjectInput.style.display = "block";
-        }
-      }
-      type.value = event.type;
-      typeSelect.value = "Inny";
-      typeInputTitle.style.display = "none";
-      typeInput.style.display = "none";
-      description.value = event.description;
-      for (let i = 0; i < typeSelect.options.length; i++) {
-        if (typeSelect.options[i].value === event.type) {
-          typeSelect.value = event.type;
-        }
-      }
-      if (typeSelect.value == "Inny") {
-        typeInputTitle.style.display = "block";
-        typeInput.style.display = "block";
-      }
-      imageUrl.value = event.url;
-      const color = event.background + "|" + event.color;
-      const colorInput = document.querySelector(`input[value="${color}"]`);
-      if (colorInput) {
-        for (let x = 0; x < 18; x++) {
-          if (color == colorInput.value) {
-            colorInput.checked = "true";
-            break;
-          }
-        }
-      } else {
-        document.getElementById("librusPro_inputColor").value = event.background;
-        document.getElementById("librusPro_hexRadio").checked = true;
-        document.getElementById("librusPro_hexRadio").value = color;
-        document.getElementById("librusPro_colorHexSpan").style.background = event.background;
-        document.getElementById("librusPro_colorHexSpan").style.color = event.color;
-      }
-      if (listenerLambdaFunction) {
-        overlayConfirmButton.removeEventListener("click", listenerLambdaFunction);
-      }
-      listenerLambdaFunction = function () {
-        editCustomCell(`${targetKey}`, `${editIndex}`);
-      };
-      overlayConfirmButton.addEventListener("click", listenerLambdaFunction);
-    });
-  }
-
-  // ---------------- EDIT CUSTOM CELL --------------------
-  function editCustomCell(targetKey, editIndex) {
-    const colorSelectValue = document
-      .querySelector("input[name=librusPro_color]:checked")
-      .value.split("|");
-    if (overlayDate.value == "") {
-      document.getElementById("librusPro_error").innerText = "Wybierz datę";
-      return;
-    }
-    if (colorSelectValue == "") {
-      document.getElementById("librusPro_error").innerText = "Wybierz kolor";
-      return;
-    }
-    overlay.style.display = "none";
-
-    if (overlayDate.value == targetKey) {
-      browserAPI.storage.sync.get([targetKey], function (tempResult) {
-        const t = tempResult[targetKey];
-        t[editIndex] = {
-            lesson: lesson.value,
-            time: time.value,
-            subject: subject.value,
-            type: type.value,
-            description: description.value,
-            background: colorSelectValue[0],
-            color: colorSelectValue[1],
-            url: imageUrl.value,
-            dateAdded: t[editIndex].dateAdded,
-            dateModified: new Date().toLocaleString(),
-          },
-          browserAPI.storage.sync.set({
-            [targetKey]: t
-          });
-      });
-    } else {
-      browserAPI.storage.sync.get([targetKey], function (tempResult) {
-        addCustomCell(tempResult[targetKey][editIndex].dateAdded);
-        removeCustomCell(targetKey, editIndex);
-      });
-    }
-  }
-
-  // ------------------- MODERNIZE EVENTS, ADD DESCRIPTIONS, REMOVE CLASSES ---------------
-
-  function adjustCellContent(cell, options) {
+  adjustEventContent(event) {
     // Ukrywanie klasy
-    if (options.removeClasses) {
-      const classRegex = /^(([0-9\[\]](.+?))|([A-Za-z]{1,2}\d(.*?)))$/gm;
-      [...cell.childNodes].forEach((e) => {
-        if (e.nodeValue && e.nodeValue.match(classRegex)) {
+    if (this.options.removeClasses) {
+      [...event.childNodes].forEach((e) => {
+        if (e.nodeValue?.match(REGEXS.class)) {
           e.previousSibling?.remove();
           e.remove();
         }
       });
     }
 
-    if (options.modernizeSchedule) {
+    // Modernizacja
+    if (this.options.modernizeSchedule) {
       // Typ (np. sprawdzian)
-      [...cell.childNodes].forEach((e) => {
-        if (e.nodeValue && e.nodeValue[0] == ",") {
-          const s = document.createElement("SPAN");
-          s.innerText = e.nodeValue.slice(2);
-          s.style.textDecoration = "underline";
-          s.style.fontSize = "13px";
-          s.classList.add("typ");
-          const u = cell.querySelector(`a[href^="https://liblink.pl/"]:last-child`);
-          if (u) {
-            s.innerText = "\n" + s.innerText;
+      [...event.childNodes].forEach((e) => {
+        if (e.nodeValue?.[0] === ",") {
+          let el;
+          if (event.querySelector(`${ONLINE_LESSON}:last-child`)) {
+            el = document.createElement("SPAN");
+            el.style.textDecoration = "underline";
+            el.style.fontSize = "13px";
+            el.innerText = "\n" + e.nodeValue.slice(2);
           } else {
-            if (e.nextSibling && e.nextSibling.nodeName == "BR") e.nextSibling.remove();
-            s.style.display = "block";
-            s.style.marginBottom = "3px";
+            if (e.nextSibling?.nodeName === "BR") e.nextSibling.remove();
+            el = document.createElement("ARTICLE");
+            el.innerText = e.nodeValue.slice(2);
+            el.classList.add("librusPro_event-type");
           }
-          e.after(s);
+          e.after(el);
           e.remove();
         }
       });
 
-      // Modernizacja odwołań
-      const odwolaneRegex = /Odwołane zajęcia(\n.*) na lekcji nr: (\d+) \((.*)\)$/;
-      const odwolaneResult = cell.innerText.match(odwolaneRegex);
-      if (cell.innerText && odwolaneResult) {
-        cell.innerText = "Odwołane zajęcia na lekcji nr: " + odwolaneResult[2];
-        const p = document.createElement("SPAN");
-        p.style.fontWeight = "bold";
-        p.style.fontSize = "13px";
-        p.innerText = "\n" + odwolaneResult[3];
-        cell.appendChild(p);
+      // Odwołania
+      const cancelled_res = event.innerText.match(REGEXS.cancelled);
+      if (event.innerText && cancelled_res) {
+        event.innerText = "Odwołane zajęcia na lekcji nr: " + cancelled_res[2];
+        const el = document.createElement("ARTICLE");
+        el.classList.add("librusPro_event-subject");
+        el.innerText = cancelled_res[3];
+        event.appendChild(el);
       }
 
-      // Modernizacja zastępstw/przesunięć
-      const zastepstwaRegex = /(Zastępstwo|Przesunięcie) z (.*) na lekcji nr: (\d+) \((.*)\)$/;
-      const zastepstwaResult = cell.innerText.match(zastepstwaRegex);
-      if (cell.innerText && zastepstwaResult) {
-        cell.innerText = zastepstwaResult[1] + " na lekcji nr: " + zastepstwaResult[3];
-        const p = document.createElement("SPAN");
-        p.style.fontWeight = "bold";
-        p.style.fontSize = "13px";
-        p.innerText = "\n" + zastepstwaResult[4];
-        cell.appendChild(p);
-        const x = document.createElement("SPAN");
-        x.innerText = `\n(${zastepstwaResult[2]})`;
-        x.style.fontStyle = "italic";
-        cell.appendChild(x);
+      // Zastępstwa/przesunięcia
+      const substitution_res = event.innerText.match(REGEXS.substitution);
+      if (event.innerText && substitution_res) {
+        event.innerText = substitution_res[1] + " na lekcji nr: " + substitution_res[3];
+        const el = document.createElement("ARTICLE");
+        el.classList.add("librusPro_event-subject");
+        el.innerText = substitution_res[4];
+        event.appendChild(el);
+        const el2 = document.createElement("ARTICLE");
+        el2.innerText = `(${substitution_res[2]})`;
+        el2.classList.add("librusPro_event-teacher");
+        event.appendChild(el2);
       }
 
       // Odchudzenie nieobecności nauczycieli
-      if (cell.innerText.includes("\nNauczyciel:")) {
-        cell.innerText = cell.innerText.replace("\nNauczyciel:", "");
+      if (event.innerText.includes("\nNauczyciel:")) {
+        event.innerText = event.innerText.replace("\nNauczyciel:", "");
       }
 
-      // Pogrubienie przedmiotu
-      document.querySelectorAll(".przedmiot").forEach((e) => {
-        e.style.fontWeight = "bold";
-        e.style.fontSize = "13px";
-      });
-
       // Usuwanie linków ze starych lekcji online
-      document.querySelectorAll('.past a[href^="https://liblink.pl/"]').forEach((e) => {
+      document.querySelectorAll(`.librusPro_past ${ONLINE_LESSON}`).forEach((e) => {
         e.remove();
-      });
-
-      // Zwiększenie paddingu
-      document.querySelectorAll(".kalendarz-dzien td").forEach((e) => {
-        e.style.padding = "6px 9px";
       });
     }
 
-    // Dodawanie opisów
-    if (options.addDescriptions) {
-      const descriptionRegex = /Opis: (.+?)(<br>|<br \/>)Data/;
-      let out = (cell.title.match(descriptionRegex)) ? "Opis: " + cell.title.match(descriptionRegex)[1] : null;
-      if (out) {
-        // Opis z title na wierzch, ucięcie zbyt długich.
-        const d = document.createElement("SPAN");
-        if (out.length > 200) {
-          out = out.slice(0, 250).replaceAll("<br />", "\n").replaceAll("<br>", "\n") + "\n[...]";
-        } else {
-          out = out.replaceAll("<br />", "\n").replaceAll("<br>", "\n");
+    // Dodawanie opisów z title na wierzch, ucięcie zbyt długich
+    if (this.options.addDescriptions) {
+      let desc_res = event.title.match(REGEXS.description);
+      if (desc_res) {
+        let desc = ("Opis: " + desc_res[1]).replaceAll("<br />", "\n").replaceAll("<br>", "\n");
+        if (desc.length > 200) {
+          desc = desc.slice(0, 200) + "\n[...]";
         }
-        const u = cell.querySelector(`a[href^="https://liblink.pl/"]:last-child`);
-        if (u) {
-          d.innerText = "\n" + out;
-          cell.insertBefore(d, u);
+        const l = event.querySelector(`${ONLINE_LESSON}:last-child`);
+        if (l) {
+          const el = document.createElement("SPAN");
+          el.innerText = "\n" + desc;
+          event.insertBefore(el, l);
         } else {
-          d.innerText = out;
-          d.style.display = "block";
-          cell.appendChild(d);
+          const el = document.createElement("ARTICLE");
+          el.innerText = desc;
+          event.appendChild(el);
         }
       }
     }
   }
 
-  browserAPI.storage.sync.get(["options", "plan"], function (t) {
-    let options = t["options"];
-    if (options) {
-      // Wersja depresyjna terminarza
-      if (options.depressionMode) {
-        const calendarDays = document.getElementsByClassName("kalendarz-dzien");
-        for (const e of calendarDays) {
-          if (e.classList.contains("past")) {
-            e.style.filter = "grayscale(100%) brightness(0.5)";
-          } else {
-            e.style.filter = "grayscale(100%) brightness(0.6) contrast(1.2)";
-            e.style.opacity = "0.9";
-          }
+  static getTimetableEntry(lesson, entry) {
+    let text = [`<b class="librusPro_timetable-lessonNo">${lesson}.</b>`];
+    if (!entry) {
+      text.push("-");
+    } else {
+      text.push(`<span class="librusPro_timetable-time">${entry["HourFrom"]}-${entry["HourTo"]}</span>`);
+      text.push(`<span class="${entry["IsCanceled"] ? ' librusPro_timetable-cancelled' : ''} ${entry["IsSubstitutionClass"] ? ' librusPro_timetable-info' : ''}">${entry["Subject"]["Name"]}</span>`);
+      if (entry["VirtualClassName"]) {
+        text.push(`<span class="librusPro_timetable-class">${entry["VirtualClassName"]}</span>`);
+      }
+      if (entry["IsCanceled"]) {
+        text.push(`<span class="librusPro_timetable-info">Odwołane</span>`);
+      }
+      if (entry["IsSubstitutionClass"]) {
+        text.push(`<span class="librusPro_timetable-teacher">(${entry["Teacher"]["FirstName"]} ${entry["Teacher"]["LastName"]})</span>`);
+      }
+      // TODO: idk z przesunięciami
+    }
+
+    return "<article>" + text.join(" ") + "</article>";
+  }
+
+  // TODO: idk jeśli nie udostępniony
+  insertTimetable(days, requestedTimetable) {
+    browserAPI.storage.local.get(["timetable"], (data) => {
+      let timetable = data["timetable"];
+      if (!timetable) {
+        browserAPI.runtime.sendMessage({msg: 'fetchTimetable'}, () => { this.insertTimetable(days) });
+        return;
+      }
+
+      if (requestedTimetable) {
+        timetable = requestedTimetable;
+      }
+
+      const subjects = new Set();
+      for (let day of days) {
+        const timetableElement = document.createElement("ARTICLE");
+        timetableElement.innerText = TIMETABLE_SYMBOL;
+        timetableElement.classList.add("librusPro_lesson-plan", "librusPro_jqueryTitle");
+
+        if (requestedTimetable === null) {
+          timetableElement.title = '<article class="librusPro_timetable-header">LibrusPro <span class="librusPro_white">|</span> <span class="librusPro_error">Wystąpił błąd!</span></article><article>Skontaktuj się z developerem!</article>';
+          day.after(timetableElement);
+          continue;
         }
-      }
 
-      // Zaciemnianie dni wolnych
-      if (options.darkTheme) {
-        document.querySelectorAll(`[onclick*="/terminarz/szczegoly_wolne/"]`).forEach((e) => {
-          if (!e.innerText.includes("Nieobecność:")) {
-            e.parentElement.parentElement.parentElement.parentElement.parentElement.classList.add("weekend");
-          }
-        });
-      }
+        const date = `${this.year}-${String(this.month).padStart(2, '0')}-${day.innerText.padStart(2, '0')}`;
 
-      document.querySelectorAll("#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td > div > table > tbody > tr > td:not(.librusPro_custom)").forEach((e) => {
-        // Ukrywanie nieobecności nauczycieli
-        if (!options.showTeacherFreeDays && e.innerText.includes("Nieobecność:")) {
-          e.remove();
+        let dayTimetable = timetable[date];
+        if (!dayTimetable) {
+          let d = new Date(date);
+          let day = d.getDay(),
+          diff = d.getDate() - day + (day == 0 ? -6:1); // niedziela
+          d.setDate(diff);
+          let key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          browserAPI.runtime.sendMessage({msg: 'fetchTimetable', data: key},
+            (_requestedTimetable) => { this.insertTimetable(days, _requestedTimetable) });
           return;
         }
 
-        adjustCellContent(e, options);
-        if (options.modernizeTitles) modernizeTitle(e);
+        let lastLesson = 0;
+        for (let lesson in dayTimetable) {
+          let entry = dayTimetable[lesson]?.[0];
+          if (entry) lastLesson = lesson;
+        }
+        const timetableText = [];
+        for (let lesson in dayTimetable) {
+          let entry = dayTimetable[lesson]?.[0];
+          // Jeśli okienko i nie zerowa
+          if (!entry && lesson !== "0" && +lesson < lastLesson) {
+            timetableText.push(CustomSchedule.getTimetableEntry(lesson));
+          } else if (entry) {
+            timetableText.push(CustomSchedule.getTimetableEntry(lesson, entry));
+            subjects.add(entry["Subject"]["Name"]);
+          }
+        }
+        if (timetableText.length <= 0) continue;
+
+        timetableElement.title = '<article class="librusPro_timetable-header">LibrusPro <span class="librusPro_white">|</span> <span class="librusPro_lightblue">Plan lekcji:</span></article>' + timetableText.join("");
+        day.after(timetableElement);
+      }
+
+      refreshjQueryTitles();
+      overlay.insertSubjects(subjects);
+    });
+  }
+}
+
+// Tu się dzieje cała magia
+function main() {
+  if (window.location.href.indexOf(URLS.newVersion) > -1) {
+    alert("[LibrusPro] » Rozszerzenie przeznaczone jest dla widoku standardowego systemu Librus Synergia. Widok alternatywny nie jest oraz nie będzie wspierany. Po zamknięciu tego komunikatu powrócisz do strony głównej odpowiedniego widoku.");
+    window.location.replace(URLS.schedule);
+    return;
+  }
+
+  registerOnStorageChange(window.location.href.indexOf(URLS.schedule) > -1);
+  injectjQueryHook();
+
+  // Co to po komu ta strona startowa?
+  if (URLS.index.some((e) => window.location.href.indexOf(e) > -1)) {
+    // Przekierowanie i aktualizacja danych
+    browserAPI.runtime.sendMessage({msg: 'fetchStudentInfo'});
+    browserAPI.runtime.sendMessage({msg: 'fetchTimetable'});
+    document.location.replace(URLS.grades);
+    return;
+  }
+
+  getGradeColumns();
+
+  // Nie wymagające opcji
+  printCreditsToConsole();
+  adjustHeader();
+  adjustNavbar();
+  insertFooter();
+  disableAutoLogout();
+
+  // Świąteczny banner (połowa grudnia -> połowa stycznia)
+  let isChristmas = new Date();
+  if ((isChristmas.getMonth() === 11 && isChristmas.getDate() >= 14) || (isChristmas.getMonth() === 0 && isChristmas.getDate() <= 14)) christmasBanner();
+
+  // Oceny
+  if (window.location.href.indexOf(URLS.grades) > -1) {
+    collapseBehavior();
+
+    if (!gradesSinceLastLoginView) {
+      insertProposedBehavior();
+    }
+  }
+
+  // Prace domowe
+  if (window.location.href.indexOf(URLS.homework) > -1) {
+    adjustHomeworks();
+  }
+
+  // Szczegóły oceny
+  if (window.location.href.indexOf(URLS.gradeDetails) > -1) {
+    initCommentsInProximity();
+  }
+
+  // Frekwencja
+  if (window.location.href.indexOf(URLS.attendance) > -1) {
+    insertAttendanceStatistics();
+  }
+
+  // Pobranie opcji i danych
+  browserAPI.storage.sync.get(["student", "options", "aprilfools"], (data) => {
+    let options = data["options"];
+    let student = data["student"];
+
+    if (!data["aprilfools"]) {
+      const d = new Date();
+      if (d.getMonth() === 3 && d.getDate() === 1) aprilfools();
+    }
+
+    if (!options) {
+      browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
+      return;
+    } else {
+      for (let p in OPTIONS_DEFAULT) {
+        if (!options.hasOwnProperty(p)) {
+          let t = OPTIONS_DEFAULT;
+          for (let u in options) {
+            t[u] = options[u];
+          }
+          browserAPI.storage.sync.set({ ["options"]: t });
+          return;
+        }
+      }
+    }
+
+    // Oceny
+    if (window.location.href.indexOf(URLS.grades) > -1) {
+      // Tymczasowa modyfikacja ocen
+      if (options.enableGradeManager && options.calculateAverages) {
+        const gradeManagerParent = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p")?.parentElement;
+        if (gradeManagerParent) {
+          gradeManager = new GradeManager(gradeManagerParent, options);
+        }
+      }
+
+      // Ukrywanie jedynek
+      if (options.hideOnes) hideOnes();
+
+      // Wyłączenie mrugania zagrożeń
+      if (!options.keepBlinker) removeBlinker();
+
+      // Ukrywanie przedmiotów bez ocen
+      if (options.hideSubjects) hideSubjects();
+
+      // Wstawianie średnich i dostosowanie kolorów w wersji depresyjnej
+      handleGrades(options);
+    }
+
+    // Frekwencja
+    if (window.location.href.indexOf(URLS.attendance) > -1) {
+      // Modernizacja dymków
+      if (options.modernizeTitles) document.querySelectorAll(".box > .ocena").forEach(e => modernizeTitle(e));
+    }
+
+    // Ciemny motyw
+    if (options.darkTheme) {
+      finalizeDarkTheme();
+    }
+
+    // Numerek z dziennika
+    if (student && student.number !== null && student.class !== null) {
+      displayStudentNumber(student);
+    } else {
+      browserAPI.runtime.sendMessage({msg: 'fetchStudentInfo'}, displayStudentNumber);
+    }
+
+    // Terminarz
+    if (window.location.href.indexOf(URLS.schedule) > -1 && window.location.href.indexOf(URLS.scheduleDetails) < 0) {
+      overlay = new ScheduleOverlay();
+      const schedule = new CustomSchedule(options, student?.class ?? "[klasa]");
+    }
+
+    // Debug
+    if (options.debug) {
+      console.log("[LibrusPro] » Debugging enabled.");
+      browserAPI.storage.sync.get(null, function (result) {
+        console.log("[LibrusPro] » Chrome storage sync data:", result);
+        // console.log("[LibrusPro] » Chrome storage data:", JSON.stringify(result));
+      });
+      browserAPI.storage.local.get(null, function (result) {
+        console.log("[LibrusPro] » Chrome storage local data:", result);
       });
     }
 
-    let plan = t["plan"];
-    if (plan) {
-      let h = 0;
-      const przedmioty = new Set();
-      for (let d in plan) {
-        if (d == "dzwonki") continue;
-        h += plan[d].length;
-        plan[d].forEach((e) => {
-          if (e) przedmioty.add(e[0]);
-        });
-      }
-      if (h > 0) {
-        document.querySelectorAll(".center:not(.weekend) > .kalendarz-dzien").forEach((e) => {
-          const timetable = document.createElement("ARTICLE");
-          timetable.innerText = "≡";
-          timetable.classList.add("librusPro_timetable", "librusPro_jqueryTitle");
-          e.insertBefore(timetable, e.querySelector(".kalendarz-numer-dnia"));
-
-          const dzienTyg = [...e.parentElement.parentElement.children].indexOf(e.parentElement);
-          const t = plan[dzienTyg];
-          const u = [];
-          for (let i = 0; i < t.length; i++) {
-            if (!t[i]) {
-              if (i != 0) {
-                u.push(`<b style="color: #0791bb">${i}.</b> <i style="color: #aaaaaa">(${plan.dzwonki[i]})</i> -`);
-              }
-              continue;
-            }
-            u.push(`<b style="color: #0791bb">${i}.</b> <i style="color: #aaaaaa">(${plan.dzwonki[i]})</i> ${t[i].join(' ')}`);
-          }
-          timetable.title = 'Plan lekcji <i style="color: #bbbbbb">(z bieżącego tygodnia)</i>:<br>' + u.join("<br>");
-        });
-      }
-      if (przedmioty.size > 0) {
-        [...przedmioty].sort().forEach((e) => {
-          const o = document.createElement("OPTION");
-          o.value = e;
-          o.innerText = e;
-          subjectSelect.insertBefore(o, subjectSelectOther);
-        })
-      } else {
-        subjectSelectLabel.style.display = "none";
-        subjectSelect.style.display = "none";
-        subjectInput.style.display = "block";
-        subjectInputTitle.style.display = "block";
-      }
-    }
-    location.href = "javascript: librusPro_jqueryTitle()";
+    otherAddons();
+    refreshjQueryTitles();
   });
+  refreshjQueryTitles();
 }
+
+// Niech się dzieje wola nieba, 
+// z nią się zawsze zgadzać trzeba.
+main();
+
+// To już jest koniec, nie ma już nic.
