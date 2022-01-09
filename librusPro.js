@@ -42,6 +42,7 @@ const URLS = Object.freeze({
   gdpr: "https://synergia.librus.pl/wydruki/wydruk_danych_osobowych/2137.pdf",
   newVersion: "https://synergia.librus.pl/gateway/ms/studentdatapanel/ui/",
   refreshSession: "https://synergia.librus.pl/refreshToken",
+  notes: "https://synergia.librus.pl/uwagi",
 });
 const ONLINE_LESSON = 'a[href^="https://liblink.pl/"]';
 const OPTIONS_DEFAULT = Object.freeze({
@@ -1084,6 +1085,11 @@ function adjustHeader() {
   link.href = browserAPI.runtime.getURL('img/icon.png');
 }
 
+// YYYY-MM-DD
+function getYYYYMMDD(year, month, date) {
+  return `${year}-${String(month).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+}
+
 // Copyright
 function insertFooter() {
   const footer = document.getElementById("footer");
@@ -1098,6 +1104,40 @@ function insertFooter() {
     
     <div>» <span style="font-style: italic">LibrusPro © ${new Date().getFullYear()} Maks Kowalski</span></div>
   </div>`;
+}
+
+function insertNote() {
+  const lastNote = document.querySelector("#body > div > div > table > tbody > tr:last-child");
+  if (lastNote) {
+    let date = new Date();
+    date = getYYYYMMDD(date.getFullYear(), date.getMonth() + 1, date.getDate());
+    lastNote.insertAdjacentHTML('afterend', `
+    <tr class="line1">
+      <td>Korzystanie z wtyczki LibrusPro</td>
+      <td class="small">${date}</td>
+      <td>Maks Kowalski</td>
+      <td>pozytywna</td>
+      <td>inna</td>
+    </tr>
+    `);
+  } else {
+    const e = document.querySelector(".container.border-red.resizeable.center");
+    if (!e) return;
+    e.outerHTML = `
+    <table class="decorated big center">
+      <thead><tr><td>Uwaga</td><td>Data</td><td>Kto dodał</td><td>Rodzaj uwagi</td><td>Kategoria</td></tr></thead>
+      <tbody>
+          <tr class="line1">
+            <td>Korzystanie z wtyczki LibrusPro</td>
+            <td class="small">2022-01-09</td>
+            <td>Maks Kowalski</td>
+            <td>pozytywna</td>
+            <td>inna</td>
+          </tr>
+      </tbody>
+      <tfoot><tr><td colspan="5">&nbsp;</td></tr></tfoot>
+    </table>`;
+  }
 }
 
 // KEKW
@@ -1195,7 +1235,7 @@ function disableAutoLogout() {
   // Załadowanie strony w tle co 20 minut, aby nie wylogowywało
   const code = `function refreshLibrus() {
     fetch('https://synergia.librus.pl/wiadomosci', { cache: 'no-cache', credentials: 'same-origin' });
-    fetch(REFRESH_URL);
+    fetch('${URLS.refreshSession}');
   }
   setInterval(refreshLibrus, 20*60*1000);`;
   const refreshScript = document.createElement('script');
@@ -1958,7 +1998,7 @@ class CustomSchedule {
       });
 
       // Klucz
-      const date = `${this.year}-${String(this.month).padStart(2, '0')}-${dayId.innerText.padStart(2, '0')}`;
+      const date = getYYYYMMDD(this.year, this.month, dayId.innerText);
 
       // [+]
       const _newEventButton = dayId.parentElement.insertBefore(newEventButton.cloneNode(true), dayId);
@@ -2340,7 +2380,7 @@ class CustomSchedule {
           continue;
         }
 
-        const date = `${this.year}-${String(this.month).padStart(2, '0')}-${day.innerText.padStart(2, '0')}`;
+        const date = getYYYYMMDD(this.year, this.month, day.innerText);
 
         let dayTimetable = timetable[date];
         if (!dayTimetable) {
@@ -2348,7 +2388,7 @@ class CustomSchedule {
           let day = d.getDay(),
           diff = d.getDate() - day + (day == 0 ? -6:1); // niedziela
           d.setDate(diff);
-          let key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+          const key = getYYYYMMDD(d.getFullYear(), d.getMonth() + 1, d.getDate());
           browserAPI.runtime.sendMessage({msg: 'fetchTimetable', data: key},
             (_requestedTimetable) => { this.insertTimetable(days, _requestedTimetable) });
           return;
@@ -2437,6 +2477,11 @@ function main() {
   // Frekwencja
   if (window.location.href.indexOf(URLS.attendance) > -1) {
     insertAttendanceStatistics();
+  }
+
+  // Uwagi
+  if (window.location.href.indexOf(URLS.notes) > -1) {
+    insertNote();
   }
 
   // Pobranie opcji i danych
