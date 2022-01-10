@@ -11,7 +11,7 @@ const NO_DATA = "-";
 const ADD_EDIT_SYMBOL = "✎";
 const REMOVE_SYMBOL = "⨉";
 const TIMETABLE_SYMBOL = "≡";
-const PROXIMITY_COMMENTS_NUMBER = 100;
+/*const PROXIMITY_COMMENTS_NUMBER = 100;*/
 const TYPE_SUBJECT_LENGTH = 30;
 const DESCRIPTION_LENGTH = 200;
 const REGEXS = Object.freeze({
@@ -278,8 +278,8 @@ async function getAttendanceLessonsStatistics(button) {
   }
 }
 
-// Wyświetlanie komentarzy w pobliżu
-function displayComments(comments) {
+// Wyświetlanie komentarzy w pobliżu --- 10.01.22 fixed by Librus
+/*function displayComments(comments) {
   // Pomijanie 'undefined' z początku i końca listy, ale pozostawienie ich w środku
   let start = comments.length;
   let end = 0;
@@ -365,8 +365,7 @@ function initCommentsInProximity() {
     event.target.parentElement.remove() ;
     getCommentsInProximity();
   });
-
-}
+}*/
 
 // Aktywacja wykazu uczęszczania
 function insertAttendanceStatistics() {
@@ -2469,10 +2468,10 @@ function main() {
     adjustHomeworks();
   }
 
-  // Szczegóły oceny
+  /*// Szczegóły oceny
   if (window.location.href.indexOf(URLS.gradeDetails) > -1) {
     initCommentsInProximity();
-  }
+  }*/
 
   // Frekwencja
   if (window.location.href.indexOf(URLS.attendance) > -1) {
