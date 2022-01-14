@@ -17,6 +17,7 @@ const DESCRIPTION_LENGTH = 200;
 const REGEXS = Object.freeze({
   gradeId: /https:\/\/synergia.librus.pl\/przegladaj_oceny\/szczegoly\/(\d*)/,
   weight: /(<br>Waga: )(\d+?)(<br>)/,
+  category: /(Kategoria: )(.*?)(<br>)/,
   grade: /[0-6][+-]?/,
   countToAverage: /<br>Licz do średniej: (tak|nie)<br>/,
   gradeImprovement: /<br \/>Poprawa oceny:(.*)/,
@@ -80,7 +81,6 @@ const DEPRESSION_MODE_COLORS = Object.freeze({
   positiveBehavior: "#98a987",
 });
 const COLORS = Object.freeze({
-  gradeManagerNewGrade: "#00ff00",
   error: "#ff5555",
 });
 const TITLE_MODERNIZATION = Object.freeze([
@@ -139,10 +139,8 @@ function registerOnStorageChange(isSchedule = false) {
 
   // Tylko po zmianie opcji
   browserAPI.storage.onChanged.addListener((changes, namespace) => {
-    for (let key in changes) {
-      if (key === "options") {
-        window.location.replace(window.location.href);
-      }
+    if (changes["options"]) {
+      window.location.replace(window.location.href);
     }
   });
 }
@@ -1270,7 +1268,7 @@ class GradeManager {
       <label class="librusPro_grade-manager-label">
         <span>Tymczasowa modyfikacja ocen:</span>
         <input type="checkbox" id="librusPro_gradeManagerCheckbox">
-        <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Modifykacja ocen</span></article><article class='librusPro_justify'>Gdy to ustawienie jest <b class='librusPro_title-tak'>włączone</b>, możesz tymczasowo <u>lokalnie</u> <span class='librusPro_lightgreen'>dodawać</span> nowe oceny, bądź <span class='librusPro_lightblue'>edytować</span> i <span class='librusPro_salmon'>usuwać</span> bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.</article><article class='librusPro_seaweed librusPro_justify librusPro_italic'>(Po odświeżeniu strony <span class='librusPro_yellow'>wszystko wraca</span> do stanu sprzed modyfikacji! Wszystkie zmiany zachodzą jedynie lokalnie i <span class='librusPro_salmon'>nie mają wpływu na Twoje rzeczywiste oceny!</span>)</article><article class='librusPro_lightgreen librusPro_justify'>W menu dodawania ocen cząstkowych możesz zobaczyć <span class='librusPro_white'>ile jeszcze jedynek</span> możesz zdobyć, aby uzyskać daną średnią.</article><article class='librusPro_water librusPro_justify librusPro_italic'>Domyślną średnią dla tego widoku możesz zmienić w&nbsp;<u>ustawieniach rozszerzenia</u>, jak i całkowicie wyłączyć tymczasową modyfikację ocen.</article><b class='librusPro_lightblue'>Oceny możesz dodawać dzięki '<span class='librusPro_white'>${ADD_EDIT_SYMBOL}</span>',<br>a modyfikować po prostu <span class='librusPro_white'>klikając na daną ocenę</span>.</b>" src="/images/pomoc_ciemna.png">
+        <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Modifykacja ocen</span></article><article class='librusPro_justify'>Gdy to ustawienie jest <b class='librusPro_title-tak'>włączone</b>, możesz tymczasowo, <u>lokalnie</u> <span class='librusPro_lightgreen'>dodawać</span> nowe oceny, bądź <span class='librusPro_lightblue'>edytować</span> i&nbsp;<span class='librusPro_salmon'>usuwać</span> bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.</article><article class='librusPro_seaweed librusPro_justify librusPro_italic'>(Po odświeżeniu strony <span class='librusPro_yellow'>wszystko wraca</span> do stanu sprzed modyfikacji! Wszystkie zmiany zachodzą jedynie lokalnie i <span class='librusPro_salmon'>nie mają wpływu na Twoje rzeczywiste oceny!</span>)</article><article class='librusPro_lightgreen librusPro_justify'>W menu dodawania ocen cząstkowych możesz zobaczyć <span class='librusPro_white'>ile jeszcze jedynek</span> możesz zdobyć, aby uzyskać daną średnią.</article><article class='librusPro_water librusPro_justify librusPro_italic'>Domyślną średnią dla tego widoku możesz zmienić w&nbsp;<u>ustawieniach rozszerzenia</u>, jak i całkowicie wyłączyć tymczasową modyfikację ocen.</article><b class='librusPro_lightblue'>Oceny możesz dodawać dzięki '<span class='librusPro_white'>${ADD_EDIT_SYMBOL}</span>',<br>a modyfikować po prostu <span class='librusPro_white'>klikając na daną ocenę</span>.</b>" src="/images/pomoc_ciemna.png">
       </label>
       <div class="librusPro_grade-manager-advice">(Najedź, aby dowiedzieć się więcej)</div>
     </td>
@@ -1281,19 +1279,35 @@ class GradeManager {
             <div class="librusPro_overlay-header-column">
               <div class="librusPro_overlay-header librusPro_overlay-header-adding">Dodaj ocenę</div>
               <div class="librusPro_overlay-header librusPro_overlay-header-editting">Edytuj ocenę</div>
+              <div class="librusPro_overlay-header librusPro_overlay-header-normal-grade">cząstkową</div>
+              <div class="librusPro_overlay-header librusPro_overlay-header-final-grade">śródroczną</div>
             </div>
           </div>
           <label class="librusPro_overlay-input-label">
             <div class="librusPro_overlay-input-title">Ocena:</div>
             <select class="librusPro_overlay-input" id="librusPro_grade">
-              ${['0', '1', '1+', '2-', '2', '2+', '3-', '3', '3+', '4-', '4', '4+', '5-', '5', '5+', '6-', '6']
-                .map(x => `<option value="${x}"${x === '1' ? 'selected' : ''}>${x}</option>`).join("")}
+              <option value="nb">nieobecny</option>
             </select>
           </label>
-          <label class="librusPro_overlay-input-label" id="librusPro_weightLabel">
-            <div class="librusPro_overlay-input-title">Waga:</div>
-            <input placeholder="2" type="number" step="1" min="0" max="999" id="librusPro_weight" class="librusPro_overlay-input">
+          <label class="librusPro_overlay-input-label">
+            <div class="librusPro_overlay-input-title">Kategoria:</div>
+            <select class="librusPro_overlay-input" id="librusPro_category">
+              <option value="">-- wybierz --</option>
+            </select>
           </label>
+          <div class="librusPro_overlay-input-two-label" id="librusPro_categoryDetailsLabel">
+            <label class="librusPro_overlay-input-label">
+              <div class="librusPro_overlay-input-title">Waga:</div>
+              <input placeholder="2" type="number" step="1" min="0" max="999" id="librusPro_weight" class="librusPro_overlay-input">
+            </label>
+            <label class="librusPro_overlay-input-label">
+              <div class="librusPro_overlay-input-title">Licz do średniej:</div>
+              <select class="librusPro_overlay-input" id="librusPro_countToTheAverage">
+                <option value="true" selected>Tak</option>
+                <option value="false">Nie</option>
+              </select>
+            </label>
+          </div>
           <label class="librusPro_overlay-input-label" id="librusPro_commentLabel">
             <div class="librusPro_overlay-input-title">Komentarz:</div>
             <textarea placeholder="Rodział 4" id="librusPro_comment"
@@ -1309,6 +1323,7 @@ class GradeManager {
             <button type="button" class="librusPro_overlay-button librusPro_overlay-button-close"
               id="librusPro_closeButton">Zamknij</button>
           </div>
+          <div class="librusPro_overlay-header librusPro_overlay-section-header">Kalkulator jedynek</div>
           <div class="librusPro_overlay-input-two-label" id="librusPro_onesContainer">
             <label class="librusPro_overlay-input-label">
               <div class="librusPro_overlay-input-title">Ile jedynek:</div>
@@ -1332,6 +1347,8 @@ class GradeManager {
     this.overlay = document.getElementById("librusPro_gradeManagerOverlay");
     this.gradeInput = document.getElementById("librusPro_grade");
     this.weightInput = document.getElementById("librusPro_weight");
+    this.categoryInput = document.getElementById("librusPro_category");
+    this.countInput = document.getElementById("librusPro_countToTheAverage");
     this.commentInput = document.getElementById("librusPro_comment");
     this.addButton = document.getElementById("librusPro_addGrade");
     this.editButton = document.getElementById("librusPro_editGrade");
@@ -1349,7 +1366,7 @@ class GradeManager {
           this.overlay.style.display = "none";
           this.overlay.classList.remove("librusPro_overlay-adding");
           this.overlay.classList.remove("librusPro_overlay-editting");
-          this.overlay.classList.remove("librusPro_overlay-gradeFinal");
+          this.overlay.classList.remove("librusPro_overlay-grade-final");
         }
     }, false);
   
@@ -1363,13 +1380,63 @@ class GradeManager {
         el.classList.toggle("librusPro_add-grade-enabled");
       });    
     }
+
+    browserAPI.storage.local.get(["colors", "gradeTypes", "gradeCategories"], (data) => {
+      if (!data["colors"] || !data["gradeTypes"] || !data["gradeCategories"]) {
+        browserAPI.runtime.sendMessage({msg: 'fetchGradeManagerValues'}, ([c, t, g]) => { this.populateOverlay(c,t,g) });
+        return;
+      }
+      this.populateOverlay(data["colors"], data["gradeTypes"], data["gradeCategories"]);
+    });
+  }
+
+  populateOverlay(colors, types, categories) {
+    this.colors = colors;
+    this.categories = categories;
+
+    for (let e in types) {
+      const option = document.createElement("OPTION");
+      option.innerText = e;
+      option.value = types[e];
+      this.gradeInput.appendChild(option);
+    }
+
+    for (let e in this.categories) {
+      const option = document.createElement("OPTION");
+      option.innerText = this.categories[e].name;
+      option.value = e;
+      this.categoryInput.appendChild(option);
+      const color = this.colors[this.categories[e].color];
+      const useLight = isLightFontColorForBackground(color);
+      option.style.setProperty("background-color", color, "important");
+      if (useLight) {
+        option.style.setProperty("color", "#fff", "important");
+      } else {
+        option.style.setProperty("color", "#333", "important");
+      }
+    }
+
+    this.categoryInput.onchange = () => {
+      const id = this.categoryInput.value;
+      const e = this.categories[id] ?? {
+        count: true,
+        weight: 1,
+        color: 1,
+      };
+      this.countInput.value = e.count;
+      this.weightInput.value = e.weight ?? 0;
+      this.selectedColor = this.colors[e.color];
+    }
   }
 
   showOverlay(element, isNew = true, isFinal = false) {
     this.overlay.style.display = "block";
-    this.overlay.classList.remove("librusPro_overlay-adding", "librusPro_overlay-editting", "librusPro_overlay-gradeFinal");
+    this.overlay.classList.remove("librusPro_overlay-adding", "librusPro_overlay-editting", "librusPro_overlay-grade-final");
     this.overlay.classList.add(`librusPro_overlay-${isNew ? "adding" : "editting"}`);
-    if (isFinal || element.parentElement.isFinal) this.overlay.classList.add("librusPro_overlay-gradeFinal");
+    if (isFinal || element.parentElement.isFinal) this.overlay.classList.add("librusPro_overlay-grade-final");
+    this.categoryInput.value = "";
+    this.countInput.value = "true";
+    this.selectedColor = this.colors[1];
     this.weightInput.value = isFinal ? "0" : "1";
     this.commentInput.value = "";
     if (isNew) {
@@ -1409,12 +1476,13 @@ class GradeManager {
     } else {
       let title = decodeURIComponent(atob(element.dataset.title));
       this.weightInput.value = title.match(REGEXS.weight)?.[2] ?? this.weightInput.value;
-      // Oceny inne niż liczbowe, np. bz
-      if (document.querySelectorAll(`#librusPro_grade option[value="${element.innerText}"]`).length === 0) {
-        const option = document.createElement("OPTION");
-        option.value = element.innerText;
-        option.innerText = element.innerText;
-        this.gradeInput.appendChild(option);
+      this.countInput.value = title.match(REGEXS.countToAverage)?.[1] === "tak" ? true : false;
+      let cat = title.match(REGEXS.category)?.[2];
+      for (let c in this.categories) {
+        if (this.categories[c].name === cat) {
+          this.categoryInput.value = c;
+          this.selectedColor = this.colors[this.categories[c].color];
+        }
       }
       this.gradeInput.value = element.innerText;
       this.editButton.onclick = (e) => {
@@ -1431,15 +1499,20 @@ class GradeManager {
   addGrade(element, isFinal) {
     const gradeBox = document.createElement("SPAN");
     gradeBox.classList.add("grade-box");
-    gradeBox.style.backgroundColor = COLORS.gradeManagerNewGrade;
+    gradeBox.style.backgroundColor = this.selectedColor;
     const grade = document.createElement("A");
     grade.classList.add("ocena", "librusPro_jqueryTitle");
     grade.innerText = this.gradeInput.value;
     grade.style.cursor = "pointer";
-    let weight = Number(this.weightInput.value);
-    if (weight < 0) weight = 0;
-    let comment = this.commentInput.value;
-    grade.title = `Kategoria: LibrusPro<br>Data: 2137-02-30 (nd.)<br>Nauczyciel: Maks Kowalski<br>Licz do średniej: ${isFinal ? "nie" : "tak"}<br>${weight > 0 ? `Waga: ${weight}<br>` : ""}Dodał: Maks Kowalski<br>${comment.length > 0 ? `<br>Komentarz: ${comment}` : ""}`;
+    if (isFinal) {
+      grade.title = `Kategoria: ${this.categoryInput.selectedOptions[0].innerText}<br>Data: 2137-02-30 (nd.)<br>Nauczyciel: Maks Kowalski<br>Licz do średniej: nie<br>Dodał: Maks Kowalski`;
+    } else {
+      let weight = Number(this.weightInput.value);
+      if (weight < 0) weight = 0;
+      const comment = this.commentInput.value;
+      const count = this.countInput.value === "true";
+      grade.title = `Kategoria: ${this.categoryInput.selectedOptions[0].innerText}<br>Data: 2137-02-30 (nd.)<br>Nauczyciel: Maks Kowalski<br>Licz do średniej: ${count ? "tak" : "nie"}<br>Waga: ${weight}<br>Dodał: Maks Kowalski<br>${comment.length > 0 ? `<br>Komentarz: ${comment}` : ""}`;
+    }
     gradeBox.appendChild(grade);
     element.insertBefore(gradeBox, element.lastElementChild);
     refreshjQueryTitles();
@@ -1458,24 +1531,25 @@ class GradeManager {
 
   modifyGrade(element, title) {
     element.innerText = this.gradeInput.value;
+    element.parentElement.style.backgroundColor = this.selectedColor;
+    let newTitle = title.replace(REGEXS.category, "$1" + this.categoryInput.selectedOptions[0].innerText + "$3");
     if (!element.parentElement.isFinal) {
       let weight = Number(this.weightInput.value).toFixed(0);
       if (weight < 0) weight = 0;
-      let newTitle = title.replace(REGEXS.weight, "$1" + weight + "$3");
-      let countToAverage = title.match(REGEXS.countToAverage);
-      if (!countToAverage) {
-        newTitle += `<br>Licz do średniej: tak<br>`;
-      } else if (countToAverage?.[1] === "nie") {
-        newTitle = newTitle.replace(REGEXS.countToAverage, "<br>Licz do średniej: tak<br>");
+      newTitle = newTitle.replace(REGEXS.weight, "$1" + weight + "$3");
+      const count = this.countInput.value === "true" ? "tak" : "nie";
+      newTitle = newTitle.replace(REGEXS.countToAverage, `<br>Licz do średniej: ${count}<br>`);
+      if (!title.match(REGEXS.countToAverage)) {
+        newTitle += `<br>Licz do średniej: ${count}<br>`;
       }
       if (!title.match(REGEXS.weight)) {
         newTitle += `<br>Waga: ${weight}<br>`;
       }
       newTitle = newTitle.replace(/(<br(\/?)>){2,}/g, "<br>");
-      element.title = newTitle;
-      if (this.options.modernizeTitles) modernizeTitle(element);
-      element.dataset.title = btoa(encodeURIComponent(newTitle));
     }
+    element.title = newTitle;
+    if (this.options.modernizeTitles) modernizeTitle(element);
+    element.dataset.title = btoa(encodeURIComponent(newTitle));
     handleGrades(this.options, true);
   }
 
@@ -1561,6 +1635,7 @@ class GradeManager {
 // Czy biała czcionka dla danego tła
 function isLightFontColorForBackground(bgColor) {
   const color = (bgColor.charAt(0) === '#') ? bgColor.substring(1, 7) : bgColor;
+  if (color.toLowerCase() === "f00" || color.toLowerCase() === "ff0000") return true;
   const r = parseInt(color.substring(0, 2), 16);
   const g = parseInt(color.substring(2, 4), 16);
   const b = parseInt(color.substring(4, 6), 16);
@@ -1628,8 +1703,8 @@ class ScheduleOverlay {
       <div class="librusPro_header-container">
         <img src="${browserAPI.runtime.getURL('img/icon.png')}" class="librusPro_overlay-logo">
         <div class="librusPro_overlay-header-column">
-          <div class="librusPro_overlay-header librusPro_overlay-header-adding">Dodaj wydarzenie</div>
-          <div class="librusPro_overlay-header librusPro_overlay-header-editting">Edytuj wydarzenie</div>
+          <div class="librusPro_overlay-header librusPro_overlay-header-adding librusPro_margin-bottom-9">Dodaj wydarzenie</div>
+          <div class="librusPro_overlay-header librusPro_overlay-header-editting librusPro_margin-bottom-9">Edytuj wydarzenie</div>
           <input class="librusPro_overlay-input" id="librusPro_date" type="date">
         </div>
       </div>
@@ -1834,17 +1909,13 @@ class ScheduleOverlay {
   updateOverlayColorValue() {
     const color = this.customColorInput.value;
     this.customColorPreview.style.background = color;
-    if (color !== "#ff0000") {
-      let useLight = isLightFontColorForBackground(color);
-      if (useLight) {
-        this.customColorPreview.classList.remove("librusPro_overlay-dark-dot");
-        this.customColor.value = color + "|#ffffff";
-      } else {
-        this.customColorPreview.classList.add("librusPro_overlay-dark-dot");
-        this.customColor.value = color + "|#222222";
-      }
-    } else {
+    let useLight = isLightFontColorForBackground(color);
+    if (useLight) {
+      this.customColorPreview.classList.remove("librusPro_overlay-dark-dot");
       this.customColor.value = color + "|#ffffff";
+    } else {
+      this.customColorPreview.classList.add("librusPro_overlay-dark-dot");
+      this.customColor.value = color + "|#222222";
     }
     this.customColor.checked = true;
   }
@@ -1972,7 +2043,7 @@ class CustomSchedule {
     // [+] template
     const newEventButton = document.createElement("a");
     newEventButton.innerText = "[+]";
-    newEventButton.title = 'Dodaj nowe wydarzenie';
+    newEventButton.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Dodaj nowe wydarzenie</span></article>";
     newEventButton.classList.add("librusPro_new-event-button", "librusPro_jqueryTitle");
 
     for (const dayId of daysIds) {
@@ -2435,8 +2506,7 @@ function main() {
   // Co to po komu ta strona startowa?
   if (URLS.index.some((e) => window.location.href.indexOf(e) > -1)) {
     // Przekierowanie i aktualizacja danych
-    browserAPI.runtime.sendMessage({msg: 'fetchStudentInfo'});
-    browserAPI.runtime.sendMessage({msg: 'fetchTimetable'});
+    browserAPI.runtime.sendMessage({msg: 'fetchAll'});
     document.location.replace(URLS.grades);
     return;
   }

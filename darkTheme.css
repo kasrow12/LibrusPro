@@ -810,6 +810,9 @@ table.decorated {
 .librusPro_overlay-header {
 	color: #eee;
 }
+.librusPro_overlay-section-header {
+	color: #ccc;
+}
 .librusPro_overlay-logo {
 	filter: brightness(0.9);
 }

@@ -193,6 +193,73 @@ async function fetchTimetable(weekStart) {
   return timetables;
 }
 
+async function fetchGradeManagerValues() {
+  await fetch(REFRESH_URL);
+  let colors = await fetch(`${API}/Colors`)
+  .then(response => response.json())
+  .then(data => {
+    data = data["Colors"];
+    let _colors = {};
+    for (let e of data) {
+      _colors[e["Id"]] = `#${e["RGB"]}`;
+    }
+    return _colors;
+  })
+  .catch(error => {
+    console.log(error);
+    return null;
+  });
+  if (!colors) {
+    return null;
+  }
+  browserAPI.storage.local.set({ ["colors"]: colors });
+
+  let types = await fetch(`${API}/Grades/Types`)
+  .then(response => response.json())
+  .then(data => {
+    data = data["Types"];
+    let _types = {};
+    for (let e of data) {
+      _types[e["Name"]] = e["Value"];
+    }
+    return _types;
+  })
+  .catch(error => {
+    console.log(error);
+    return null;
+  });
+  if (!types) {
+    return null;
+  }
+  browserAPI.storage.local.set({ ["gradeTypes"]: types });
+
+  let categories = await fetch(`${API}/Grades/Categories`)
+  .then(response => response.json())
+  .then(data => {
+    data = data["Categories"];
+    let _categories = {};
+    for (let e of data) {
+      _categories[e["Id"]] = {
+        name: e["Name"],
+        color: e["Color"]["Id"],
+        weight: e["Weight"],
+        count: e["CountToTheAverage"],
+      };
+    }
+    return _categories;
+  })
+  .catch(error => {
+    console.log(error);
+    return null;
+  });
+  if (!categories) {
+    return null;
+  }
+  browserAPI.storage.local.set({ ["gradeCategories"]: categories });
+
+  return [colors, types, categories];
+}
+
 // Nasłuchiwanie skryptów ze stron
 browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (browserAPI.runtime.lastError) {
@@ -204,14 +271,21 @@ browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
       let studentInfo = await fetchStudentInfo();
       sendResponse(studentInfo);
     })();
-    // Async
-    return true;
   } else if (request.msg === "fetchTimetable") {
     (async () => {
       let timetable = await fetchTimetable(request.data);
       sendResponse(timetable);
     })();
-    // Async
-    return true;
+  } else if (request.msg === "fetchGradeManagerValues") {
+    (async () => {
+      let val = await fetchGradeManagerValues();
+      sendResponse(val);
+    })();
+  } else if (request.msg === "fetchAll") {
+    fetchStudentInfo();
+    fetchTimetable();
+    fetchGradeManagerValues();
   }
+  // Async
+  return true;
 });
