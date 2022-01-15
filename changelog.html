@@ -137,14 +137,14 @@ body
     text-decoration: underline;
     content: "Najnowsza";
 }
-.change::before {
+.changes > div::before {
     content: "» ";
     padding: .2em;
 }
-.change {
+.changes > div {
     font-size: .95rem;
 }
-.highlight {
+.changes > div b {
     color: #aa5180;
 }
 .header {
@@ -168,65 +168,89 @@ body
     <h2 class="header">Co nowego?</h2>
     <div class="container">
         <div class="changelog">
+            <div class="version">3.0.0</div><div class="version-date">15.01.2022 r.</div>
+            <div class="changes">
+                <div><b>Przepisano dużą część kodu</b>. W przypadku jakiegokolwiek jego nieprawidłowego działania, proszę o taką informację na oficjalnym Discordzie! (link w stopce)</div>
+                <div><b>Odświeżono menu dodawania nowych wydarzeń</b> w terminarzu oraz <b>tymczasowej modyfikacji ocen</b> i dodano możliwość zamykania ich po kliknięciu poza nimi.</div>
+                <div>Dodano w oknie dodawania nowych ocen cząstkowych <b>kalkulator ilości jedynek</b>, które można jeszcze otrzymać, aby średnia była wyższa od tej ustalonej w ustawieniach rozszerzenia.</div>
+                <div>Dodano w menu tymczasowej modyfikacji ocen dostosowanie <b>kategorii oceny (koloru) i jej liczenia do średniej</b></div>
+                <div><b>Wyłączono funkcję podglądania komentarzy</b> innych w związku z jej naprawieniem przez firmę Librus.</div>
+                <div>Dodano <b>odświeżanie sesji</b> odpowiadającej za pobieranie wykazu frekwencji.</div>
+                <div><b>Naprawiono</b> działanie rozszerzenia na podstronach dziennika z parametrami w adresie.</div>
+                <div><b>Naprawiono</b> brak odświeżania strony po dodaniu nowego wydarzenia w terminarzu.</div>
+                <div><b>Wyłączono</b> możliwość korzystania z tymczasowej modyfikacji ocen, gdy liczenie średnich nie jest włączone w&nbsp;opcjach rozszerzenia.</div>
+                <div><b>Dodano</b> możliwość edycji ocen nie liczonych do średniej.</div>
+                <div>Zmodernizowano <b>historię logowań</b>.</div>
+                <div>Naprawiono <b>wyświetlanie dymków</b> w przeglądarce Firefox.</div>
+                <div>Przywrócono <b>przycisk Ankiety</b> i przeniesiono go do zakładki 'Organizacja'.</div>
+                <div>Przeniesiono <b>przycisk Plan lekcji</b> do głównego menu.</div>
+                <div>Dodano <b>ukrywanie sobót i niedzieli</b> w planie lekcji, jeżeli wszystkie są puste .</div>
+                <div>Zmieniono <b>wygląd obrazków/gifów</b> w terminarzu.</div>
+                <div>Zmieniono <b>system pobierania planu lekcji</b> do terminarza, teraz każda komórka pokazuje jej <b>aktualny plan dla danego dnia</b>, a nie z bieżącego tygodnia.</div>
+                <div>Dodano możliwość <b>wyłączenia dodawania planu lekcji</b> do terminarza.</div>
+                <div>Dodano możliwość <b>wyłączenia mrugania zagrożeń</b>.</div>
+            </div>
+        </div>
+        <div class="changelog">
             <div class="version">2.12.0</div><div class="version-date">14.12.2021 r.</div>
             <div class="changes">
-                <div class="change">Dodano <b class="highlight">świąteczny banner</b>. Poczuj magię świąt razem z LibrusPro!</div>
-                <div class="change"><b class="highlight">Naprawiono</b> funkcjonowanie rozszerzenia w szkołach z wyłączonym mruganiem zagrożeń.</div>
+                <div>Dodano <b>świąteczny banner</b>. Poczuj magię świąt razem z LibrusPro!</div>
+                <div><b>Naprawiono</b> funkcjonowanie rozszerzenia w szkołach z wyłączonym mruganiem zagrożeń.</div>
             </div>
         </div>
         <div class="changelog">
             <div class="version">2.11.1</div><div class="version-date">30.11.2021 r.</div>
             <div class="changes">
-                <div class="change">Naprawiono wyświetlanie <b class="highlight">menu ustawień rozszerzenia</b> w przeglądarce Firefox.</div>
+                <div>Naprawiono wyświetlanie <b>menu ustawień rozszerzenia</b> w przeglądarce Firefox.</div>
             </div>
         </div>
         <div class="changelog">
             <div class="version">2.11.0</div><div class="version-date">30.11.2021 r.</div>
             <div class="changes">
-                <div class="change">Odświeżono popup, czyli <b class="highlight">menu ustawień rozszerzenia</b>. Opcje zostały pogrupowane w karty, a jego nowy wygląd nie powinien już straszyć.</div>
-                <div class="change">Dodano możliwość ukrywania <b class="highlight">nieobecności nauczycieli</b> oraz <b class="highlight">tymczasowej modyfikacji ocen</b>. Są one możliwe do włączenia w menu rozszerzenia.</div>
-                <div class="change">Nadano funkcjonalność polu <i>"Jesteś zalogowany jako"</i>, które po kliknięciu otwiera <b class="highlight">zbiór wszystkich danych</b>, które są Tobie udostępniane dzięki RODO.</div>
-                <div class="change">Naprawiono wyświetlanie <b class="highlight">emotikonów</b>.</div>
+                <div>Odświeżono popup, czyli <b>menu ustawień rozszerzenia</b>. Opcje zostały pogrupowane w karty, a jego nowy wygląd nie powinien już straszyć.</div>
+                <div>Dodano możliwość ukrywania <b>nieobecności nauczycieli</b> oraz <b>tymczasowej modyfikacji ocen</b>. Są one możliwe do włączenia w menu rozszerzenia.</div>
+                <div>Nadano funkcjonalność polu <i>"Jesteś zalogowany jako"</i>, które po kliknięciu otwiera <b>zbiór wszystkich danych</b>, które są Tobie udostępniane dzięki RODO.</div>
+                <div>Naprawiono wyświetlanie <b>emotikonów</b>.</div>
             </div>
         </div>
         <div class="changelog">
             <div class="version">2.10.0</div><div class="version-date">07.11.2021 r.</div>
             <div class="changes">
-                <div class="change">Dodano możliwość <b class="highlight">podejrzenia komentarzy innych</b> w przypadku seryjnego  wpisywania ocen. Przycisk wraz z&nbsp;dokładniejszym opisem i przykładem działania tej funkcji znajduje się w widoku szczegółów po kliknięciu na daną ocenę.</div>
-                <div class="change">Dodano przyciemnianie <b class="highlight">dni wolnych</b> w terminarzu.</div>
+                <div>Dodano możliwość <b>podejrzenia komentarzy innych</b> w przypadku seryjnego  wpisywania ocen. Przycisk wraz z&nbsp;dokładniejszym opisem i przykładem działania tej funkcji znajduje się w widoku szczegółów po kliknięciu na daną ocenę.</div>
+                <div>Dodano przyciemnianie <b>dni wolnych</b> w terminarzu.</div>
             </div>
         </div>
         <div class="changelog">
             <div class="version">2.9.1</div><div class="version-date">02.11.2021 r.</div>
             <div class="changes">
-                <div class="change">Wymuszono otwieranie podglądu prac domowych w <b class="highlight">nowej karcie</b>, a nie oknie. <i class="credit">@Mateusz</i></div>
-                <div class="change">Wprowadzono wizualne poprawki w widoku <b class="highlight">prac domowych</b>.</div>
-                <div class="change">Wyeksponowano przycisk <b class="highlight">wykazu uczęszczania</b> oraz dodano podświetlanie frekwencji mniejszej niż <b class="highlight">50%</b>.</div>
-                <div class="change">Zaktualizowano <b class="highlight">opisy</b> rozszerzenia na stronach pobierania.</div>
+                <div>Wymuszono otwieranie podglądu prac domowych w <b>nowej karcie</b>, a nie oknie.</div>
+                <div>Wprowadzono wizualne poprawki w widoku <b>prac domowych</b>.</div>
+                <div>Wyeksponowano przycisk <b>wykazu uczęszczania</b> oraz dodano podświetlanie frekwencji mniejszej niż <b>50%</b>.</div>
+                <div>Zaktualizowano <b>opisy</b> rozszerzenia na stronach pobierania.</div>
             </div>
         </div>
         <div class="changelog">
             <div class="version">2.9.0</div><div class="version-date">19.10.2021 r.</div>
             <div class="changes">
-                <div class="change">Dodano możliwość wyświetlenia wykazu uczęszczania, czyli informacji dot. <b class="highlight">procentowej obecności</b> na danych zajęciach.</div>
-                <div class="change">Dodano <b class="highlight">changelog</b>.</div>
-                <div class="change">Dodano <b class="highlight">modernizację dymków frekwencji oraz wydarzeń</b> w terminarzu.</div>
+                <div>Dodano możliwość wyświetlenia wykazu uczęszczania, czyli informacji dot. <b>procentowej obecności</b> na danych zajęciach.</div>
+                <div>Dodano <b>changelog</b>.</div>
+                <div>Dodano <b>modernizację dymków frekwencji oraz wydarzeń</b> w terminarzu.</div>
             </div>
         </div>
         <div class="changelog">
             <div class="version">2.8.1</div><div class="version-date">17.10.2021 r.</div>
             <div class="changes">
-                <div class="change">Dodano <b class="highlight">możliwość</b> tymczasowego, lokalnego <b class="highlight">dodawania ocen i edycji istniejących</b>, aby np. sprawdzić jaka byłaby średnia wtedy średnia.</div>
-                <div class="change">Dodano <b class="highlight">modernizację dymków</b> po najechaniu na oceny (możliwa do wyłączenia w menu rozszerzenia).</div>
+                <div>Dodano <b>możliwość</b> tymczasowego, lokalnego <b>dodawania ocen i edycji istniejących</b>, aby np. sprawdzić jaka byłaby średnia wtedy średnia.</div>
+                <div>Dodano <b>modernizację dymków</b> po najechaniu na oceny (możliwa do wyłączenia w menu rozszerzenia).</div>
             </div>
         </div>
         <div class="changelog">
             <div class="version">2.7.0</div><div class="version-date">21.09.2021 r.</div>
             <div class="changes">
-                <div class="change"><b class="highlight">Zoptymalizowano</b> system liczenia średnich.</div>
-                <div class="change">Dodano <b class="highlight">ekran ładowania</b>.</div>
-                <div class="change">Dodano <b class="highlight">informację, gdy wyliczona średnia przez rozszerzenie różni się</b> od faktycznej (w przypadku, gdy podgląd średnich jest włączony w danej szkole). [Wyłączone w przypadku "Ukrywania jedynek"]</div>
-                <div class="change">Dodano <b class="highlight">możliwość wyboru przedmiotu z listy</b>, podczas dodawania swojego wydarzenia w terminarzu (zamiast jego ręcznego wpisywania).</div>
+                <div><b>Zoptymalizowano</b> system liczenia średnich.</div>
+                <div>Dodano <b>ekran ładowania</b>.</div>
+                <div>Dodano <b>informację, gdy wyliczona średnia przez rozszerzenie różni się</b> od faktycznej (w przypadku, gdy podgląd średnich jest włączony w danej szkole). [Wyłączone w przypadku "Ukrywania jedynek"]</div>
+                <div>Dodano <b>możliwość wyboru przedmiotu z listy</b>, podczas dodawania swojego wydarzenia w terminarzu (zamiast jego ręcznego wpisywania).</div>
             </div>
         </div>
     </div>
