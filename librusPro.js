@@ -1251,7 +1251,15 @@ function modernizeTitle(element) {
 
 // szósteczki - maybe kiedyś
 // document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = "6"});
-// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {if (/[0-6][+-]?/.test(e.innerText)) e.innerText = Math.floor(Math.random() * (7 - 4) + 4)});
+// document.querySelectorAll(".grade-box > a:not(#ocenaTest)").forEach((e) => {
+//   if (/[0-6][+-]?/.test(e.innerText))
+//     e.innerText = Math.floor(Math.random() * (7 - 4) + 4)
+//   if (Math.random() < 0.2) {
+//     e.innerText += "+";
+//   } else if (Math.random() < 0.2) {
+//     e.innerText += "-";
+//   }
+// });
 // document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr:not(.bolded) > td:nth-child(4)").forEach((e) => {e.innerText = "6.00"});
 // document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr:not(.bolded) > td:nth-child(10)").forEach((e) => {e.innerText = "6.00"});
 // document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded.line1 > td:nth-child(5)").innerText = "wzorowe";
@@ -1762,7 +1770,7 @@ class ScheduleOverlay {
         <input placeholder="Zaliczenie" type="text" id="librusPro_type" class="librusPro_overlay-input">
       </label>
       <label class="librusPro_overlay-input-label">
-        <div class="librusPro_overlay-input-title">Opis:</div>
+        <div class="librusPro_overlay-input-title">Opis <span class="librusPro_italic">(HTML dozwolony)</span>:</div>
         <textarea placeholder="Rozdział 2" id="librusPro_description"
           class="librusPro_overlay-input librusPro_overlay-input-textarea" rows="3"></textarea>
       </label>
@@ -2245,9 +2253,9 @@ class CustomSchedule {
           if (event.description && this.options.addDescriptions) {
             const s = document.createElement("ARTICLE");
             if (event.description.length > DESCRIPTION_LENGTH) {
-              s.innerText = `Opis: ${event.description.replaceAll("<br />", "\n").slice(0, DESCRIPTION_LENGTH)}\n[...]`;
+              s.innerHTML = `Opis: ${event.description.replaceAll("\n", "<br />").slice(0, DESCRIPTION_LENGTH)}\n[...]`;
             } else {
-              s.innerText = `Opis: ${event.description.replaceAll("<br />", "\n")}`;
+              s.innerHTML = `Opis: ${event.description.replaceAll("\n", "<br />")}`;
             }
             eventEl.appendChild(s);
           }
@@ -2382,6 +2390,8 @@ class CustomSchedule {
         event.appendChild(el);
         const el2 = document.createElement("ARTICLE");
         el2.innerText = `(${substitution_res[2]})`;
+        // Tryb incognito, do screenów
+        // el2.innerText = `(${randomName()})`;
         el2.classList.add("librusPro_event-teacher");
         event.appendChild(el2);
       }
@@ -2389,6 +2399,8 @@ class CustomSchedule {
       // Odchudzenie nieobecności nauczycieli
       if (event.innerText.includes("\nNauczyciel:")) {
         event.innerText = event.innerText.replace("\nNauczyciel:", "");
+        // Tryb incognito, do screenshotów
+        // event.innerText = event.innerText.replace(/\nNauczyciel:.*/, " " + randomName());
       }
 
       // Usuwanie linków ze starych lekcji online
@@ -2508,10 +2520,16 @@ class CustomSchedule {
   }
 }
 
+// Do screenów, tryb incognito
+function randomName() {
+  let x = ["Adam Zając", "Paweł Kowalski", "Jan Krzysztof Duda", "Zenek Martyniuk", "Barbara Nowak", "Maria Lewandowska", "Szymon Wójcik", "Krystyna Woźniak"];
+  return x[Math.floor(Math.random() * x.length)];
+}
+
 // Tu się dzieje cała magia
 function main() {
   if (window.location.href.indexOf(URLS.newVersion) > -1) {
-    alert("[LibrusPro] » Rozszerzenie przeznaczone jest dla widoku standardowego systemu Librus Synergia. Widok alternatywny nie jest oraz nie będzie wspierany. Po zamknięciu tego komunikatu powrócisz do strony głównej odpowiedniego widoku.");
+    alert("[LibrusPro] » Rozszerzenie nie jest przeznaczone do widoku alternatywnego systemu Librus Synergia, który nie jest i nie będzie wspierany. Po zamknięciu tego komunikatu powrócisz do widoku standardowego. Jeżeli jednak chcesz skorzystać z nowszej wersji dziennika, wyłącz na ten czas rozszerzenie LibrusPro.");
     window.location.replace(URLS.schedule);
     return;
   }

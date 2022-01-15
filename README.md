@@ -64,7 +64,7 @@ Możesz zobaczyć także ile jedynek możesz jeszcze dostać, aby nadal znajdowa
 ## ⭐️ • Wersja depresyjna 🕶
 Stonowane kolory ocen i wydarzeń w terminarzu, gdy czujesz się nie najlepiej. Wersja możliwa do włączenia w opcjach rozszerzenia.
 
-## ⭐️ • Wyłączenie mrugania zagrożeń 🕶
+## ⭐️ • Wyłączenie mrugania zagrożeń 🚨
 Nauczyciel postanowił Cię zagrozić i teraz cały rok mruga Ci jedynka? Spokojnie, załatwione. Już nie mruga.
 
 ## ⭐️ • Zapobieganie automatycznemu wylogowaniu 🎉
