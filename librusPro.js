@@ -1426,6 +1426,15 @@ class GradeManager {
       this.countInput.value = e.count;
       this.weightInput.value = e.weight ?? 0;
       this.selectedColor = this.colors[e.color];
+      if (this.categories[id]) {
+        this.categoryInput.style.setProperty("background-color", this.selectedColor, "important");
+        this.categoryInput.style.setProperty("color", this.categoryInput.options[this.categoryInput.selectedIndex].style.color, "important");
+        this.categoryInput.style.filter = "brightness(0.6)";
+      } else {
+        this.categoryInput.style.background = "";
+        this.categoryInput.style.color = "";
+        this.categoryInput.style.filter = "";
+      }
     }
   }
 
@@ -1435,6 +1444,9 @@ class GradeManager {
     this.overlay.classList.add(`librusPro_overlay-${isNew ? "adding" : "editting"}`);
     if (isFinal || element.parentElement.isFinal) this.overlay.classList.add("librusPro_overlay-grade-final");
     this.categoryInput.value = "";
+    this.categoryInput.style.background = "";
+    this.categoryInput.style.color = "";
+    this.categoryInput.style.filter = "";
     this.countInput.value = "true";
     this.selectedColor = this.colors[1];
     this.weightInput.value = isFinal ? "0" : "1";
@@ -1479,9 +1491,13 @@ class GradeManager {
       this.countInput.value = title.match(REGEXS.countToAverage)?.[1] === "tak" ? true : false;
       let cat = title.match(REGEXS.category)?.[2];
       for (let c in this.categories) {
-        if (this.categories[c].name === cat) {
+        if (this.categories[c].name === cat
+          && this.categoryInput.querySelector(`[value="${c}"]`).style.backgroundColor === element.parentElement.style.backgroundColor) {
           this.categoryInput.value = c;
           this.selectedColor = this.colors[this.categories[c].color];
+          this.categoryInput.style.setProperty("background-color", this.selectedColor, "important");
+          this.categoryInput.style.setProperty("color", this.categoryInput.options[this.categoryInput.selectedIndex].style.color, "important");
+          this.categoryInput.style.filter = "brightness(0.6)";
         }
       }
       this.gradeInput.value = element.innerText;
