@@ -350,6 +350,9 @@ table ~ .librusPro_events-table {
 .librusPro_modernized-schedule .kalendarz-dzien td {
   padding: 6px 9px;
 }
+#scheduleForm td {
+  word-break: break-all;
+}
 .librusPro_depression-mode .kalendarz-dzien:not(.librusPro_past) {
   filter: grayscale(100%) brightness(0.6) contrast(1.2);
   opacity: 0.9;
