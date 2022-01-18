@@ -93,13 +93,17 @@ browserAPI.tabs.onActivated.addListener((info) => {
 });
 
 // Otwieranie changelogu po aktualizacji
-browserAPI.runtime.onInstalled.addListener((reason) => {
-  if (options.debug === true) return;
-  if (reason["reason"] === browserAPI.runtime.OnInstalledReason.INSTALL) {
+browserAPI.runtime.onInstalled.addListener((data) => {
+  if (data.reason === browserAPI.runtime.OnInstalledReason.INSTALL) {
     // chrome.tabs.create({
     //   url: 'welcome.html'
     // });
-  } else if (reason["reason"] === browserAPI.runtime.OnInstalledReason.UPDATE) {
+  } else if (data.reason === browserAPI.runtime.OnInstalledReason.UPDATE) {
+    // Nie pokazywać changeloga jeśli tylko różnią się patchem aka 3.0.0 -> 3.0.1
+    const currentVersion = chrome.runtime.getManifest().version.match(/(.*)\.\d+/)[1];
+    const previousVersion = data.previousVersion.match(/(.*)\.\d+/)[1];
+    if (currentVersion === previousVersion) return;
+
     browserAPI.tabs.create({
       url: CHANGELOG_URL
     });
