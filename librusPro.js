@@ -1065,6 +1065,7 @@ function adjustHeader() {
     "terminarz": "Terminarz",
     "moje_zadania": "Zadania domowe",
     "plan_lekcji": "Plan lekcji",
+    "gateway/api": "API",
   }
   let pageType = "Synergia";
   for (const e in pageTypes) {
