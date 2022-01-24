@@ -393,7 +393,7 @@ table ~ .librusPro_events-table {
   position: absolute;
   float: left;
   margin-top: 5px;
-  color: #bbbbbb;
+  color: #707273;
   font-weight: bold;
   cursor: pointer;
 }
@@ -430,7 +430,7 @@ td:hover > .kalendarz-dzien > .librusPro_new-event-button {
   display: none;
   padding: 5px 7px;
   margin: 0 auto;
-  color: #bbbbbb;
+  color: #707273;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);

@@ -799,6 +799,9 @@ table.decorated {
 [style*="rgb(189, 183, 107)"] {
 	background: #e0dd6b !important;
 }
+.librusPro_new-event-button, .librusPro_lesson-plan {
+	color: #bbb;
+}
 /* End: Schedule */
 /* Begin: Overlay dark theme */
 .librusPro_overlay-body {
