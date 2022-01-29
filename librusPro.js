@@ -44,6 +44,7 @@ const URLS = Object.freeze({
   newVersion: "https://synergia.librus.pl/gateway/ms/studentdatapanel/ui/",
   refreshSession: "https://synergia.librus.pl/refreshToken",
   notes: "https://synergia.librus.pl/uwagi",
+  lessons: "https://synergia.librus.pl/zrealizowane_lekcje",
 });
 const ONLINE_LESSON = 'a[href^="https://liblink.pl/"]';
 const OPTIONS_DEFAULT = Object.freeze({
@@ -95,6 +96,19 @@ const TITLE_MODERNIZATION = Object.freeze([
   [/(Poprawa oceny:) (.{0,2}) \((.*?)\)(<br ?\/?>|$)/g, '<b class="librusPro_title-improved">$2</b> <span class="librusPro_title-brackets">(<span class="librusPro_title-type">$3</span>)</span>$4'],
   [/(Godzina lekcyjna:) (\d+?)<\/b>(<br ?\/?>|$)/g, '<span class="librusPro_title-improved">$2</span>$3'],
 ]);
+const PAGE_TITLES = Object.freeze({
+  "default": "Synergia",
+  "przegladaj_oceny": "Oceny",
+  "przegladaj_nb": "Frekwencja",
+  "wiadomosci": "Wiadomości",
+  "ogloszenia": "Ogłoszenia",
+  "terminarz": "Terminarz",
+  "moje_zadania": "Zadania domowe",
+  "plan_lekcji": "Plan lekcji",
+  "gateway/api": "API",
+  "zaplanowane_lekcje": "Zaplanowane",
+  "zrealizowane_lekcje": "Zrealizowane",
+});
 // Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest. Pozdro
 // JS liczy od 0, CSS od 1
 const OFFSET_JS = 2;
@@ -1057,19 +1071,9 @@ function adjustHeader() {
   }
 
   // W zależności od podstrony
-  const pageTypes = {
-    "przegladaj_oceny": "Oceny",
-    "przegladaj_nb": "Frekwencja",
-    "wiadomosci": "Wiadomości",
-    "ogloszenia": "Ogłoszenia",
-    "terminarz": "Terminarz",
-    "moje_zadania": "Zadania domowe",
-    "plan_lekcji": "Plan lekcji",
-    "gateway/api": "API",
-  }
-  let pageType = "Synergia";
-  for (const e in pageTypes) {
-    if (location.href.includes(e)) pageType = pageTypes[e];
+  let pageType = PAGE_TITLES.default;
+  for (const e in PAGE_TITLES) {
+    if (location.href.includes(e)) pageType = PAGE_TITLES[e];
   }
   document.title = pageTitle + pageType;
 
@@ -2640,6 +2644,11 @@ function main() {
     // Frekwencja
     if (window.location.href.indexOf(URLS.attendance) > -1) {
       // Modernizacja dymków
+      if (options.modernizeTitles) document.querySelectorAll(".box > .ocena").forEach(e => modernizeTitle(e));
+    }
+
+    // Zrealizowane lekcje
+    if (window.location.href.indexOf(URLS.lessons) > -1) {
       if (options.modernizeTitles) document.querySelectorAll(".box > .ocena").forEach(e => modernizeTitle(e));
     }
 

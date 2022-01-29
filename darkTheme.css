@@ -863,3 +863,12 @@ input[type="button"].small,
 	background: #232323 !important;
 	color: var(--textcolor3) !important;
 }
+.active {
+	color: #87d8ff;
+}
+div.pagination ul li a {
+	color: var(--textcolor3) !important;
+}
+div.pagination ul li:hover {
+	background-color: #444 !important;
+}
