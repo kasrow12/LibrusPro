@@ -911,6 +911,10 @@ function otherAddons() {
   if (document.getElementById(atob("TGlicGx1cw=="))) {
     alert(decodeURIComponent(atob("JTVCTGlicnVzUHJvJTVEJTIwJUMyJUJCJTIwV3lrcnl0byUyMGlubmUlMjByb3pzemVyemVuaWUlMjB6d2klQzQlODV6YW5lJTIweiUyMGZ1bmtjam9ub3dhbmllbSUyMGR6aWVubmlrYSUyMExpYnJ1cyUyMChMaWJQbHVzKS4lMjBBYnklMjB1bmlrbiVDNCU4NSVDNCU4NyUyMHBvdGVuY2phbG55Y2glMjBwcm9ibGVtJUMzJUIzdyUyMGklMjBrb25mbGlrdCVDMyVCM3clMjB6JTIwTGlicnVzUHJvJTJDJTIwd3klQzUlODIlQzQlODVjeiUyMHByb3N6JUM0JTk5JTIwcG96b3N0YSVDNSU4MmUlMjByb3pzemVyemVuaWElMjBkbyUyMExpYnJ1c2Eu")));
   }
+
+  if (document.getElementsByTagName("TBODY")?.[5]?.lastElementChild?.innerText === decodeURIComponent(atob("JUM1JTlBcmVkbmlhJTIwb3JheiUyMEZyZWt3ZW5jamElMjBvYmxpY3pvbmElMjBkemklQzQlOTlraSUyMG9wcm9ncmFtb3dhbml1JTIwRG9taW5pa2ElMjBTenBpbHNraWVnbyUyMGklMjBQYXclQzUlODJhJTIwU3pld2N6eWth"))) {
+    alert(decodeURIComponent(atob("JTVCTGlicnVzUHJvJTVEJTIwJUMyJUJCJTIwV3lrcnl0byUyMGlubmUlMjByb3pzemVyemVuaWUlMjB6d2klQzQlODV6YW5lJTIweiUyMGZ1bmtjam9ub3dhbmllbSUyMGR6aWVubmlrYSUyMExpYnJ1cyUyMChBc3lzdGVudCUyMExpYnJ1cykuJTIwQWJ5JTIwdW5pa24lQzQlODUlQzQlODclMjBwb3RlbmNqYWxueWNoJTIwcHJvYmxlbSVDMyVCM3clMjBpJTIwa29uZmxpa3QlQzMlQjN3JTIweiUyMExpYnJ1c1BybyUyQyUyMHd5JUM1JTgyJUM0JTg1Y3olMjBwcm9zeiVDNCU5OSUyMHBvem9zdGElQzUlODJlJTIwcm96c3plcnplbmlhJTIwZG8lMjBMaWJydXNhLg==")));
+  }
 }
 
 // Proponowane zachowanie do tabeli głównej
@@ -2533,6 +2537,10 @@ function randomName() {
 
 // Tu się dzieje cała magia
 function main() {
+  setTimeout(otherAddons, 500);
+  setTimeout(otherAddons, 2000);
+  setTimeout(otherAddons, 5000);
+
   if (window.location.href.indexOf(URLS.newVersion) > -1) {
     alert("[LibrusPro] » Rozszerzenie nie jest przeznaczone do widoku alternatywnego systemu Librus Synergia, który nie jest i nie będzie wspierany. Po zamknięciu tego komunikatu powrócisz do widoku standardowego. Jeżeli jednak chcesz skorzystać z nowszej wersji dziennika, wyłącz na ten czas rozszerzenie LibrusPro.");
     window.location.replace(URLS.schedule);
@@ -2682,7 +2690,6 @@ function main() {
       });
     }
 
-    otherAddons();
     refreshjQueryTitles();
   });
   refreshjQueryTitles();
