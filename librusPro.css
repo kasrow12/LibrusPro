@@ -749,3 +749,10 @@ body {
   text-align: right;
 }
 /* End: Last-login */
+.librusPro_hidden {
+  display: none;
+}
+.librusPro_proposed-behavior {
+  font-style: italic;
+  font-weight: normal !important;
+}

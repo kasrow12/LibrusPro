@@ -33,6 +33,7 @@ const OPTIONS_DEFAULT = Object.freeze({
   averageValue: 1.80,
   insertTimetable: true,
   keepBlinker: false,
+  hideFirstTerm: false,
 });
 
 // Kompatybilność

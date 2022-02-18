@@ -24,6 +24,7 @@ const OPTIONS_DEFAULT = {
   averageValue: 1.80,
   insertTimetable: true,
   keepBlinker: false,
+  hideFirstTerm: false,
 };
 
 let browserAPI;
@@ -33,7 +34,7 @@ if (typeof chrome != null) {
   browserAPI = browser;
 }
 
-const boolOptions = ['hideSubjects', 'calculateAverages', 'depressionMode', 'modernizeSchedule', 'removeClasses', 'addDescriptions', 'darkTheme', 'hideOnes', 'countZeros', 'countToAverage', 'modernizeTitles', 'debug', 'averageWarn', 'showTeacherFreeDays', 'enableGradeManager', 'insertTimetable', 'keepBlinker'];
+const boolOptions = ['hideSubjects', 'calculateAverages', 'depressionMode', 'modernizeSchedule', 'removeClasses', 'addDescriptions', 'darkTheme', 'hideOnes', 'countZeros', 'countToAverage', 'modernizeTitles', 'debug', 'averageWarn', 'showTeacherFreeDays', 'enableGradeManager', 'insertTimetable', 'keepBlinker', 'hideFirstTerm'];
 const valueOptions = ['plusValue', 'minusValue', 'averageValue'];
 const extraOptions = ['debug', 'averageWarn'];
 

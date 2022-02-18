@@ -68,6 +68,7 @@ const OPTIONS_DEFAULT = Object.freeze({
   averageValue: 1.80,
   insertTimetable: true,
   keepBlinker: false,
+  hideFirstTerm: false,
 });
 const DEPRESSION_MODE_COLORS = Object.freeze({
   proposed: "#aaad84",
@@ -387,7 +388,7 @@ function insertAttendanceStatistics() {
     <div>Wykaz uczęszczania</div>
     <div class="librusPro_sub-header">Dzięki LibrusPro!</div>
   </h3>
-  <table class="center big decorated" style="margin-bottom: 4em;">
+  <table class="librusPro_attendance-table center big decorated" style="margin-bottom: 4em;">
     <thead>
       <tr>
         <td rowspan="2">Przedmiot</td>
@@ -560,7 +561,7 @@ class Average {
 // Wiersz Brak ocen
 function insertNoGrades() {
   const noNewGrades = document.createElement("TR");
-  noNewGrades.classList = "bolded line1";
+  noNewGrades.classList = "bolded line1 librusPro_no-grades-row";
   noNewGrades.innerHTML = `<td colspan="64" style="text-align: center;">Brak ocen <span class="emoji">😎</span></td>`;
   const ref = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody");
   if (ref) {
@@ -570,6 +571,9 @@ function insertNoGrades() {
 
 // System powiązanch modułów z ocenami
 function handleGrades(options, recalculate = false) {
+  const tbody = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type:not(#tabSource) > tbody");
+  tbody.parentElement.classList.add("librusPro_grades-table");
+
   if (!document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr:nth-child(1):not([name=przedmioty_all])")) {
     insertNoGrades();
     return;
@@ -587,7 +591,6 @@ function handleGrades(options, recalculate = false) {
     }
   }
 
-  const tbody = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type:not(#tabSource) > tbody");
   const midtermGrades = {
     srodroczneI: tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.srodroczneI + OFFSET_CSS}) > span > a`),
     srodroczneII: tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.srodroczneII + OFFSET_CSS}) > span > a`),
@@ -595,7 +598,7 @@ function handleGrades(options, recalculate = false) {
     proponowaneI: tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.proponowaneI + OFFSET_CSS}) > span > a`),
     proponowaneII: tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.proponowaneII + OFFSET_CSS}) > span > a`),
     proponowaneR: tbody.querySelectorAll(`tr:not(.bolded) > td:nth-child(${INDICES.proponowaneR + OFFSET_CSS}) > span > a`),
-  }
+  };
 
   const averages = [];
   const rows = document.querySelectorAll('form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type:not(#tabSource) > tbody > tr:not(.bolded, [id^="przedmioty"], .librusPro_average)');
@@ -869,6 +872,43 @@ function hideSubjects() {
   });
 }
 
+// Ukrywanie ocen i średnich z I semestru
+function hideFirstTermGrades() {
+  // Oceny i średnie
+  const gradeRows = document.querySelectorAll('.librusPro_grades-table > tbody > tr:not(.bolded, #przedmioty_zachowanie, [name="przedmioty_all"])');
+  const firstTermIndices = [INDICES.ocenyI, INDICES.sredniaI, INDICES.srodroczneI];
+  if (INDICES.proponowaneI > -1) firstTermIndices.push(INDICES.proponowaneI);
+  gradeRows.forEach((e) => {
+    for (let i of firstTermIndices) {
+      e.children?.[i + OFFSET_JS].classList.toggle("librusPro_hidden");
+    }
+  });
+  const behaviourRow = document.querySelector('.librusPro_grades-table > tbody > tr.bolded:not(.librusPro_no-grades-row)');
+  behaviourRow?.children[0 + OFFSET_JS].classList.toggle("librusPro_hidden");
+  const proposedOrFinalBehavior = behaviourRow?.children[1 + OFFSET_JS];
+  proposedOrFinalBehavior?.classList.toggle("librusPro_hidden");
+  if (proposedOrFinalBehavior?.classList.contains("librusPro_proposed-behavior")) {
+    behaviourRow?.children[2 + OFFSET_JS].classList.toggle("librusPro_hidden");
+  }
+  // 'Okres 1'
+  document.querySelector(".librusPro_grades-table > thead > tr:nth-child(1) > td:nth-child(3)")?.classList.toggle("librusPro_hidden");
+  // 'Oceny bieżące, Śr.I., (I), I'
+  const gradeRowsHeader = document.querySelector(".librusPro_grades-table > thead > tr:nth-child(2)");
+  for (let i of firstTermIndices) {
+    gradeRowsHeader?.children?.[i].classList.toggle("librusPro_hidden");
+  }
+}
+
+// Ukrywanie frekwencji z I semestru
+function hideFirstTermAbsence() {
+  const absenceRows = document.querySelectorAll("#absence_form > div > div > table.center.big.decorated:not(.librusPro_attendance-table) > tbody > tr");
+  let deleting = false;
+  for (let i = 0; i < absenceRows.length; i++) {
+    if (absenceRows[i].querySelector("td.center.bolded")?.innerText == "Okres 1") deleting = true;
+    if (deleting) absenceRows[i].classList.add("librusPro_hidden");
+  }
+}
+
 // Usuwanie jedynek
 function hideOnes() {
   // Oceny poprawione (w dodatkowym spanie)
@@ -937,10 +977,8 @@ function insertProposedBehavior() {
   propZachRoczneElement.innerText = propZachRoczne;
 
   // Stylizacja proponowanych zachowań
-  propZachSrodroczneElement.style.fontStyle = "italic";
-  propZachRoczneElement.style.fontStyle = "italic";
-  propZachSrodroczneElement.style.fontWeight = "normal";
-  propZachRoczneElement.style.fontWeight = "normal";
+  propZachSrodroczneElement.classList.add("librusPro_proposed-behavior");
+  propZachRoczneElement.classList.add("librusPro_proposed-behavior");
 
   // Wstawienie stworzonych elementów
   zachSrodroczneElement.parentElement.insertBefore(propZachSrodroczneElement, zachSrodroczneElement);
@@ -2647,12 +2685,18 @@ function main() {
 
       // Wstawianie średnich i dostosowanie kolorów w wersji depresyjnej
       handleGrades(options);
+
+      // Ukrywanie ocen i średnich z I semestru
+      if (options.hideFirstTerm) hideFirstTermGrades();
     }
 
     // Frekwencja
     if (window.location.href.indexOf(URLS.attendance) > -1) {
       // Modernizacja dymków
       if (options.modernizeTitles) document.querySelectorAll(".box > .ocena").forEach(e => modernizeTitle(e));
+
+      // Ukrywanie frekwencji z I semestru
+      if (options.hideFirstTerm) hideFirstTermAbsence();
     }
 
     // Zrealizowane lekcje
