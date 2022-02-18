@@ -61,6 +61,6 @@ Subdued colors for grades and schedule events when you are not feeling well. Dep
 - adding a Lesson Plan button instead, which opens in new tab instead of window
 
 # 🧷 License
-This project is licensed under the terms of the MIT license. See the [LICENSE](LICENSE.md) file for license rights and limitations.
+This project is licensed under the terms of the MIT license. See the [LICENSE](LICENSE) file for license rights and limitations.
 
 <i>LibrusPro © 2022 Maks Kowalski</i>

@@ -79,6 +79,8 @@ Dopóki karta z e-dziennikiem będzie otwarta, Twoja sesja nie wygaśnie! Koniec
   - przeniesienie w zamian przycisku Plan lekcji, który otwiera go w nowej karcie, a nie oknie,
   - otwieranie podglądów prac domowych również w nowej karcie, a nie oknie,
   - poświetlenie średniej rocznej kwalifikującej się na czerwony pasek,
+  - wyświetlanie daty dodania oceny w widoku jej szczegółów (po kliknięciu),
+  - możliwość wyłączenia wyświetlania ocen i frekwencji z I semestru,
   - wyświetlanie danych osobowych po kliknięciu na pole "jesteś zalogowany(-a) jako:",
   - zaciemnianie przeszłych oraz wolnych dni w terminarzu,
   - oraz wiele innych pomniejszych zmian i smaczków!
@@ -90,6 +92,6 @@ Dopóki karta z e-dziennikiem będzie otwarta, Twoja sesja nie wygaśnie! Koniec
 ## 👋 Jeżeli rozszerzenie Ci się spodobało, nie zapomnij polecić znajomym, niech korzystanie z Librusa stanie się choć trochę przyjemniejsze dla nas wszystkich.
 
 # 🧷 Licencja
-Ten projekt jest licencjonowany zgodnie z warunkami licencji MIT. Zobacz plik [LICENSE](LICENSE.md), aby zapoznać się z prawami i ograniczeniami tej licencji.
+Ten projekt jest licencjonowany zgodnie z warunkami licencji MIT. Zobacz plik [LICENSE](LICENSE), aby zapoznać się z prawami i ograniczeniami tej licencji.
 
 <i>LibrusPro © 2022 Maks Kowalski</i>
