@@ -2573,6 +2573,24 @@ function randomName() {
   return x[Math.floor(Math.random() * x.length)];
 }
 
+// Dopisywanie daty dodania oceny w widoku szczegółów
+async function insertCreationDate() {
+  const gradeHref = document.querySelector('form[name="PrzegladajOceny"]')?.action;
+  if (!gradeHref) return;
+  const gradeId = gradeHref.match(/\/(\d*?)$/)[1];
+
+  await fetch(URLS.refreshSession);
+  let date = await fetch(`${API}/Grades/${gradeId}`)
+  .then(response => response.json())
+  .then(data => {return data["Grade"]["AddDate"]});
+  
+  const refRow = document.querySelector("table.decorated.medium.center > tbody > tr:last-child");
+  const row = refRow.cloneNode(true);
+  row.children[0].innerText = "Data dodania";
+  row.children[1].innerText = date;
+  refRow.parentElement.appendChild(row);
+}
+
 // Tu się dzieje cała magia
 function main() {
   setTimeout(otherAddons, 500);
@@ -2623,10 +2641,11 @@ function main() {
     adjustHomeworks();
   }
 
-  /*// Szczegóły oceny
+  // Szczegóły oceny
   if (window.location.href.indexOf(URLS.gradeDetails) > -1) {
-    initCommentsInProximity();
-  }*/
+    insertCreationDate();
+    //initCommentsInProximity();
+  }
 
   // Frekwencja
   if (window.location.href.indexOf(URLS.attendance) > -1) {
