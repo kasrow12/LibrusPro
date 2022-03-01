@@ -40,6 +40,7 @@ const URLS = Object.freeze({
   index: ["https://synergia.librus.pl/uczen/index", "https://synergia.librus.pl/rodzic/index"],
   comment: "https://synergia.librus.pl/komentarz_oceny/1",
   gradeDetails: "https://synergia.librus.pl/przegladaj_oceny/szczegoly",
+  textGradeDetails: "https://synergia.librus.pl/przegladaj_oceny/szczegoly/ksztaltujace",
   gdpr: "https://synergia.librus.pl/wydruki/wydruk_danych_osobowych/2137.pdf",
   newVersion: "https://synergia.librus.pl/gateway/ms/studentdatapanel/ui/",
   refreshSession: "https://synergia.librus.pl/refreshToken",
@@ -2574,13 +2575,14 @@ function randomName() {
 }
 
 // Dopisywanie daty dodania oceny w widoku szczegółów
-async function insertCreationDate() {
+async function insertCreationDate(isTextGrade = false) {
   const gradeHref = document.querySelector('form[name="PrzegladajOceny"]')?.action;
   if (!gradeHref) return;
   const gradeId = gradeHref.match(/\/(\d*?)$/)[1];
 
   await fetch(URLS.refreshSession);
-  let date = await fetch(`${API}/Grades/${gradeId}`)
+  const url = `${API}/${isTextGrade ? "TextGrades" : "Grades"}/${gradeId}`;
+  let date = await fetch(url)
   .then(response => response.json())
   .then(data => {return data["Grade"]["AddDate"]});
   
@@ -2642,7 +2644,9 @@ function main() {
   }
 
   // Szczegóły oceny
-  if (window.location.href.indexOf(URLS.gradeDetails) > -1) {
+  if (window.location.href.indexOf(URLS.textGradeDetails) > -1) {
+    insertCreationDate(true);
+  } else if (window.location.href.indexOf(URLS.gradeDetails) > -1) {
     insertCreationDate();
     //initCommentsInProximity();
   }
