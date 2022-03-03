@@ -464,7 +464,7 @@ class Average {
 
   calculate() {
     if (this.weights === 0) this.average = NO_DATA;
-    else this.average = (Math.round(this.sum / this.weights * 100 + Number.EPSILON) / 100).toFixed(2);
+    else this.average = (Math.round(this.sum * 100 / this.weights + Number.EPSILON) / 100).toFixed(2);
   }
 
   // Liczenie średniej ze średnich (roczna)
@@ -1343,6 +1343,7 @@ class GradeManager {
             <div class="librusPro_overlay-input-title">Ocena:</div>
             <select class="librusPro_overlay-input" id="librusPro_grade">
               <option value="nb">nieobecny</option>
+              <option value="T">inna</option>
             </select>
           </label>
           <label class="librusPro_overlay-input-label">
