@@ -89,7 +89,8 @@ const COLORS = Object.freeze({
 const TITLE_MODERNIZATION = Object.freeze([
   [/(Ocena:|Lekcja:) ([\D\d]*?)(<br\/?>|$)/g, '<span class="librusPro_title-grade">$2</span>$3'],
   [/(Kategoria:|Rodzaj:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-type">$2</span>$3'],
-  [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:| wystawienia:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
+  [/<?b?r?>?(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:| wystawienia:))<?\/?b?r?>? (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
+  [/<b>(Data dodania:)<\/b>(.*?)$/g, '<span class="librusPro_title-date">$2</span>'], // jeżeli będą 2 daty (plan lekcji)
   [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
   [/(Nauczyciel:|Dodał:|Uczeń:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2</span>$3'],
   [/(Waga:) (\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
@@ -97,6 +98,11 @@ const TITLE_MODERNIZATION = Object.freeze([
   [/(Opis:) ([\D\d]*?)Data dodania:/g, '<span class="librusPro_title-comment">$2</span>Data dodania:'],
   [/(Poprawa oceny:) (.{0,2}) \((.*?)\)(<br ?\/?>|$)/g, '<b class="librusPro_title-improved">$2</b> <span class="librusPro_title-brackets">(<span class="librusPro_title-type">$3</span>)</span>$4'],
   [/(Godzina lekcyjna:) (\d+?)<\/b>(<br ?\/?>|$)/g, '<span class="librusPro_title-improved">$2</span>$3'],
+  [/<b>(Nr lekcji:)<\/b> (.*?)(( -> )(.*?))?(<br ?\/?>|$)/g, '<span class="librusPro_title-improved">$2<span class="librusPro_title-brackets">$4</span>$5</span>$6'],
+  [/<b>(Klasa:)<\/b> (.*?)(( -> )(.*?))?(<br ?\/?>|$)/g, '<span class="librusPro_title-comment">$2<span class="librusPro_title-brackets">$4</span>$5</span>$6'],
+  [/<b>(Nauczyciel:)<\/b> (.*?)(( -> )(.*?))?(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2<span class="librusPro_title-brackets">$4</span>$5</span>$6'],
+  [/<b>(Przedmiot:)<\/b> (.*?)(( -> )(.*?))?(<br ?\/?>|$)/g, '<span class="librusPro_title-grade">$2<span class="librusPro_title-brackets">$4</span>$5</span>$6'],
+  [/<b>(Sala:)<\/b> (.*?)(( -> )(.*?))?(<br ?\/?>|$)/g, '<span class="librusPro_title-weight">$2<span class="librusPro_title-brackets">$4</span>$5</span>$6'],
 ]);
 const PAGE_TITLES = Object.freeze({
   "default": "Synergia",
@@ -2726,6 +2732,11 @@ function main() {
     // Zrealizowane lekcje
     if (window.location.href.indexOf(URLS.lessons) > -1) {
       if (options.modernizeTitles) document.querySelectorAll(".box > .ocena").forEach(e => modernizeTitle(e));
+    }
+
+    // Plan lekcji
+    if (window.location.href.indexOf(URLS.timetable) > -1) {
+      if (options.modernizeTitles) document.querySelectorAll('#timetableEntryBox > a[href="javascript:void(0);"]').forEach(e => modernizeTitle(e));
     }
 
     // Ciemny motyw
