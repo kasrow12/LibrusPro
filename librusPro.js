@@ -652,8 +652,8 @@ function handleGrades(options, recalculate = false) {
         plus.classList.add("librusPro_add-grade", "librusPro_jqueryTitle");
       }
     }
-    const averageI = Average.getWeighted(rows[i].querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box > a`), options);
-    const averageII = Average.getWeighted(rows[i].querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box > a`), options);
+    const averageI = Average.getWeighted(rows[i].querySelectorAll(`td:nth-child(${INDICES.ocenyI + OFFSET_CSS}) span.grade-box:not(.librusPro_aprilFools) > a`), options);
+    const averageII = Average.getWeighted(rows[i].querySelectorAll(`td:nth-child(${INDICES.ocenyII + OFFSET_CSS}) span.grade-box:not(.librusPro_aprilFools) > a`), options);
     const averageR = Average.combine(averageI, averageII);
     averages[i] = [averageI, averageII, averageR];
     avgI.sum += averageI.sum;
@@ -725,7 +725,7 @@ function handleGrades(options, recalculate = false) {
   if (!recalculate) {
     // Możliwość modyfikacji ocen
     if (gradeManager) {
-      document.querySelectorAll(".grade-box:not(#Ocena0, .positive-behaviour, .negative-behaviour) > a").forEach((e) => {
+      document.querySelectorAll(".grade-box:not(#Ocena0, .positive-behaviour, .negative-behaviour, .librusPro_aprilFools) > a").forEach((e) => {
         e.addEventListener("click", (event) => {
           if (!gradeManager.enabled) {
             gradeManager.switch.focus();
@@ -921,7 +921,7 @@ function hideFirstTermAbsence() {
 // Usuwanie jedynek
 function hideOnes() {
   // Oceny poprawione (w dodatkowym spanie)
-  document.querySelectorAll("span > .grade-box > a:not(#ocenaTest)").forEach((e) => {
+  document.querySelectorAll("span > .grade-box:not(.librusPro_aprilFools) > a:not(#ocenaTest)").forEach((e) => {
     if (/[0-1][+-]?/.test(e.innerText)) {
       [...e.parentElement.parentElement.childNodes].forEach(elm => elm.nodeType !== 1 && elm.parentNode.removeChild(elm));
       const b = e.parentElement.nextElementSibling;
@@ -931,14 +931,14 @@ function hideOnes() {
   });
 
   // Oceny zwykłe
-  document.querySelectorAll("td:not(.center) > .grade-box > a:not(#ocenaTest)").forEach((e) => {
+  document.querySelectorAll("td:not(.center) > .grade-box:not(.librusPro_aprilFools) > a:not(#ocenaTest)").forEach((e) => {
     if (/[0-1][+-]?/.test(e.innerText)) {
       e.parentElement.remove();
     }
   });
 
   // (Proponowane) (śród)roczne [obsługa mrugania]
-  document.querySelectorAll('td.center > .grade-box > a:not(#ocenaTest)').forEach((e) => {
+  document.querySelectorAll('td.center > .grade-box:not(.librusPro_aprilFools) > a:not(#ocenaTest)').forEach((e) => {
     if (/[0-1][+-]?/.test(e.innerText)) {
       e.innerText = "2";
     }
@@ -1194,61 +1194,53 @@ function insertNote() {
 }
 
 // KEKW
-function aprilfools() {
+function aprilfools(modernize = false) {
   if (!document.getElementById("icon-oceny")) return;
   if (document.getElementById("liczba_ocen_od_ostatniego_logowania_form")) {
     const a = document.querySelector(`a[href="javascript:$('#liczba_ocen_od_ostatniego_logowania_form').submit();"]`);
     if (!a) return;
     a.innerText = +a.innerText + 2;
   } else {
-    const f = document.createElement("FORM");
-    const a = document.createElement("A");
-    f.innerHTML = '<input type="hidden" name="zmiany_logowanie" value="zmiany_logowanie">';
-    f.action = "https://synergia.librus.pl/przegladaj_oceny/uczen";
-    f.method = "POST";
-    f.id = "liczba_ocen_od_ostatniego_logowania_form";
-    f.classList.add("hidden");
-    a.innerText = "2";
-    a.href = "javascript:$('#liczba_ocen_od_ostatniego_logowania_form').submit();";
-    a.classList.add("button", "counter", "blue");
-    document.getElementById("icon-oceny").appendChild(f);
-    document.getElementById("icon-oceny").appendChild(a);
+    const template = document.createElement("template");
+    const html = `<span>
+      <form action="https://synergia.librus.pl/przegladaj_oceny/uczen" method="POST" id="liczba_ocen_od_ostatniego_logowania_form" class="hidden">
+        <input type="hidden" name="zmiany_logowanie" value="zmiany_logowanie">
+      </form>
+      <a href="javascript:$('#liczba_ocen_od_ostatniego_logowania_form').submit();" class="button counter blue librusPro_jqueryTitle" title="Liczba ocen dodanych od ostatniego logowania: 2">2</a>
+    </span>`;
+    template.innerHTML = html.trim();
+    document.getElementById("icon-oceny").appendChild(template.content.firstChild);
   }
 
-  let pp = INDICES.ocenyII + OFFSET_JS;
-  if (gradesSinceLastLoginView) {
-    pp = 5;
-  }
+  const secondTermIndex = gradesSinceLastLoginView ? 5 : INDICES.ocenyII + OFFSET_JS;
+  let polski = false;
+  let matma = false;
+
   document.querySelectorAll("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type > tbody > tr > td:nth-child(2)").forEach((e) => {
-    if (e.innerText.toLowerCase().includes("polski") && !document.getElementById("polski")) {
-      const n = document.createElement("SPAN");
-      n.innerHTML = `<a id="polski" class="ocena librusPro_jqueryTitle" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">1</a>`;
-      n.classList.add("grade-box");
-      n.style.background = "#00FF00";
-      const el = e.parentElement.children[pp];
-      if (el.innerText == "Brak ocen") el.innerText = "";
-      el.appendChild(n);
-      document.getElementById("polski").title = `Kategoria: Kartkówka niezapowiedziana<br>Data: 2022-04-01 (pt.)<br>Nauczyciel: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br>Licz do średniej: tak<br>Waga: 3<br>Dodał: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br/><br/>Komentarz: Prima Aprilis<br/><span style="color: #777777; padding-left: 5px; font-style: italic">Kliknij mnie, aby ukryć.</span>`;
-    } else if (e.innerText.toLowerCase().includes("matematyka") && !document.getElementById("matma")) {
-      const n = document.createElement("SPAN");
-      n.innerHTML = `<a id="matma" class="ocena librusPro_jqueryTitle" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">1</a>`;
-      n.classList.add("grade-box");
-      n.style.background = "#FF0000";
-      const el = e.parentElement.children[pp];
-      if (el.innerText == "Brak ocen") el.innerText = "";
-      el.appendChild(n);
-      document.getElementById("matma").title = `Kategoria: Praca klasowa<br>Data: 2022-04-01 (pt.)<br>Nauczyciel: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br>Licz do średniej: tak<br>Waga: 5<br>Dodał: ${document.querySelector("#user-section > b").innerText.split("(")[0]}<br/><br/>Komentarz: Prima Aprilis<br/><span style="color: #777777; padding-left: 5px; font-style: italic">Kliknij mnie, aby ukryć.</span>`;
+    if (polski && matma) return;
+    const rowName = e.innerText.toLowerCase();
+    if (!rowName.includes("polski") && !rowName.includes("matematyka")) return;
+    
+    const grade = document.createElement("SPAN");
+    const secondTerm = e.parentElement.children[secondTermIndex];
+    if (secondTerm.innerText === "Brak ocen") secondTerm.innerText = "";
+    secondTerm.appendChild(grade);
+    const name = document.querySelector("#user-section > b").innerText.split("(")[0];
+
+    if (rowName.includes("polski") && !polski) {
+      grade.outerHTML = `<span class="grade-box librusPro_aprilFools" style="background: #00FF00;"><a class="ocena librusPro_jqueryTitle" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" title="Kategoria: Kartkówka niezapowiedziana<br>Data: ${new Date().getFullYear()}-04-01 (pt.)<br>Nauczyciel: ${name}<br>Licz do średniej: tak<br>Waga: 3<br>Dodał: ${name}<br/><br/>Komentarz: Prima Aprilis<br/><span style='color: #777777; padding-left: 5px; font-style: italic'>Kliknij mnie, aby ukryć.</span>">1</a></span>`;
+    } else if (rowName.includes("matematyka") && !matma) {
+      grade.outerHTML = `<span class="grade-box librusPro_aprilFools" style="background: #FF0000;"><a class="ocena librusPro_jqueryTitle" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" title="Kategoria: Praca klasowa<br>Data: ${new Date().getFullYear()}-04-01 (pt.)<br>Nauczyciel: ${name}<br>Licz do średniej: tak<br>Waga: 5<br>Dodał: ${name}<br/><br/>Komentarz: Prima Aprilis<br/><span style='color: #777777; padding-left: 5px; font-style: italic'>Kliknij mnie, aby ukryć.</span>">1</a></span>`;
     }
   });
-  if (document.getElementById("matma")) document.getElementById("matma").addEventListener('click', function () {
-    browserAPI.storage.sync.set({
-      ["aprilfools"]: false
+
+  document.querySelectorAll(".librusPro_aprilFools > a").forEach((e) => {
+    e.addEventListener('click', () => {
+      browserAPI.storage.sync.set({
+        ["aprilfools"]: true
+      });
     });
-  });
-  if (document.getElementById("polski")) document.getElementById("polski").addEventListener('click', function () {
-    browserAPI.storage.sync.set({
-      ["aprilfools"]: false
-    });
+    if (modernize) modernizeTitle(e);
   });
   refreshjQueryTitles();
 }
@@ -2698,11 +2690,6 @@ function main() {
     let options = data["options"];
     let student = data["student"];
 
-    if (!data["aprilfools"]) {
-      const d = new Date();
-      if (d.getMonth() === 3 && d.getDate() === 1) aprilfools();
-    }
-
     if (!options) {
       browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
       return;
@@ -2717,6 +2704,11 @@ function main() {
           return;
         }
       }
+    }
+
+    if (!data["aprilfools"]) {
+      const d = new Date();
+      if (d.getMonth() === 3 && d.getDate() === 1) aprilfools(options.modernizeTitles);
     }
 
     // Oceny
