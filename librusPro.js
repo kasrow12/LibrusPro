@@ -40,6 +40,7 @@ const URLS = Object.freeze({
   index: ["https://synergia.librus.pl/uczen/index", "https://synergia.librus.pl/rodzic/index"],
   comment: "https://synergia.librus.pl/komentarz_oceny/1",
   gradeDetails: "https://synergia.librus.pl/przegladaj_oceny/szczegoly",
+  attendanceDetails: "https://synergia.librus.pl/przegladaj_nb/szczegoly",
   textGradeDetails: "https://synergia.librus.pl/przegladaj_oceny/szczegoly/ksztaltujace",
   gdpr: "https://synergia.librus.pl/wydruki/wydruk_danych_osobowych/2137.pdf",
   newVersion: "https://synergia.librus.pl/gateway/ms/studentdatapanel/ui/",
@@ -2583,7 +2584,7 @@ function randomName() {
 }
 
 // Dopisywanie daty dodania oceny w widoku szczegółów
-async function insertCreationDate(isTextGrade = false) {
+async function insertGradeCreationDate(isTextGrade = false) {
   const gradeHref = document.querySelector('form[name="PrzegladajOceny"]')?.action;
   if (!gradeHref) return;
   const gradeId = gradeHref.match(/\/(\d*?)$/)[1];
@@ -2595,6 +2596,24 @@ async function insertCreationDate(isTextGrade = false) {
   .then(data => {return data["Grade"]["AddDate"]});
   
   const refRow = document.querySelector("table.decorated.medium.center > tbody > tr:last-child");
+  const row = refRow.cloneNode(true);
+  row.children[0].innerText = "Data dodania";
+  row.children[1].innerText = date;
+  refRow.parentElement.appendChild(row);
+}
+
+async function insertAttendanceCreationDate() {
+  const attendanceHref = document.querySelector('form#absence_form')?.action;
+  if (!attendanceHref) return;
+  const attendanceId = attendanceHref.match(/\/(\d*?)$/)[1];
+
+  await fetch(URLS.refreshSession);
+  const url = `${API}/Attendances/${attendanceId}`;
+  let date = await fetch(url)
+  .then(response => response.json())
+  .then(data => {return data["Attendance"]["AddDate"]});
+
+  const refRow = document.querySelector("table.decorated.medium.center > tbody > tr:first-child");
   const row = refRow.cloneNode(true);
   row.children[0].innerText = "Data dodania";
   row.children[1].innerText = date;
@@ -2653,15 +2672,20 @@ function main() {
 
   // Szczegóły oceny
   if (window.location.href.indexOf(URLS.textGradeDetails) > -1) {
-    insertCreationDate(true);
+    insertGradeCreationDate(true);
   } else if (window.location.href.indexOf(URLS.gradeDetails) > -1) {
-    insertCreationDate();
+    insertGradeCreationDate();
     //initCommentsInProximity();
   }
 
   // Frekwencja
   if (window.location.href.indexOf(URLS.attendance) > -1) {
     insertAttendanceStatistics();
+  }
+
+  // Szczegóły frekwencji
+  if (window.location.href.indexOf(URLS.attendanceDetails) > -1) {
+    insertAttendanceCreationDate();
   }
 
   // Uwagi
