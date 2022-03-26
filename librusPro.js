@@ -2575,36 +2575,19 @@ function randomName() {
   return x[Math.floor(Math.random() * x.length)];
 }
 
-// Dopisywanie daty dodania oceny w widoku szczegółów
-async function insertGradeCreationDate(isTextGrade = false) {
-  const gradeHref = document.querySelector('form[name="PrzegladajOceny"]')?.action;
-  if (!gradeHref) return;
-  const gradeId = gradeHref.match(/\/(\d*?)$/)[1];
+// Dopisywanie daty dodania oceny/frekwencji w widoku szczegółów
+async function insertCreationDate(isTextGrade = false, isAttendance = false) {
+  const selector = isAttendance ? 'form#absence_form' : 'form[name="PrzegladajOceny"]';
+  const el = document.querySelector(selector)?.action;
+  if (!el) return;
+  const id = el.match(/\/(\d*?)$/)[1];
 
   await fetch(URLS.refreshSession);
-  const url = `${API}/${isTextGrade ? "TextGrades" : "Grades"}/${gradeId}`;
-  let date = await fetch(url)
+  const endpoint = isAttendance ? "Attendances" : (isTextGrade ? "TextGrades" : "Grades");
+  let date = await fetch(`${API}/${endpoint}/${id}`)
   .then(response => response.json())
-  .then(data => {return data["Grade"]["AddDate"]});
+  .then(data => {return data[isAttendance ? "Attendance" : "Grade"]["AddDate"]});
   
-  const refRow = document.querySelector("table.decorated.medium.center > tbody > tr:last-child");
-  const row = refRow.cloneNode(true);
-  row.children[0].innerText = "Data dodania";
-  row.children[1].innerText = date;
-  refRow.parentElement.appendChild(row);
-}
-
-async function insertAttendanceCreationDate() {
-  const attendanceHref = document.querySelector('form#absence_form')?.action;
-  if (!attendanceHref) return;
-  const attendanceId = attendanceHref.match(/\/(\d*?)$/)[1];
-
-  await fetch(URLS.refreshSession);
-  const url = `${API}/Attendances/${attendanceId}`;
-  let date = await fetch(url)
-  .then(response => response.json())
-  .then(data => {return data["Attendance"]["AddDate"]});
-
   const refRow = document.querySelector("table.decorated.medium.center > tbody > tr:first-child");
   const row = refRow.cloneNode(true);
   row.children[0].innerText = "Data dodania";
@@ -2664,9 +2647,9 @@ function main() {
 
   // Szczegóły oceny
   if (window.location.href.indexOf(URLS.textGradeDetails) > -1) {
-    insertGradeCreationDate(true);
+    insertCreationDate(true);
   } else if (window.location.href.indexOf(URLS.gradeDetails) > -1) {
-    insertGradeCreationDate();
+    insertCreationDate();
     //initCommentsInProximity();
   }
 
@@ -2677,7 +2660,7 @@ function main() {
 
   // Szczegóły frekwencji
   if (window.location.href.indexOf(URLS.attendanceDetails) > -1) {
-    insertAttendanceCreationDate();
+    insertCreationDate(false, true);
   }
 
   // Uwagi
