@@ -949,9 +949,12 @@ function hideOnes() {
 // Wyłączenie mrugania zagrożeń
 function removeBlinker() {
   document.querySelectorAll('span.grade-box + script').forEach((e) => {
-    let gradeBox = e.previousElementSibling;
-    e.parentElement.appendChild(gradeBox.cloneNode(true));
+    const gradeBox = e.previousElementSibling;
+    const grade = gradeBox.cloneNode(true);
+    grade.classList.add("librusPro_jqueryTitle");
+    e.parentElement.appendChild(grade);
     gradeBox.remove();
+    refreshjQueryTitles();
   })
 }
 
