@@ -62,14 +62,20 @@ browserAPI.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     console.log(browserAPI.runtime.lastError.message);
     return;
   }
-  if (tab.url != null && tab.url.indexOf(SYNERGIA_URL) > -1 && options.darkTheme) {
-    browserAPI.tabs.insertCSS({
-        file: DARKTHEME_CSS,
-        runAt: "document_start"
-      },
-      () => { if (browserAPI.runtime.lastError) console.log(browserAPI.runtime.lastError.message); }
-    );
-  }
+  browserAPI.tabs.get(tabId, (t) => {
+    if (browserAPI.runtime.lastError) {
+      console.log(browserAPI.runtime.lastError.message);
+      return;
+    }
+      if (t.url && t.url.indexOf(SYNERGIA_URL) > -1 && options.darkTheme) {
+      browserAPI.tabs.insertCSS({
+          file: DARKTHEME_CSS,
+          runAt: "document_start"
+        },
+        () => { if (browserAPI.runtime.lastError) console.log(browserAPI.runtime.lastError.message); }
+      );
+    }
+  });
 });
 
 browserAPI.tabs.onActivated.addListener((info) => {
@@ -82,7 +88,7 @@ browserAPI.tabs.onActivated.addListener((info) => {
       console.log(browserAPI.runtime.lastError.message);
       return;
     }
-    if (tab.url != null && tab.url.indexOf(SYNERGIA_URL) > -1 && options.darkTheme) {
+    if (tab.url && tab.url.indexOf(SYNERGIA_URL) > -1 && options.darkTheme) {
       browserAPI.tabs.insertCSS({
           file: DARKTHEME_CSS,
           runAt: "document_start"
