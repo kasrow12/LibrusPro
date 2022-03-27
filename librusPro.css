@@ -756,3 +756,6 @@ body {
   font-style: italic;
   font-weight: normal !important;
 }
+#librusPro_attendancesButton {
+  margin: .3em;
+}

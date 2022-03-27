@@ -119,6 +119,7 @@ const PAGE_TITLES = Object.freeze({
   "zaplanowane_lekcje": "Zaplanowane",
   "zrealizowane_lekcje": "Zrealizowane",
 });
+const WEEK_DAYS = Object.freeze(['pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sb.', 'ndz.']);
 // Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest. Pozdro
 // JS liczy od 0, CSS od 1
 const OFFSET_JS = 2;
@@ -149,7 +150,7 @@ if (typeof chrome != null) {
 }
 
 // Od ostatniego logowania/w tym tygodniu
-const gradesSinceLastLoginView = document.querySelector("form[name=\"PrzegladajOceny\"] > div > h2")?.innerText.includes("-") ?? false;
+const sinceLastLoginView = document.querySelector("form > div > h2")?.innerText.includes("-") ?? false;
 
 // Aktualizacja strony po zmianie ustawień
 function registerOnStorageChange(isSchedule = false) {
@@ -200,8 +201,7 @@ function printCreditsToConsole() {
   const code = `
     console.log("%cDzięki za korzystanie z rozszerzenia LibrusPro!", "color:#ce84c8;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
     console.log("%cJeżeli znajduje się tutaj cokolwiek czerwonego, bądź nie działa coś związanego z wtyczką, proszę zgłoś to.", "color:#d63d4a;font-size:1rem;font-weight:bold");
-    console.log(" %cOficjalny Discord: ${DISCORD_LINK}", "color:#90e9f0;");
-  `;
+    console.log(" %cOficjalny Discord: ${DISCORD_LINK}", "color:#90e9f0;");`;
   const script = document.createElement('script');
   script.appendChild(document.createTextNode(code));
   (document.body || document.head || document.documentElement).appendChild(script);
@@ -217,87 +217,140 @@ function christmasBanner() {
   banner.classList.add("librusPro_jqueryTitle");
 }
 
-// Pobieranie wykazu uczęszczania
-async function getAttendanceLessonsStatistics(button) {
-  try {
-    await fetch(URLS.refreshSession);
-    let userID = await fetch(`${API}/Me`)
-    .then(response => response.json())
-    .then(data => {return data["Me"]["Account"]["UserId"]});
+function prepareAttendances(modernizeTitles) {
+  if (sinceLastLoginView) return;
 
-    fetch(`${API}/Lessons`)
-    .then(response => response.json())
-    .then(async (lessons) => {
-      document.querySelector(".librusPro_tfoot-text").innerText = "Widok przedstawia aktualne dane pobrane z dziennika Librus Synergia.";
-      const container = document.getElementById("librusPro_lessonsAttendance");
-      const template = document.createElement("template");
-      const html = `
-        <tr class="line0 bolded">
-          <td></td>
-          <td class="right">Razem</td>
-          <td id="librusPro_totalAbsences">0</td>
-          <td id="librusPro_totalAttendances">0</td>
-          <td id="librusPro_totalAttendancePercent">%</td>
-        </tr>`
-      template.innerHTML = html.trim();
-      container.insertBefore(template.content.firstChild, container.firstElementChild);
-      const totalAbsencesEl = document.getElementById("librusPro_totalAbsences");
-      const totalAttendancesEl = document.getElementById("librusPro_totalAttendances");
-      const totalAttendancePercentEl = document.getElementById("librusPro_totalAttendancePercent");
+  // która godzina pierwsza (0/1)
+  const offset = +document.querySelector("#absence_form > div > div > table.center.big.decorated:not(.librusPro_attendance-table) > thead > tr:nth-child(1) > td.large.center > p:nth-child(2)").innerText;
+  // ile godzin lekcyjnych
+  const n = document.querySelectorAll("#absence_form > div > div > table.center.big.decorated:not(.librusPro_attendance-table) > thead > tr:nth-child(1) > td.large.center > p").length;
 
-      for (let lesson of lessons["Lessons"]) {
-        fetch(`${API}/Attendances/LessonsStatistics/${lesson["Id"]}`)
-        .then(response => response.json())
-        .then(async (data) => {
-          for (let lessonStats of data["LessonsStatistics"]) {
-            if (lessonStats["Student"]["Id"] !== userID) continue;
-            const subjectName = await fetch(`${API}/Subjects/${lesson["Subject"]["Id"]}`)
-            .then(response => response.json())
-            .then(data => {return data["Subject"]["Name"]});
-
-            const teacherName = await fetch(`${API}/Users/${lesson["Teacher"]["Id"]}`)
-            .then(response => response.json())
-            .then(data => {return `${data["User"]["FirstName"]} ${data["User"]["LastName"]}`});
-
-            const absences = lessonStats["Absences"];
-            const attendances = lessonStats["Attendances"];
-            const percent = ((attendances - absences) / attendances * 100).toFixed(2);
-
-            const rowTemplate = document.createElement("template");
-            const rowHtml = `
-              <tr class="line0">
-                <td>${subjectName}</td>
-                <td>${teacherName}</td>
-                <td>${absences}</td>
-                <td>${attendances}</td>
-                <td${percent < 50 ? ' class="librusPro_lessons-attendance-low"' : ""}>${percent}%</td$>
-              </tr>`
-            rowTemplate.innerHTML = rowHtml.trim();
-            container.insertBefore(rowTemplate.content.firstChild, container.firstElementChild);
-
-            totalAbsencesEl.innerText = +totalAbsencesEl.innerText + absences;
-            totalAttendancesEl.innerText = +totalAttendancesEl.innerText + attendances;
-            const totalPercent = ((+totalAttendancesEl.innerText - +totalAbsencesEl.innerText) / +totalAttendancesEl.innerText * 100).toFixed(2);
-            totalAttendancePercentEl.innerText = totalPercent + "%";
-          }
-        });
-      }
-    });
-  } catch(error) {
-    console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu statystyk frekwencji!", `color: ${COLORS.error};`);
-    console.log(error);
-    button.parentElement.parentElement.style.display = "table-row";
-    const container = document.getElementById("librusPro_lessonsAttendance");
-    const tr = document.createElement("TR");
-    tr.classList.add("line0", "bolded");
-    const errorMessage = document.createElement("td");
-    errorMessage.innerText = "Wystąpił błąd!";
-    errorMessage.colSpan = "5";
-    errorMessage.classList.add("center");
-    tr.appendChild(errorMessage);
-    container.insertBefore(tr, container.firstElementChild);
-    return;
+  // kwadraciki z numerami lekcji
+  let lessonsHeader = "";
+  for (let i = offset; i < n + offset; i++) {
+    lessonsHeader += `<p class="box" style="float: left; background-color:#F7F8FA;">${i}</p>`;
   }
+  const tableTemplate = document.createElement("template");
+  let tableHtml = `<table class="center medium decorated ${modernizeTitles ? "librusPro_modernizeTitles" : ""}" id="librusPro_allAttendanceTable" style="margin-bottom: 3em;">
+    <thead>
+      <tr>
+        <td>Data</td>
+        <td>Nr lekcji<br>${lessonsHeader}</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="line0">
+        <td colspan="2" class="center"><input type="button" id="librusPro_attendancesButton" class="ui-button ui-widget ui-state-default ui-corner-all" value="Pobierz całą frekwencję (m.in. obecności)"></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">&nbsp;</td>
+      </tr>
+    </tfoot>
+  </table>`;
+  tableTemplate.innerHTML = tableHtml.trim();
+  const ref = document.querySelector(".librusPro_attendance-table");
+  ref.parentElement.insertBefore(tableTemplate.content.firstChild, ref.nextElementSibling);
+
+  const button = document.getElementById("librusPro_attendancesButton");
+  button.addEventListener("click", () => {
+    button.parentElement.parentElement.style.display = "none";
+    browserAPI.runtime.sendMessage({msg: 'fetchAttendances'}, displayAttendances);
+  });
+}
+
+// Wyświetlanie wszystkich obecności w widoku frekwencji
+function displayAttendances(attendances) {
+  // types:
+  //   n: nazwa
+  //   s: skrót
+  //   c: hex
+  // attendances:
+  //   i: id
+  //   l: id lekcji
+  //   n: nr lekcji
+  //   s: semestr
+  //   t: id typu
+  //   u: id dodającego
+
+  browserAPI.storage.local.get(["lessons", "subjects", "users", "attendanceTypes"], (data) => {
+    const lessons = data["lessons"];
+    const subjects = data["subjects"];
+    const users = data["users"];
+    const types = data["attendanceTypes"];
+
+    // jeśli nie ma czegoś w local storage, pobieramy
+    if (!lessons || !subjects || !users || !types) {
+      browserAPI.runtime.sendMessage({msg: 'fetchConstants'}, () => {
+        browserAPI.runtime.sendMessage({msg: 'fetchAttendances'}, displayAttendances);
+      });
+      return;
+    }
+
+    const body = document.querySelector("#librusPro_allAttendanceTable > tbody");
+    if (!attendances) {
+      console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu całej frekwencji!", `color: ${COLORS.error};`);
+      const tr = document.createElement("TR");
+      tr.classList.add("line0", "bolded");
+      const errorMessage = document.createElement("td");
+      errorMessage.innerText = "Wystąpił błąd! Odśwież stronę i spróbuj ponownie!";
+      errorMessage.colSpan = "5";
+      errorMessage.classList.add("center");
+      tr.appendChild(errorMessage);
+      body.appendChild(tr);
+      return;
+    }
+
+    // która godzina pierwsza (0/1)
+    const offset = +document.querySelector("#absence_form > div > div > table.center.big.decorated:not(.librusPro_attendance-table) > thead > tr:nth-child(1) > td.large.center > p:nth-child(2)").innerText;
+    // ile godzin lekcyjnych
+    const n = document.querySelectorAll("#absence_form > div > div > table.center.big.decorated:not(.librusPro_attendance-table) > thead > tr:nth-child(1) > td.large.center > p").length;
+
+    const template = document.createElement("template");
+    const rowHtml = `<tr class="line0">
+      <td></td>
+      <td class="center">
+        ${'<p class="box" style="float: left; background-color:#F7F8FA;"></p>'.repeat(n)}
+      </td>
+    </tr>`;
+    template.innerHTML = rowHtml.trim();
+
+    const modernize = document.getElementById("librusPro_allAttendanceTable").classList.contains("librusPro_modernizeTitles");
+    let lastSem = 1;
+    for (let date in attendances) {
+      const rowEl = template.content.firstChild.cloneNode(true);
+      const weekday = WEEK_DAYS[new Date(date).getDay() - 1];
+      rowEl.firstElementChild.innerText = `${date} (${weekday})`;
+      const box = rowEl.children[1];
+
+      attendances[date].forEach((attendance) => {
+        if (attendance.s > lastSem) {
+          lastSem = attendance.s;
+          const spacer = document.createElement("template");
+          const spacerHtml = `<tr class="line1"><td class="center bolded" colspan="7">Okres 1</td></tr>`;
+          spacer.innerHTML = spacerHtml.trim();
+          body.insertBefore(spacer.content.firstChild, body.firstElementChild);
+        }
+        const target = box.children[attendance.n - offset];
+        const el = document.createElement("template");
+        const html = `<a href="javascript:void(0);" title="Rodzaj: ${types[attendance.t].n}<br> Data: ${date} (${weekday})<br>Lekcja: ${subjects[lessons[attendance.l].s]}<br>Nauczyciel: ${users[lessons[attendance.l].t]}<br>Godzina lekcyjna: ${attendance.n}</b><br>Dodał: ${users[attendance.u]}" class="ocena librusPro_jqueryTitle" onclick="otworz_w_nowym_oknie('/przegladaj_nb/szczegoly/${attendance.i}','szczegóły',850,400)">${types[attendance.t].s}</a>`;
+        el.innerHTML = html.trim();
+        const attendanceEl = target.appendChild(el.content.firstChild);
+        const color = types[attendance.t].c;
+        target.style.backgroundColor = color;
+        if (modernize) modernizeTitle(attendanceEl);
+      });
+      body.insertBefore(rowEl, body.firstElementChild);
+    }
+
+    if (!attendances) return;
+    const spacer = document.createElement("template");
+    const spacerHtml = `<tr class="line1"><td class="center bolded" colspan="7">Okres ${lastSem}</td></tr>`;
+    spacer.innerHTML = spacerHtml.trim();
+    body.insertBefore(spacer.content.firstChild, body.firstElementChild);
+    refreshjQueryTitles();
+  });
 }
 
 // Wyświetlanie komentarzy w pobliżu --- 10.01.22 fixed by Librus
@@ -390,14 +443,16 @@ function initCommentsInProximity() {
 }*/
 
 // Aktywacja wykazu uczęszczania
-function insertAttendanceStatistics() {
+function prepareAttendanceStatistics() {
+  if (sinceLastLoginView) return;
+
   let template = document.createElement('template');
   let html = `
   <h3 class="center librusPro_header">
     <div>Wykaz uczęszczania</div>
     <div class="librusPro_sub-header">Dzięki LibrusPro!</div>
   </h3>
-  <table class="librusPro_attendance-table center big decorated" style="margin-bottom: 4em;">
+  <table class="librusPro_attendance-table center big decorated" style="margin-bottom: 2em;">
     <thead>
       <tr>
         <td rowspan="2">Przedmiot</td>
@@ -426,12 +481,96 @@ function insertAttendanceStatistics() {
   const parent = document.querySelector(".container-background");
   parent.insertBefore(template.content.children[1], parent.firstChild);
   parent.insertBefore(template.content.firstChild, parent.firstChild);
+
   const button = document.getElementById("librusPro_attendanceButton");
   button.addEventListener("click", () => {
     button.parentElement.parentElement.style.display = "none";
     button.parentElement.parentElement.previousElementSibling?.remove();
-    getAttendanceLessonsStatistics(button);
+    displayAttendanceStatistics();
   });
+}
+
+// Pobieranie wykazu uczęszczania
+async function displayAttendanceStatistics() {
+  try {
+    await fetch(URLS.refreshSession);
+    let userID = await fetch(`${API}/Me`)
+    .then(response => response.json())
+    .then(data => {return data["Me"]["Account"]["UserId"]});
+
+    browserAPI.storage.local.get(["lessons", "subjects", "users"], (data) => {
+      if (!data["lessons"] || !data["subjects"] || !data["users"]) {
+        browserAPI.runtime.sendMessage({msg: 'fetchAll'}, () => { displayAttendanceStatistics(); });
+        return;
+      }
+      const subjects = data["subjects"];
+      const users = data["users"];
+
+      document.querySelector(".librusPro_tfoot-text").innerText = "Widok przedstawia aktualne dane pobrane z dziennika Librus Synergia.";
+      const container = document.getElementById("librusPro_lessonsAttendance");
+      const template = document.createElement("template");
+      const html = `
+        <tr class="line0 bolded">
+          <td></td>
+          <td class="right">Razem</td>
+          <td id="librusPro_totalAbsences">0</td>
+          <td id="librusPro_totalAttendances">0</td>
+          <td id="librusPro_totalAttendancePercent">%</td>
+        </tr>`
+      template.innerHTML = html.trim();
+      container.insertBefore(template.content.firstChild, container.firstElementChild);
+      const totalAbsencesEl = document.getElementById("librusPro_totalAbsences");
+      const totalAttendancesEl = document.getElementById("librusPro_totalAttendances");
+      const totalAttendancePercentEl = document.getElementById("librusPro_totalAttendancePercent");
+
+      for (let lessonKey in data["lessons"]) {
+        const lesson = data["lessons"][lessonKey];
+        fetch(`${API}/Attendances/LessonsStatistics/${lessonKey}`)
+        .then(response => response.json())
+        .then(async (data) => {
+          for (let lessonStats of data["LessonsStatistics"]) {
+            if (lessonStats["Student"]["Id"] !== userID) continue;
+
+            const subjectName = subjects[lesson.s];
+            const teacherName = users[lesson.t];
+            const absences = lessonStats["Absences"];
+            const attendances = lessonStats["Attendances"];
+            const percent = ((attendances - absences) / attendances * 100).toFixed(2);
+
+            const rowTemplate = document.createElement("template");
+            const rowHtml = `
+              <tr class="line0">
+                <td>${subjectName}</td>
+                <td>${teacherName}</td>
+                <td>${absences}</td>
+                <td>${attendances}</td>
+                <td${percent < 50 ? ' class="librusPro_lessons-attendance-low"' : ""}>${percent}%</td$>
+              </tr>`
+            rowTemplate.innerHTML = rowHtml.trim();
+            container.insertBefore(rowTemplate.content.firstChild, container.firstElementChild);
+
+            totalAbsencesEl.innerText = +totalAbsencesEl.innerText + absences;
+            totalAttendancesEl.innerText = +totalAttendancesEl.innerText + attendances;
+            const totalPercent = ((+totalAttendancesEl.innerText - +totalAbsencesEl.innerText) / +totalAttendancesEl.innerText * 100).toFixed(2);
+            totalAttendancePercentEl.innerText = totalPercent + "%";
+          }
+        });
+      }
+    });
+  } catch(error) {
+    console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu statystyk frekwencji!", `color: ${COLORS.error};`);
+    console.log(error);
+    const container = document.getElementById("librusPro_lessonsAttendance");
+    const tr = document.createElement("TR");
+    tr.classList.add("line0", "bolded");
+    const errorMessage = document.createElement("td");
+    errorMessage.innerText = "Wystąpił błąd! Odśwież stronę i spróbuj ponownie!";
+    errorMessage.colSpan = "5";
+    errorMessage.classList.add("center");
+    tr.appendChild(errorMessage);
+    container.insertBefore(tr, container.firstElementChild);
+    return;
+  }
 }
 
 // Pobranie indexów kolumn
@@ -483,6 +622,7 @@ class Average {
 
   // Liczenie średniej arytmetycznej np. do proponowanych
   static getMean(elements, background, options) {
+    if (elements.length === 0) return new Average();
     let sum = 0;
     let count = 0;
     elements.forEach((e) => {
@@ -502,7 +642,6 @@ class Average {
         else if (e.innerText[1] === "-") sum -= +options.minusValue;
       }
     });
-    if (count === 0) return new Average();
     return new Average(sum, count);
   }
 
@@ -760,7 +899,7 @@ function handleGrades(options, recalculate = false) {
   }
 
   // Poświetlenie średniej zaliczającej się na czerwony pasek
-  if (!gradesSinceLastLoginView) {
+  if (!sinceLastLoginView) {
     for (const type of ["proponowaneR", "roczne"]) {
       const node = srednieTr.children[INDICES[type] + OFFSET_JS];
       if (+node.innerText >= 4.75) {
@@ -1006,7 +1145,7 @@ function insertProposedBehavior() {
 
 // Schowanie paska z zachowaniem
 function collapseBehavior() {
-  if (gradesSinceLastLoginView) {
+  if (sinceLastLoginView) {
     // Ukrycie zachowania, jeśli nie zostało zmienione
     const zachowanieTr = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded");
     let toHide = true;
@@ -1097,7 +1236,7 @@ function adjustHeader() {
     title += '<article class="librusPro_last-login-row"><span class="librusPro_title-user">2005-04-02</span><span class="librusPro_title-type">21:37:00</span><span class="librusPro_title-nie">127.0.0.1</span><span class="librusPro_greeno">Watykan</span></article>';
     title = title.replace('ajcazilakol', 'Polska').replace('ajcazilakol', 'Polska');
     for (let i = 0; i < 9; i++) {
-      title = title.replace('ajcazilakol', locations[Math.floor(Math.random()*locations.length)]);
+      title = title.replace('ajcazilakol', locations[Math.floor(Math.random() * locations.length)]);
     }
     lastLogin[0].title = title;
     lastLogin[1].title = title;
@@ -1441,61 +1580,63 @@ class GradeManager {
       });    
     }
 
-    browserAPI.storage.local.get(["colors", "gradeTypes", "gradeCategories"], (data) => {
-      if (!data["colors"] || !data["gradeTypes"] || !data["gradeCategories"]) {
-        browserAPI.runtime.sendMessage({msg: 'fetchGradeManagerValues'}, ([c, t, g]) => { this.populateOverlay(c,t,g) });
-        return;
-      }
-      this.populateOverlay(data["colors"], data["gradeTypes"], data["gradeCategories"]);
-    });
+    this.populateOverlay();
   }
 
-  populateOverlay(colors, types, categories) {
-    this.colors = colors;
-    this.categories = categories;
-
-    for (let e in types) {
-      const option = document.createElement("OPTION");
-      option.innerText = e;
-      option.value = types[e];
-      this.gradeInput.appendChild(option);
-    }
-
-    for (let e in this.categories) {
-      const option = document.createElement("OPTION");
-      option.innerText = this.categories[e].name;
-      option.value = e;
-      this.categoryInput.appendChild(option);
-      const color = this.colors[this.categories[e].color];
-      const useLight = isLightFontColorForBackground(color);
-      option.style.setProperty("background-color", color, "important");
-      if (useLight) {
-        option.style.setProperty("color", "#fff", "important");
-      } else {
-        option.style.setProperty("color", "#333", "important");
+  populateOverlay() {
+    browserAPI.storage.local.get(["colors", "gradeTypes", "gradeCategories"], (data) => {
+      if (!data["colors"] || !data["gradeTypes"] || !data["gradeCategories"]) {
+        browserAPI.runtime.sendMessage({msg: 'fetchAll'}, () => { this.populateOverlay(); });
+        return;
       }
-    }
 
-    this.categoryInput.onchange = () => {
-      const id = this.categoryInput.value;
-      const e = this.categories[id] ?? {
-        count: true,
-        weight: 1,
-        color: 1,
-      };
-      this.countInput.value = e.count;
-      this.weightInput.value = e.weight ?? 0;
-      this.selectedColor = this.colors[e.color];
-      if (this.categories[id]) {
-        this.categoryInput.style.setProperty("background-color", this.selectedColor, "important");
-        this.categoryInput.style.setProperty("color", this.categoryInput.options[this.categoryInput.selectedIndex].style.color, "important");
-        this.categoryInput.style.filter = "brightness(0.6)";
-      } else {
-        this.categoryInput.style.background = "";
-        this.categoryInput.style.color = "";
-        this.categoryInput.style.filter = "";
+      const types = data["gradeTypes"];
+      this.colors = data["colors"];
+      this.categories = data["gradeCategories"];
+
+      for (let e in types) {
+        const option = document.createElement("OPTION");
+        option.innerText = e;
+        option.value = types[e];
+        this.gradeInput.appendChild(option);
       }
-    }
+
+      for (let e in this.categories) {
+        const option = document.createElement("OPTION");
+        option.innerText = this.categories[e].name;
+        option.value = e;
+        this.categoryInput.appendChild(option);
+        const color = this.colors[this.categories[e].color];
+        const useLight = isLightFontColorForBackground(color);
+        option.style.setProperty("background-color", color, "important");
+        if (useLight) {
+          option.style.setProperty("color", "#fff", "important");
+        } else {
+          option.style.setProperty("color", "#333", "important");
+        }
+      }
+
+      this.categoryInput.onchange = () => {
+        const id = this.categoryInput.value;
+        const e = this.categories[id] ?? {
+          count: true,
+          weight: 1,
+          color: 1,
+        };
+        this.countInput.value = e.count;
+        this.weightInput.value = e.weight ?? 0;
+        this.selectedColor = this.colors[e.color];
+        if (this.categories[id]) {
+          this.categoryInput.style.setProperty("background-color", this.selectedColor, "important");
+          this.categoryInput.style.setProperty("color", this.categoryInput.options[this.categoryInput.selectedIndex].style.color, "important");
+          this.categoryInput.style.filter = "brightness(0.6)";
+        } else {
+          this.categoryInput.style.background = "";
+          this.categoryInput.style.color = "";
+          this.categoryInput.style.filter = "";
+        }
+      }
+    });
   }
 
   showOverlay(element, isNew = true, isFinal = false) {
@@ -1508,7 +1649,7 @@ class GradeManager {
     this.categoryInput.style.color = "";
     this.categoryInput.style.filter = "";
     this.countInput.value = "true";
-    this.selectedColor = this.colors[1];
+    this.selectedColor = this.colors?.[1];
     this.weightInput.value = isFinal ? "0" : "1";
     this.commentInput.value = "";
     if (isNew) {
@@ -2638,7 +2779,7 @@ function main() {
   if (window.location.href.indexOf(URLS.grades) > -1) {
     collapseBehavior();
 
-    if (!gradesSinceLastLoginView) {
+    if (!sinceLastLoginView) {
       insertProposedBehavior();
     }
   }
@@ -2658,7 +2799,7 @@ function main() {
 
   // Frekwencja
   if (window.location.href.indexOf(URLS.attendance) > -1) {
-    insertAttendanceStatistics();
+    prepareAttendanceStatistics();
   }
 
   // Szczegóły frekwencji
@@ -2730,6 +2871,8 @@ function main() {
 
       // Ukrywanie frekwencji z I semestru
       if (options.hideFirstTerm) hideFirstTermAbsence();
+
+      prepareAttendances(options.modernizeTitles);
     }
 
     // Zrealizowane lekcje

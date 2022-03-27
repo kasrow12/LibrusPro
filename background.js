@@ -120,6 +120,25 @@ browserAPI.runtime.onInstalled.addListener((data) => {
   }
 });
 
+async function fetchFromApi(endpoint, func) {
+  let req = await fetch(`${API}/${endpoint}`)
+  .then(response => response.json())
+  .then(data => {
+    // "Attendances/Types" => "Types"
+    data = data[endpoint.split("/").at(-1)];
+    let result = {};
+    for (let e of data) {
+      func(result, e);
+    }
+    return result;
+  })
+  .catch(error => {
+    console.log(error);
+    return null;
+  });
+  return req || null;
+}
+
 // Pobieranie klasy oraz numerka z dziennika, wywoływane po każdym zalogowaniu oraz gdy nie ma zapisanych w storage
 async function fetchStudentInfo() {
   await fetch(REFRESH_URL);
@@ -204,71 +223,75 @@ async function fetchTimetable(weekStart) {
   return timetables;
 }
 
-async function fetchGradeManagerValues() {
+async function fetchConstants() {
   await fetch(REFRESH_URL);
-  let colors = await fetch(`${API}/Colors`)
-  .then(response => response.json())
-  .then(data => {
-    data = data["Colors"];
-    let _colors = {};
-    for (let e of data) {
-      _colors[e["Id"]] = `#${e["RGB"]}`;
+
+  // Nauczyciele
+  let users = await fetchFromApi("Users", (r, e) => { r[e["Id"]] = `${e["LastName"]} ${e["FirstName"]}` });
+  browserAPI.storage.local.set({ ["users"]: users });
+
+  // Nazwy przedmiotów
+  let subjects = await fetchFromApi("Subjects", (r, e) => { r[e["Id"]] = e["Name"] });
+  browserAPI.storage.local.set({ ["subjects"]: subjects });
+
+  // Przedmioty
+  let lessons = await fetchFromApi("Lessons", (r, e) => { 
+    r[e["Id"]] = {
+      t: e["Teacher"]["Id"], 
+      s: e["Subject"]["Id"],
     }
-    return _colors;
-  })
-  .catch(error => {
-    console.log(error);
-    return null;
   });
-  if (!colors) {
-    return null;
-  }
+  browserAPI.storage.local.set({ ["lessons"]: lessons });
+
+  // Kolory
+  let colors = await fetchFromApi("Colors", (r, e) => { r[e["Id"]] = `#${e["RGB"]}` });
   browserAPI.storage.local.set({ ["colors"]: colors });
 
-  let types = await fetch(`${API}/Grades/Types`)
-  .then(response => response.json())
-  .then(data => {
-    data = data["Types"];
-    let _types = {};
-    for (let e of data) {
-      _types[e["Name"]] = e["Value"];
-    }
-    return _types;
-  })
-  .catch(error => {
-    console.log(error);
-    return null;
-  });
-  if (!types) {
-    return null;
-  }
-  browserAPI.storage.local.set({ ["gradeTypes"]: types });
+  // Typy ocen (1,1+,...)
+  let gradeTypes = await fetchFromApi("Grades/Types", (r, e) => { r[e["Name"]] = e["Value"] });
+  browserAPI.storage.local.set({ ["gradeTypes"]: gradeTypes });
 
-  let categories = await fetch(`${API}/Grades/Categories`)
-  .then(response => response.json())
-  .then(data => {
-    data = data["Categories"];
-    let _categories = {};
-    for (let e of data) {
-      _categories[e["Id"]] = {
-        name: e["Name"],
-        color: e["Color"]["Id"],
-        weight: e["Weight"],
-        count: e["CountToTheAverage"],
-      };
+  // Kategorie ocen
+  let gradeCategories = await fetchFromApi("Grades/Categories", (r, e) => { 
+    r[e["Id"]] = {
+      name: e["Name"],
+      color: e["Color"]["Id"],
+      weight: e["Weight"],
+      count: e["CountToTheAverage"],
     }
-    return _categories;
-  })
-  .catch(error => {
-    console.log(error);
-    return null;
   });
-  if (!categories) {
-    return null;
-  }
-  browserAPI.storage.local.set({ ["gradeCategories"]: categories });
+  browserAPI.storage.local.set({ ["gradeCategories"]: gradeCategories });
 
-  return [colors, types, categories];
+  // Kategorie frekwencji
+  let attendanceTypes = await fetchFromApi("Attendances/Types", (r, e) => { 
+    r[e["Id"]] = {
+      n: e["Name"],
+      s: e["Short"],
+      c: e["ColorRGB"] ? "#" + e["ColorRGB"] : colors[e["Color"]["Id"]],
+    }
+  });
+  browserAPI.storage.local.set({ ["attendanceTypes"]: attendanceTypes });
+}
+
+async function fetchAttendances() {
+  await fetch(REFRESH_URL);
+  let attendances = await fetchFromApi("Attendances", (r, e) => { 
+    const attendance = {
+      i: e["Id"],
+      l: e["Lesson"]["Id"],
+      n: e["LessonNo"],
+      s: e["Semester"],
+      t: e["Type"]["Id"],
+      u: e["AddedBy"]["Id"],
+    };
+    if (!r[e["Date"]]) {
+      r[e["Date"]] = [attendance];
+    } else {
+      r[e["Date"]].push(attendance);
+    }
+  });
+
+  return attendances;
 }
 
 // Nasłuchiwanie skryptów ze stron
@@ -277,26 +300,28 @@ browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
     console.log(browserAPI.runtime.lastError.message);
     return;
   }
-  if (request.msg === "fetchStudentInfo") {
-    (async () => {
-      let studentInfo = await fetchStudentInfo();
-      sendResponse(studentInfo);
-    })();
-  } else if (request.msg === "fetchTimetable") {
-    (async () => {
-      let timetable = await fetchTimetable(request.data);
-      sendResponse(timetable);
-    })();
-  } else if (request.msg === "fetchGradeManagerValues") {
-    (async () => {
-      let val = await fetchGradeManagerValues();
-      sendResponse(val);
-    })();
-  } else if (request.msg === "fetchAll") {
-    fetchStudentInfo();
-    fetchTimetable();
-    fetchGradeManagerValues();
-  }
+  (async () => {
+    switch (request.msg) {
+      case "fetchTimetable":
+        sendResponse(await fetchTimetable(request.data));
+        break;
+      case "fetchAttendances":
+        sendResponse(await fetchAttendances());
+        break;
+      case "fetchConstants":
+        sendResponse(await fetchConstants());
+        break;
+      case "fetchStudentInfo":
+        sendResponse(await fetchStudentInfo());
+        break;
+      case "fetchAll":
+        await fetchStudentInfo();
+        await fetchTimetable();
+        await fetchConstants();
+        sendResponse();
+        break;
+    }
+  })();
   // Async
   return true;
 });
