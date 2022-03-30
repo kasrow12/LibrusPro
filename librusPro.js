@@ -334,9 +334,12 @@ function displayAttendances(attendances) {
         }
         const target = box.children[attendance.n - offset];
         const el = document.createElement("template");
-        const html = `<a href="javascript:void(0);" title="Rodzaj: ${types[attendance.t].n}<br> Data: ${date} (${weekday})<br>Lekcja: ${subjects[lessons[attendance.l].s]}<br>Nauczyciel: ${users[lessons[attendance.l].t]}<br>Godzina lekcyjna: ${attendance.n}</b><br>Dodał: ${users[attendance.u]}" class="ocena librusPro_jqueryTitle" onclick="otworz_w_nowym_oknie('/przegladaj_nb/szczegoly/${attendance.i}','szczegóły',850,400)">${types[attendance.t].s}</a>`;
+        const html = `<a href="javascript:void(0);" class="ocena librusPro_jqueryTitle" onclick="otworz_w_nowym_oknie('/przegladaj_nb/szczegoly/${+attendance.i}','szczegóły',850,400)"></a>`;
         el.innerHTML = html.trim();
-        const attendanceEl = target.appendChild(el.content.firstChild);
+        const a = el.content.firstChild;
+        a.title = `Rodzaj: ${types[attendance.t].n}<br> Data: ${date} (${weekday})<br>Lekcja: ${subjects[lessons[attendance.l].s]}<br>Nauczyciel: ${users[lessons[attendance.l].t]}<br>Godzina lekcyjna: ${attendance.n}</b><br>Dodał: ${users[attendance.u]}`;
+        a.textContent = types[attendance.t].s;
+        const attendanceEl = target.appendChild(a);
         const color = types[attendance.t].c;
         target.style.backgroundColor = color;
         if (modernize) modernizeTitle(attendanceEl);
@@ -476,8 +479,7 @@ function prepareAttendanceStatistics() {
       </tr>
     </tfoot>
   </table>`;
-  html = html.trim();
-  template.innerHTML = html;
+  template.innerHTML = html.trim();
   const parent = document.querySelector(".container-background");
   parent.insertBefore(template.content.children[1], parent.firstChild);
   parent.insertBefore(template.content.firstChild, parent.firstChild);
@@ -538,15 +540,16 @@ async function displayAttendanceStatistics() {
             const percent = ((attendances - absences) / attendances * 100).toFixed(2);
 
             const rowTemplate = document.createElement("template");
-            const rowHtml = `
-              <tr class="line0">
-                <td>${subjectName}</td>
-                <td>${teacherName}</td>
-                <td>${absences}</td>
-                <td>${attendances}</td>
-                <td${percent < 50 ? ' class="librusPro_lessons-attendance-low"' : ""}>${percent}%</td$>
-              </tr>`
+            const rowHtml = `<tr class="line0"><td></td><td></td><td></td><td></td><td></td></tr>`;
             rowTemplate.innerHTML = rowHtml.trim();
+
+            const td = rowTemplate.content.firstElementChild.children;
+            td[0].textContent = subjectName;
+            td[1].textContent = teacherName;
+            td[2].textContent = absences;
+            td[3].textContent = attendances;
+            td[4].textContent = `${percent}%`;
+            if (percent < 50) td[4].classList.add('librusPro_lessons-attendance-low');
             container.insertBefore(rowTemplate.content.firstChild, container.firstElementChild);
 
             totalAbsencesEl.innerText = +totalAbsencesEl.innerText + absences;
