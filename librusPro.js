@@ -1357,7 +1357,7 @@ function aprilfools(modernize = false) {
     document.getElementById("icon-oceny").appendChild(template.content.firstChild);
   }
 
-  const secondTermIndex = gradesSinceLastLoginView ? 5 : INDICES.ocenyII + OFFSET_JS;
+  const secondTermIndex = sinceLastLoginView ? 5 : INDICES.ocenyII + OFFSET_JS;
   let polski = false;
   let matma = false;
 
