@@ -3,17 +3,19 @@
   <a href="https://github.com/kasrow12/LibrusPro">
     <img src="img/icon.png" alt="Logo" width="30%" height="30%">
   </a>
+  <hr>
   <h1 align="center">📚 LibrusPro 🎉</h1>
   <h4 align="center">💠 Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, liczące średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, wyświetlające procentową obecność/frekwencję z każdego przedmiotu, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz dodające wiele usprawnień funkcjonalności i wyglądu Librusa. 💠</h4>
 </p>
+<hr>
 
 # ⏩ Obecnie dostępne dla:
-## 🖥 Google Chrome: <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Kliknij tutaj</a>
-## 🦊 Firefoxa: <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Kliknij tutaj</a>
-## 🌍 Microsoft Edge (XD): <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Kliknij tutaj</a>
-## ⭕ Opera: Najpierw pobierz <a href="https://addons.opera.com/en/extensions/details/install-chrome-extensions/">ten dodatek</a>, a następnie <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">kliknij tutaj</a>.
-## 📱 Android: <a href="https://github.com/kasrow12/LibrusPro/blob/master/docs/LibrusPro%20-%20wersja%20mobilna.pdf">Instrukcja instalacji</a>
-
+### 🖥 <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Google Chrome</a>
+### 🦊 <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Firefoxa</a>
+### 🌍 <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Microsoft Edge (XD)</a>
+### ⭕ Opery: Najpierw pobierz <a href="https://addons.opera.com/en/extensions/details/install-chrome-extensions/">ten dodatek</a>, a następnie <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">zainstaluj stąd</a>.
+### 📱 <a href="https://github.com/kasrow12/LibrusPro/blob/master/docs/LibrusPro%20-%20wersja%20mobilna.pdf">Androida</a>
+<hr>
 
 # 🛠 Funkcje
 
@@ -22,7 +24,8 @@ Librus be like:
 
 ![Light theme meme](docs/lightThemeMeme.jpg?raw=true)
 
-Nie jesteś sam(a), na szczęście to już nie jest problem. W końcu Librus nie boli w oczy! :) JEDYNY taki na rynku dedykowany ciemny motyw do tego e-dziennika! 
+Nie jesteś sam(a), na szczęście to już nie jest problem. W końcu Librus nie boli w oczy! :) <b>JEDYNY</b> taki na rynku dedykowany ciemny motyw do tego e-dziennika!
+<hr>
 <details>
   <summary>Tutaj znajdziesz kilka zrzutów ekranu:</summary>
 
@@ -32,6 +35,7 @@ Nie jesteś sam(a), na szczęście to już nie jest problem. W końcu Librus nie
 ![Ciemny motyw 4](docs/librusPro_4.png?raw=true)
 ![Ciemny motyw 5](docs/librusPro_5.png?raw=true)
 </details>
+<hr>
 
 ## ⭐️ • Własne wydarzenia w terminarzu 📆
 Chcesz dodać własne wydarzenie do swojego terminarza? Planowane kartkówki, odpowiedzi ustne, a może prace domowe, o których nie chcesz zapomnieć, a nie zostały wpisane przez nauczyciela? Z tym rozszerzeniem jest to wreszcie możliwe! Idealne na problemy z pamięcią.
@@ -41,6 +45,7 @@ Niektóre szkoły wyłączają możliwość wyświetlania średniej ocen dla ich
 
 ## ⭐️ • Wyświetlanie procentowej frekwencji z przedmiotów 🎓
 Zastanawiasz się ile masz procent frekwencji z danego przedmiotu? Może chcesz wiedzieć, ile jeszcze lekcji możesz opuścić, aby nadal być klasyfikowanym? Nie ma sprawy. W zakładce Frekwencja wystarczy, że naciśniesz odpowiedni przycisk, a Twoje procenty obecności magicznie się pojawią.
+Znajdziesz tam także możliwość pobrania i wyświetlenia wszystkich wpisanych obecności, jeżeli będziesz zainteresowany(-a) tym, czy nauczyciele spełniają swoje obowiązki.
 
 ## ⭐️ • Ukrywanie przedmiotów bez ocen 🚫
 Po co w ogóle mają się wyświetlać, skoro przez cały rok nie dostaniesz z nich ani jednej oceny?
@@ -71,27 +76,33 @@ Nauczyciel postanowił Cię zagrozić i teraz cały rok mruga Ci jedynka? Spokoj
 Dopóki karta z e-dziennikiem będzie otwarta, Twoja sesja nie wygaśnie! Koniec nieprzyjemnych komunikatów "STOP".
 
 ## ⭐️ • Poprawki oraz dodatki wizualne 🔨
-  - możliwość wyłączenia wyświetlania jedynek w menu rozszerzenia,
-  - wyświetlanie proponowanego zachowania w tabeli głównej,
-  - wyeksponowanie nowych (i oddanych) prac domowych oraz wiadomości,
-  - usunięcie przycisku Wersja Alternatywna, kto normalny z tego korzysta...,
-  - usunięcie przycisku Bezpieczny Uczeń w szkołach, w których jest on włączony,
-  - przeniesienie w zamian przycisku Plan lekcji, który otwiera go w nowej karcie, a nie oknie,
-  - otwieranie podglądów prac domowych również w nowej karcie, a nie oknie,
-  - poświetlenie średniej rocznej kwalifikującej się na czerwony pasek,
-  - wyświetlanie daty dodania oceny w widoku jej szczegółów (po kliknięciu),
-  - możliwość wyłączenia wyświetlania ocen i frekwencji z I semestru,
-  - wyświetlanie danych osobowych po kliknięciu na pole "jesteś zalogowany(-a) jako:",
-  - zaciemnianie przeszłych oraz wolnych dni w terminarzu,
-  - oraz wiele innych pomniejszych zmian i smaczków!
+  - możliwość wyłączenia wyświetlania **jedynek** w menu rozszerzenia,
+  - wyświetlanie **proponowanego zachowania** w tabeli głównej,
+  - wyeksponowanie nowych (i oddanych) **prac domowych** oraz wiadomości,
+  - usunięcie przycisku **Wersja Alternatywna**, kto normalny z tego korzysta...,
+  - usunięcie przycisku **Bezpieczny Uczeń** w szkołach, w których jest on włączony,
+  - przeniesienie w zamian **przycisku Plan lekcji**, który otwiera go w nowej karcie, a nie oknie,
+  - otwieranie podglądów prac domowych również **w nowej karcie**, a nie oknie,
+  - poświetlenie średniej rocznej kwalifikującej się na **czerwony pasek**,
+  - wyświetlanie **daty dodania ocen i frekwencji** w widoku ich szczegółów (po kliknięciu na nie),
+  - możliwość wyłączenia wyświetlania ocen i frekwencji z **I semestru**,
+  - wyświetlanie danych osobowych po kliknięciu na pole *jesteś zalogowany(-a) jako:*,
+  - zaciemnianie **przeszłych oraz wolnych dni** w terminarzu,
+  - **oraz wiele innych pomniejszych zmian i smaczków!**
+<hr>
 
 ## 👑 Z rozszerzeniem LibrusPro, to Ty stajesz się władcą tego e-dziennika. Nie przegap takiej okazji!
 
 ## 📢 Jeżeli masz jakąś propozycję, bądź znalazłeś(-aś) jakiś błąd, dołącz na oficjalnego [Discorda](https://discord.gg/e9EkVEvsDr)! 
 
 ## 👋 Jeżeli rozszerzenie Ci się spodobało, nie zapomnij polecić znajomym, niech korzystanie z Librusa stanie się choć trochę przyjemniejsze dla nas wszystkich.
+<hr>
 
-# 🧷 Licencja
+## 🧷 Licencja
 Ten projekt jest licencjonowany zgodnie z warunkami licencji MIT. Zobacz plik [LICENSE](LICENSE), aby zapoznać się z prawami i ograniczeniami tej licencji.
+<hr>
 
+## ❗ Informacja
+Wszystkie znaki towarowe są własnością ich prawowitych właścicieli i są używane wyłącznie w celach informacyjnych.
+<hr>
 <i>LibrusPro © 2022 Maks Kowalski</i>
