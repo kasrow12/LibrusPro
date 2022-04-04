@@ -194,7 +194,11 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
   z-index: 10000;
   background: #111111aa;
 }
-@media screen and (max-height: 800px) {
+@media screen and (max-height: 650px) {
+  body.librusPro_overlay-grades {
+    overflow: hidden !important;
+  }
+
   .librusPro_grade-editor-overlay {
     overflow-y: scroll;
   }
@@ -473,8 +477,8 @@ td:hover > .kalendarz-dzien > .librusPro_lesson-plan {
   z-index: 69420;
   background-color: #1119;
 }
-@media screen and (max-height: 750px) {
-  .librusPro_overlay {
+@media screen and (max-height: 850px) {
+  body.librusPro_overlay {
     overflow: hidden !important;
   }
 

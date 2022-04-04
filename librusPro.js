@@ -1646,6 +1646,7 @@ class GradeManager {
     this.overlay.style.display = "block";
     this.overlay.classList.remove("librusPro_overlay-adding", "librusPro_overlay-editting", "librusPro_overlay-grade-final");
     this.overlay.classList.add(`librusPro_overlay-${isNew ? "adding" : "editting"}`);
+    document.body.classList.add("librusPro_overlay-grades");
     if (isFinal || element.parentElement.isFinal) this.overlay.classList.add("librusPro_overlay-grade-final");
     this.categoryInput.value = "";
     this.categoryInput.style.background = "";
@@ -1708,10 +1709,12 @@ class GradeManager {
       this.editButton.onclick = (e) => {
         this.modifyGrade(element, title);
         this.overlay.style.display = "none";
+        document.body.classList.remove("librusPro_overlay-grades");
       }
       this.removeButton.onclick = (e) => {
         this.removeGrade(element);
         this.overlay.style.display = "none";
+        document.body.classList.remove("librusPro_overlay-grades");
       }
     }
   }
