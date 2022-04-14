@@ -266,14 +266,6 @@ function displayAttendances(attendances) {
   //   n: nazwa
   //   s: skrót
   //   c: hex
-  // attendances:
-  //   i: id
-  //   l: id lekcji
-  //   n: nr lekcji
-  //   s: semestr
-  //   t: id typu
-  //   u: id dodającego
-
   browserAPI.storage.local.get(["lessons", "subjects", "users", "attendanceTypes"], (data) => {
     const lessons = data["lessons"];
     const subjects = data["subjects"];
@@ -318,29 +310,30 @@ function displayAttendances(attendances) {
 
     const modernize = document.getElementById("librusPro_allAttendanceTable").classList.contains("librusPro_modernizeTitles");
     let lastSem = 1;
-    for (let date in attendances) {
+    const sortedDates = Object.keys(attendances).sort((a, b) => new Date(a) - new Date(b));
+    for (let date of sortedDates) {
       const rowEl = template.content.firstChild.cloneNode(true);
       const weekday = WEEK_DAYS[new Date(date).getDay() - 1];
       rowEl.firstElementChild.innerText = `${date} (${weekday})`;
       const box = rowEl.children[1];
 
       attendances[date].forEach((attendance) => {
-        if (attendance.s > lastSem) {
-          lastSem = attendance.s;
+        if (attendance.semester > lastSem) {
+          lastSem = attendance.semester;
           const spacer = document.createElement("template");
           const spacerHtml = `<tr class="line1"><td class="center bolded" colspan="7">Okres 1</td></tr>`;
           spacer.innerHTML = spacerHtml.trim();
           body.insertBefore(spacer.content.firstChild, body.firstElementChild);
         }
-        const target = box.children[attendance.n - offset];
+        const target = box.children[attendance.lessonNo - offset];
         const el = document.createElement("template");
-        const html = `<a href="javascript:void(0);" class="ocena librusPro_jqueryTitle" onclick="otworz_w_nowym_oknie('/przegladaj_nb/szczegoly/${+attendance.i}','szczegóły',850,400)"></a>`;
+        const html = `<a href="javascript:void(0);" class="ocena librusPro_jqueryTitle" onclick="otworz_w_nowym_oknie('/przegladaj_nb/szczegoly/${attendance.tripId ? "--" : ""}${+attendance.id}','szczegóły',850,400)"></a>`;
         el.innerHTML = html.trim();
         const a = el.content.firstChild;
-        a.title = `Rodzaj: ${types[attendance.t].n}<br> Data: ${date} (${weekday})<br>Lekcja: ${subjects[lessons[attendance.l].s]}<br>Nauczyciel: ${users[lessons[attendance.l].t]}<br>Godzina lekcyjna: ${attendance.n}</b><br>Dodał: ${users[attendance.u]}`;
-        a.textContent = types[attendance.t].s;
+        a.title = `Rodzaj: ${types[attendance.typeId].n}<br> Data: ${date} (${weekday})<br>Lekcja: ${subjects[lessons[attendance.lessonId].s]}<br>Nauczyciel: ${users[lessons[attendance.lessonId].t]}<br>Godzina lekcyjna: ${attendance.lessonNo}</b><br>${attendance.tripId ? "Czy wycieczka: Tak<br>" : ""}Dodał: ${users[attendance.userId]}`;
+        a.textContent = types[attendance.typeId].s;
         const attendanceEl = target.appendChild(a);
-        const color = types[attendance.t].c;
+        const color = types[attendance.typeId].c;
         target.style.backgroundColor = color;
         if (modernize) modernizeTitle(attendanceEl);
       });
@@ -2730,15 +2723,19 @@ async function insertCreationDate(isTextGrade = false, isAttendance = false) {
   const selector = isAttendance ? 'form#absence_form' : 'form[name="PrzegladajOceny"]';
   const el = document.querySelector(selector)?.action;
   if (!el) return;
-  const id = el.match(/\/(\d*?)$/)[1];
+  const href = el.match(/\/(--)?(\d*?)$/);
+  // Id frekwencji z wycieczek w hrefie ma z przodu --, a w API "t"
+  const id = `${href[1] ? "t" : ""}${href[2]}`;
+
 
   await fetch(URLS.refreshSession);
   const endpoint = isAttendance ? "Attendances" : (isTextGrade ? "TextGrades" : "Grades");
   let date = await fetch(`${API}/${endpoint}/${id}`)
   .then(response => response.json())
-  .then(data => {return data[isAttendance ? "Attendance" : "Grade"]["AddDate"]});
+  .then(data => {return data[isAttendance ? "Attendance" : "Grade"]?.["AddDate"]});
   
   const refRow = document.querySelector("table.decorated.medium.center > tbody > tr:first-child");
+  if (!refRow) return;
   const row = refRow.cloneNode(true);
   row.children[0].innerText = "Data dodania";
   row.children[1].innerText = date;

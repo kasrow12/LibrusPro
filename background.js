@@ -275,14 +275,17 @@ async function fetchConstants() {
 
 async function fetchAttendances() {
   await fetch(REFRESH_URL);
-  let attendances = await fetchFromApi("Attendances", (r, e) => { 
+  let attendances = await fetchFromApi("Attendances", (r, e) => {
+    const tripId = e["Trip"]?.["Id"];
     const attendance = {
-      i: e["Id"],
-      l: e["Lesson"]["Id"],
-      n: e["LessonNo"],
-      s: e["Semester"],
-      t: e["Type"]["Id"],
-      u: e["AddedBy"]["Id"],
+      // Id frekwencji z 'Czy wycieczka: Tak' jest formatu "t00000"
+      id: tripId ? e["Id"].slice(1) : e["Id"],
+      lessonId: e["Lesson"]["Id"],
+      lessonNo: e["LessonNo"],
+      semester: e["Semester"],
+      typeId: e["Type"]["Id"],
+      userId: e["AddedBy"]["Id"],
+      tripId: tripId,
     };
     if (!r[e["Date"]]) {
       r[e["Date"]] = [attendance];
