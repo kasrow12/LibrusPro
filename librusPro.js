@@ -6,7 +6,7 @@
 // Config
 const API = "https://synergia.librus.pl/gateway/api/2.0";
 const DISCORD_LINK = "https://discord.gg/e9EkVEvsDr";
-const CHROME_LINK = "https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf";
+const CHROME_LINK = "https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews";
 const NO_DATA = "-";
 const ADD_EDIT_SYMBOL = "✎";
 const REMOVE_SYMBOL = "⨉";
@@ -1290,7 +1290,7 @@ function insertFooter() {
   <span id="bottom-logo"></span>
   <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="librusPro_icon" style="background: url(&quot;${browserAPI.runtime.getURL('img/icon.png')}&quot;);"></a>
   <div class="librusPro_footer">
-    <span class="librusPro_greeno">» Podoba się wtyczka? <a href="https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf" target="_blank" class="librusPro_link">Zostaw 5<span style="font-size: 11px;">⭐</span></a></span>
+    <span class="librusPro_greeno">» Podoba się wtyczka? <a href="${CHROME_LINK}" target="_blank" class="librusPro_link">Zostaw 5<span style="font-size: 11px;">⭐</span></a></span>
     <div class="librusPro_water">» Wbijaj na oficjalny <a href="${DISCORD_LINK}" target="_blank" class="librusPro_link">Discord</a>!</div>
     
     <div>» <span style="font-style: italic">LibrusPro © ${new Date().getFullYear()} Maks Kowalski</span></div>
