@@ -87,6 +87,7 @@ td[style^="height: 25px"] {
 #user-section > b {
   color: #744465;
   transition: color 0.2s;
+  margin-right: 10px;
 }
 #user-section > b:hover {
   color: #ac6c97;
@@ -762,4 +763,7 @@ body {
 }
 #librusPro_attendancesButton {
   margin: .3em;
+}
+#language {
+  display: none;
 }
