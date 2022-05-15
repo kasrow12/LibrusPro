@@ -88,12 +88,13 @@ const COLORS = Object.freeze({
   error: "#ff5555",
 });
 const TITLE_MODERNIZATION = Object.freeze([
+  [/(^)([\D\d]*?)(<br ?\/?>(Zakres od:|Data wystawienia:))/g, '<span class="librusPro_title-type">$2</span>$3'],
   [/(Ocena:|Lekcja:) ([\D\d]*?)(<br\/?>|$)/g, '<span class="librusPro_title-grade">$2</span>$3'],
   [/(Kategoria:|Rodzaj:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-type">$2</span>$3'],
   [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:| wystawienia:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
   [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
   [/(Nauczyciel:|Dodał:|Uczeń:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2</span>$3'],
-  [/(Waga:) (\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
+  [/(Waga:|Zakres od:|Zakres do:) (\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
   [/(Komentarz:|Temat zajęć:) ([\D\d]*?)($)/g, '<span class="librusPro_title-comment">$2</span>$3'],
   [/(Opis:) ([\D\d]*?)Data dodania:/g, '<span class="librusPro_title-comment">$2</span>Data dodania:'],
   [/(Poprawa oceny:) (.{0,2}) \((.*?)\)(<br ?\/?>|$)/g, '<b class="librusPro_title-improved">$2</b> <span class="librusPro_title-brackets">(<span class="librusPro_title-type">$3</span>)</span>$4'],
