@@ -158,6 +158,7 @@ function registerOnStorageChange(isSchedule = false) {
   // Automatyczne odświeżanie po wszystkich zmianach (z pominięciem "Potwiedź ponowne przesłanie formularza")
   if (isSchedule) {
     browserAPI.storage.onChanged.addListener((changes, namespace) => {
+      if (changes["customColor"] && Object.keys(changes).length == 1) return;
       window.location.replace(window.location.href);
     });
     return;
@@ -2029,8 +2030,8 @@ class ScheduleOverlay {
         <label class="librusPro_overlay-color-label" for="librusPro_customColorInput">
           <input type="color" id="librusPro_customColorInput" value="#010101">
           <input type="radio" name="librusPro_color" value="#aaaaaa|#333333" id="librusPro_customColor">
-          <span class="librusPro_overlay-color-preview "
-            style="background: linear-gradient(216deg, #f00 0%, #ff7300 23%, #f9ff00 43%, #00ff73 64%, #0023ff 85%)"
+          <span class="librusPro_overlay-color-preview"
+            style="background: url(${browserAPI.runtime.getURL('img/color_picker.png')})"
             id="librusPro_customColorPreview"></span>
         </label>
       </div>
@@ -2088,9 +2089,17 @@ class ScheduleOverlay {
     // Ukrywanie/Pokazywanie inputa dla "Inny" w select
     this.typeInputHidden = true;
     this.subjectInputHidden = true;
+    this.customColorInput.addEventListener("click", () => this.updateOverlayColorValue());
     this.customColorInput.addEventListener("change", () => this.updateOverlayColorValue());
     this.subjectSelect.addEventListener("change", () => this.displayInputIfOtherSelected());
     this.typeSelect.addEventListener("change", () => this.displayInputIfOtherSelected());
+
+    // Pobieranie ostatnio zaznaczonego koloru
+    browserAPI.storage.local.get(["customColor"], (data) => {
+      if (data.customColor) {
+        this.lastCustomColor = data.customColor;
+      }
+    });
   }
 
     // Ukrywanie/Pokazywanie inputa dla "Inny" w select
@@ -2126,7 +2135,7 @@ class ScheduleOverlay {
   updateOverlayColorValue() {
     const color = this.customColorInput.value;
     this.customColorPreview.style.background = color;
-    let useLight = isLightFontColorForBackground(color);
+    const useLight = isLightFontColorForBackground(color);
     if (useLight) {
       this.customColorPreview.classList.remove("librusPro_overlay-dark-dot");
       this.customColor.value = color + "|#ffffff";
@@ -2135,6 +2144,7 @@ class ScheduleOverlay {
       this.customColor.value = color + "|#222222";
     }
     this.customColor.checked = true;
+    browserAPI.storage.local.set({ ["customColor"]: color });
   }
 
   // Otwieranie overlaya i jego reset
@@ -2151,9 +2161,13 @@ class ScheduleOverlay {
     this.description.value = "";
     this.imageUrl.value = "";
     this.firstColor.checked = "true";
-    this.customColor.value = "#aaaaaa|#ffffff";
-    this.customColorInput.value = "#010101";
-    this.customColorPreview.style.background = "linear-gradient(225deg, #f00 0%, #ff7300 23%, #f9ff00 43%, #00ff73 64%, #0023ff 85%)";
+    if (this.lastCustomColor) {
+      this.customColorInput.value = this.lastCustomColor;
+    } else {
+      this.customColor.value = "#aaaaaa|#ffffff";
+      this.customColorInput.value = "#010101";
+    }
+    this.customColorPreview.style.background = `url(${browserAPI.runtime.getURL('img/color_picker.png')})`;
     this.displayInputIfOtherSelected();
 
     this.overlay.style.display = "block";
@@ -2193,6 +2207,12 @@ class ScheduleOverlay {
     const colorInput = document.querySelector(`input[value="${color}"]`);
     if (colorInput) {
       colorInput.checked = true;
+      if (this.lastCustomColor) {
+        this.customColorInput.value = this.lastCustomColor;
+      } else {
+        this.customColorInput.value = "#010101";
+      }
+      this.customColorPreview.style.background = `url(${browserAPI.runtime.getURL('img/color_picker.png')})`;
     } else {
       this.customColor.checked = true;
       this.customColor.value = color;
