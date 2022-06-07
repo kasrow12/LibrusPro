@@ -26,6 +26,7 @@ const OPTIONS_DEFAULT = {
   keepBlinker: false,
   hideFirstTerm: false,
 };
+const CHANGELOG_URL = "changelog.html";
 
 let browserAPI;
 if (typeof chrome != null) {
@@ -76,6 +77,13 @@ browserAPI.storage.sync.get(["options"], function (t) {
 // Restore default button
 document.getElementById("resetButton").onclick = () => {
   restoreDefaults();
+  return false;
+};
+
+document.getElementById("changelog").onclick = () => {
+  browserAPI.tabs.create({
+    url: CHANGELOG_URL
+  });
   return false;
 };
 
