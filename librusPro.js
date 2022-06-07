@@ -35,6 +35,7 @@ const URLS = Object.freeze({
   attendance: "https://synergia.librus.pl/przegladaj_nb/uczen",
   schedule: "https://synergia.librus.pl/terminarz",
   scheduleDetails: "https://synergia.librus.pl/terminarz/szczegoly",
+  scheduleNew: "https://synergia.librus.pl/terminarz/dodane_od_ostatniego_logowania",
   timetable: "https://synergia.librus.pl/przegladaj_plan_lekcji",
   homework: "https://synergia.librus.pl/moje_zadania",
   index: ["https://synergia.librus.pl/uczen/index", "https://synergia.librus.pl/rodzic/index"],
@@ -2923,7 +2924,7 @@ function main() {
     }
 
     // Terminarz
-    if (window.location.href.indexOf(URLS.schedule) > -1 && window.location.href.indexOf(URLS.scheduleDetails) < 0) {
+    if (window.location.href.indexOf(URLS.schedule) > -1 && window.location.href.indexOf(URLS.scheduleDetails) < 0 && window.location.href.indexOf(URLS.scheduleNew) < 0) {
       overlay = new ScheduleOverlay();
       const schedule = new CustomSchedule(options, student?.class ?? "[klasa]");
     }

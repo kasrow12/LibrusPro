@@ -356,7 +356,7 @@ table ~ .librusPro_events-table {
   padding: 6px 9px;
 }
 #scheduleForm td {
-  word-break: break-all;
+  word-break: break-word;
 }
 .librusPro_depression-mode .kalendarz-dzien:not(.librusPro_past) {
   filter: grayscale(100%) brightness(0.6) contrast(1.2);
