@@ -798,7 +798,7 @@ function handleGrades(options, recalculate = false) {
     avgII.sum += averageII.sum;
     avgII.weights += averageII.weights;
     rows[i].children[INDICES.ocenyI + OFFSET_JS].librusPro_avg = averageI;
-    rows[i].children[INDICES.ocenyII + OFFSET_JS].librusPro_avg = averageII;
+    rows[i].children[INDICES.ocenyII + OFFSET_JS].librusPro_avg = averageR;
 
     // Wyświetlanie średnich dla poszczególnych przedmiotów
     if (options.calculateAverages) {
@@ -1520,7 +1520,8 @@ class GradeManager {
             <button type="button" class="librusPro_overlay-button librusPro_overlay-button-close"
               id="librusPro_closeButton">Zamknij</button>
           </div>
-          <div class="librusPro_overlay-header librusPro_overlay-section-header">Kalkulator jedynek</div>
+          <div class="librusPro_overlay-header librusPro_overlay-section-header">Kalkulator jedynek
+          <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Kalkulator jedynek</span></article><article class='librusPro_justify'>Dzięki temu panelowi możesz zobaczyć, <span class='librusPro_water'>ile jedynek możesz jeszcze dostać</span>, aby nadal znajdować się powyżej danej średniej <i class='librusPro_gray'>(Domyślną wartość możesz ustawić w menu ustawień rozszerzenia)</i>. Gdy otworzysz ten widok dodając ocenę dla <span class='librusPro_seaweed'>I semestru</span>, liczba jedynek <span class='librusPro_seaweed'>dotyczyć będzie</span> właśnie <span class='librusPro_seaweed'>tego okresu</span>. Natomiast menu dodawania ocen dla <span class='librusPro_yellow'>II semestru</span> zawierać będzie <span class='librusPro_yellow'>kalkulator dla średniej rocznej</span>, <span class='librusPro_salmon'>a nie tylko dla tej z II-semestru!</span></article>" src="/images/pomoc_ciemna.png"></div>
           <div class="librusPro_overlay-input-two-label" id="librusPro_onesContainer">
             <label class="librusPro_overlay-input-label">
               <div class="librusPro_overlay-input-title">Ile jedynek:</div>
