@@ -2756,6 +2756,12 @@ async function insertCreationDate(isTextGrade = false, isAttendance = false) {
   let date = await fetch(`${API}/${endpoint}/${id}`)
   .then(response => response.json())
   .then(data => {return data[isAttendance ? "Attendance" : "Grade"]?.["AddDate"]});
+
+  if (!date && isTextGrade) {
+    date = await fetch(`${API}/DescriptiveTextGrades/${id}`)
+    .then(response => response.json())
+    .then(data => {return data["Grade"]?.["AddDate"]});
+  }
   
   const refRow = document.querySelector("table.decorated.medium.center > tbody > tr:first-child");
   if (!refRow) return;
