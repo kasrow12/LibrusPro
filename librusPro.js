@@ -2058,6 +2058,7 @@ class ScheduleOverlay {
     }
     this.customColor.checked = true;
     browserAPI.storage.local.set({ ["customColor"]: color });
+    this.lastCustomColor = color;
   }
 
   // Otwieranie overlaya i jego reset
