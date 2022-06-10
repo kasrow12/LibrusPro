@@ -41,6 +41,7 @@ const URLS = Object.freeze({
   timetable: "przegladaj_plan_lekcji",
   homework: "moje_zadania",
   notes: "uwagi",
+  newMessage: "wiadomosci/2",
   lessons: "zrealizowane_lekcje",
   gdpr: "https://synergia.librus.pl/wydruki/wydruk_danych_osobowych/2137.pdf",
   newVersion: "gateway/ms/studentdatapanel/ui/",
@@ -119,6 +120,7 @@ const PAGE_TITLES = Object.freeze({
   "zrealizowane_lekcje": "Zrealizowane",
 });
 const WEEK_DAYS = Object.freeze(['pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sb.', 'ndz.']);
+const DEFAULT_MESSAGE_TEMPLATE = "Dzień dobry,\n\n\nPozdrawiam\n";
 // Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest. Pozdro
 // JS liczy od 0, CSS od 1
 const OFFSET_JS = 2;
@@ -2683,6 +2685,54 @@ async function insertCreationDate(isTextGrade = false, isAttendance = false) {
   refRow.parentElement.appendChild(row);
 }
 
+// Wstawianie schematów wiadomości użytkownika
+function initMessageTemplate() {
+  const refButton = document.querySelector("input[name='anuluj_wysylanie']");
+  if (!refButton) return;
+
+  browserAPI.storage.local.get(["messageTemplate"], (data) => {
+    const insertTemplateButton = document.createElement("input");
+    insertTemplateButton.classList.add("medium", "ui-button", "ui-widget", "ui-state-default", "ui-corner-all", "librusPro_jqueryTitle");
+    insertTemplateButton.value = "Wstaw schemat";
+    insertTemplateButton.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Wstaw schemat wiadomości</span></article><article class='librusPro_justify'>Po naciśnięciu tego przycisku, <span class='librusPro_lightgreen'>treść wiadomości</span> zostanie zastąpiona schematem zapisanym w pamięci, który możesz edytować dzięki przyciskowi <span class='librusPro_greeno'>Zapisz schemat</span>.</article>";
+    insertTemplateButton.setAttribute("type", "button");
+    refButton.parentElement.insertBefore(insertTemplateButton, refButton);
+
+    const saveTemplateButton = document.createElement("input");
+    saveTemplateButton.classList.add("medium", "ui-button", "ui-widget", "ui-state-default", "ui-corner-all", "librusPro_jqueryTitle");
+    saveTemplateButton.value = "Zapisz schemat";
+    saveTemplateButton.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Zapisz schemat wiadomości</span></article><article class='librusPro_justify'>Po naciśnięciu tego przycisku, Twój schemat zostanie zastąpiony <span class='librusPro_lightgreen'>aktualną treścią wiadomości</span> i zapisany w&nbsp;pamięci. Możesz go później wstawić dzięki przyciskowi <span class='librusPro_water'>Wstaw schemat</span>.</article>";
+    saveTemplateButton.setAttribute("type", "button");
+    refButton.parentElement.insertBefore(saveTemplateButton, refButton);
+
+    const message = document.querySelector("textarea[name='tresc']");
+
+    saveTemplateButton.addEventListener("click", () => {
+      browserAPI.storage.local.set({ ["messageTemplate"]: message.value });
+      insertTemplateButton.messageTemplate = message.value;
+    });
+
+    let messageTemplate = data.messageTemplate;
+    if (!messageTemplate) {
+      const studentName = document.querySelector("#user-section > b").innerText.split("(")[0];
+      messageTemplate = DEFAULT_MESSAGE_TEMPLATE + studentName;
+      browserAPI.storage.local.set({ ["messageTemplate"]: messageTemplate });
+    }
+
+    insertTemplateButton.messageTemplate = messageTemplate;
+
+    insertTemplateButton.addEventListener("click", () => {
+      if (message.value !== "" && message.value !== insertTemplateButton.messageTemplate) {
+        if (!confirm("[LibrusPro] » Czy chcesz nadpisać aktualną wiadomość?")) return;
+      }
+
+      message.value = insertTemplateButton.messageTemplate;
+    });
+
+    refreshjQueryTitles();
+  });
+}
+
 // Tu się dzieje cała magia
 function main() {
   setTimeout(otherAddons, 500);
@@ -2753,6 +2803,11 @@ function main() {
   // Uwagi
   if (window.location.href.indexOf(URLS.notes) > -1) {
     insertNote();
+  }
+
+  // Wiadomości
+  if (window.location.href.indexOf(URLS.newMessage) > -1) {
+    initMessageTemplate();
   }
 
   // Pobranie opcji i danych
