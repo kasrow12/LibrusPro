@@ -729,9 +729,6 @@ table.decorated {
 .librusPro_grade-manager-icon > img {
 	filter: invert(0.4)
 }
-#body > form[name="PrzegladajOceny"] > div > div > table.decorated.medium.center > tbody > tr.librusPro_comment-yours > * {
-	background: #253a38 !important;
-}
 .librusPro_white {
 	color: #fff;
 }
