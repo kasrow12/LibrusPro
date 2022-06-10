@@ -100,7 +100,7 @@ browserAPI.tabs.onActivated.addListener((info) => {
 });
 
 // Otwieranie changelogu po aktualizacji
-browserAPI.runtime.onInstalled.addListener((data) => {
+/*browserAPI.runtime.onInstalled.addListener((data) => {
   if (data.reason === browserAPI.runtime.OnInstalledReason.INSTALL) {
     // chrome.tabs.create({
     //   url: 'welcome.html'
@@ -118,7 +118,7 @@ browserAPI.runtime.onInstalled.addListener((data) => {
     browserAPI.storage.sync.remove(["dane"]);
     browserAPI.storage.sync.remove(["plan"]);
   }
-});
+});*/
 
 async function fetchFromApi(endpoint, func) {
   let req = await fetch(`${API}/${endpoint}`)
