@@ -1215,9 +1215,9 @@ function insertFooter() {
 
 function insertNote() {
   const lastNote = document.querySelector("#body > div > div > table > tbody > tr:last-child");
+  let date = new Date();
+  date = getYYYYMMDD(date.getFullYear(), date.getMonth() + 1, date.getDate());
   if (lastNote) {
-    let date = new Date();
-    date = getYYYYMMDD(date.getFullYear(), date.getMonth() + 1, date.getDate());
     lastNote.insertAdjacentHTML('afterend', `
     <tr class="line1">
       <td>Korzystanie z wtyczki LibrusPro</td>
@@ -1236,7 +1236,7 @@ function insertNote() {
       <tbody>
           <tr class="line1">
             <td>Korzystanie z wtyczki LibrusPro</td>
-            <td class="small">2022-01-09</td>
+            <td class="small">${date}</td>
             <td>Maks Kowalski</td>
             <td>pozytywna</td>
             <td>inna</td>
