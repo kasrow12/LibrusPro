@@ -1,24 +1,26 @@
 {
 	"name": "LibrusPro - rozszerzenie do Librusa",
-	"version": "3.2.4",
+	"version": "4.0.0",
 	"description": "Ulepsz Librusa już dziś! Może marzysz o ciemnym motywie, liczeniu średnich i procentów frekwencji oraz własnym terminarzu?",
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"author": "Maks Kowalski",
 	"short_name": "LibrusPro",
-	"permissions": [ "storage", "https://synergia.librus.pl/*", "https://portal.librus.pl/*" ],
+	"permissions": [ "storage", "scripting" ],
+	"host_permissions": [
+		"https://synergia.librus.pl/*",
+		"https://portal.librus.pl/*"
+	],
 	"icons": {
 		"512": "img/icon.png"
 	},
-	"browser_action": {
+	"action": {
 		"default_icon": "img/icon.png",
 		"default_popup": "popup.html"
 	},
 	"background": {
-		"scripts": [ "background.js" ],
-		"persistent": false
+		"service_worker": "background.js"
 	},
-	"content_scripts": [
-		{
+	"content_scripts": [{
 			"matches": [ "https://synergia.librus.pl/*" ],
 			"js": [ "librusPro.js" ],
 			"all_frames": true
@@ -33,5 +35,11 @@
 			"js": [ "portal.js" ]
 		}
 	],
-	"web_accessible_resources": [ "img/*" ]
+	"web_accessible_resources": [{
+		"resources": [ "img/*" ],
+		"matches": [ "<all_urls>" ]
+	}, {
+		"resources": [ "librus.js" ],
+		"matches": [ "<all_urls>" ]
+	}]
 }

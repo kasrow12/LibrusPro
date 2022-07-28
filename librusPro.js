@@ -143,14 +143,6 @@ const INDICES = {
 let overlay;
 let gradeManager;
 
-// Kompatybilność
-let browserAPI;
-if (typeof chrome != null) {
-  browserAPI = chrome;
-} else {
-  browserAPI = browser;
-}
-
 // Od ostatniego logowania/w tym tygodniu
 const sinceLastLoginView = document.querySelector("form > div > h2")?.innerText.includes("-") ?? false;
 
@@ -158,7 +150,7 @@ const sinceLastLoginView = document.querySelector("form > div > h2")?.innerText.
 function registerOnStorageChange(isSchedule = false) {
   // Automatyczne odświeżanie po wszystkich zmianach (z pominięciem "Potwiedź ponowne przesłanie formularza")
   if (isSchedule) {
-    browserAPI.storage.onChanged.addListener((changes, namespace) => {
+    chrome.storage.onChanged.addListener((changes, namespace) => {
       if (changes["customColor"] && Object.keys(changes).length == 1) return;
       window.location.replace(window.location.href);
     });
@@ -166,32 +158,21 @@ function registerOnStorageChange(isSchedule = false) {
   }
 
   // Tylko po zmianie opcji
-  browserAPI.storage.onChanged.addListener((changes, namespace) => {
+  chrome.storage.onChanged.addListener((changes, namespace) => {
     if (changes["options"]) {
       window.location.replace(window.location.href);
     }
   });
 }
 
-// Wyświetlanie charakterystycznych dymków po najechaniu na dane elementy
-function injectjQueryHook() {
-  const code = `
-    document.addEventListener('refreshjQueryTitles', () => {
-      $('.librusPro_jqueryTitle').tooltip({
-        track: true,
-        show: {
-          delay: 200,
-          duration: 200
-        },
-        hide: {
-          delay: 100,
-          duration: 200
-        }
-      }).removeClass("librusPro_jqueryTitle");
-    });`;
-  const script = document.createElement('script');
-  script.appendChild(document.createTextNode(code));
-  (document.body || document.head || document.documentElement).appendChild(script);
+// Wrzucenie kodu odpowiadającego za dymki, anty-logout i creditsy w konsoli w kontekst strony (m.in. jQuery)
+function injectjPageScript() {
+  const s = document.createElement('script');
+  s.src = chrome.runtime.getURL('librus.js');
+  s.onload = function() {
+    this.remove();
+  };
+  (document.head || document.documentElement).appendChild(s);
 }
 
 // Dodawanie dymka do nowych elementów
@@ -199,22 +180,11 @@ function refreshjQueryTitles() {
   document.dispatchEvent(new CustomEvent('refreshjQueryTitles'));
 }
 
-// Wiadomość w konsoli
-function printCreditsToConsole() {
-  const code = `
-    console.log("%cDzięki za korzystanie z rozszerzenia LibrusPro!", "color:#ce84c8;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
-    console.log("%cJeżeli znajduje się tutaj cokolwiek czerwonego, bądź nie działa coś związanego z wtyczką, proszę zgłoś to.", "color:#d63d4a;font-size:1rem;font-weight:bold");
-    console.log(" %cOficjalny Discord: ${DISCORD_LINK}", "color:#90e9f0;");`;
-  const script = document.createElement('script');
-  script.appendChild(document.createTextNode(code));
-  (document.body || document.head || document.documentElement).appendChild(script);
-}
-
 // Świąteczne logo
 function christmasBanner() {
   const banner = document.getElementById("top-banner");
   if (!banner) return;
-  banner.src = browserAPI.runtime.getURL('img/christmas_banner.png');
+  banner.src = chrome.runtime.getURL('img/christmas_banner.png');
   banner.style.setProperty("filter", "brightness(0.9) contrast(0.9)", "important");
   banner.title = "<b style='color: #fff823'>Poczuj magię świąt razem z <b style='color: #a96fe3'>LibrusPro</b>!</b>";
   banner.classList.add("librusPro_jqueryTitle");
@@ -259,7 +229,7 @@ function prepareAttendances(modernizeTitles) {
   const button = document.getElementById("librusPro_attendancesButton");
   button.addEventListener("click", () => {
     button.parentElement.parentElement.style.display = "none";
-    browserAPI.runtime.sendMessage({msg: 'fetchAttendances'}, displayAttendances);
+    chrome.runtime.sendMessage({msg: 'fetchAttendances'}, displayAttendances);
   });
 }
 
@@ -269,7 +239,7 @@ function displayAttendances(attendances) {
   //   n: nazwa
   //   s: skrót
   //   c: hex
-  browserAPI.storage.local.get(["lessons", "subjects", "users", "attendanceTypes"], (data) => {
+  chrome.storage.local.get(["lessons", "subjects", "users", "attendanceTypes"], (data) => {
     const lessons = data["lessons"];
     const subjects = data["subjects"];
     const users = data["users"];
@@ -277,8 +247,8 @@ function displayAttendances(attendances) {
 
     // jeśli nie ma czegoś w local storage, pobieramy
     if (!lessons || !subjects || !users || !types) {
-      browserAPI.runtime.sendMessage({msg: 'fetchConstants'}, () => {
-        browserAPI.runtime.sendMessage({msg: 'fetchAttendances'}, displayAttendances);
+      chrome.runtime.sendMessage({msg: 'fetchConstants'}, () => {
+        chrome.runtime.sendMessage({msg: 'fetchAttendances'}, displayAttendances);
       });
       return;
     }
@@ -496,9 +466,9 @@ async function displayAttendanceStatistics() {
     .then(response => response.json())
     .then(data => {return data["Me"]["Account"]["UserId"]});
 
-    browserAPI.storage.local.get(["lessons", "subjects", "users"], (data) => {
+    chrome.storage.local.get(["lessons", "subjects", "users"], (data) => {
       if (!data["lessons"] || !data["subjects"] || !data["users"]) {
-        browserAPI.runtime.sendMessage({msg: 'fetchAll'}, () => { displayAttendanceStatistics(); });
+        chrome.runtime.sendMessage({msg: 'fetchAll'}, () => { displayAttendanceStatistics(); });
         return;
       }
       const subjects = data["subjects"];
@@ -848,10 +818,10 @@ function handleGrades(options, recalculate = false) {
       closeButton.innerText = REMOVE_SYMBOL;
       closeButton.addEventListener("click", function()  {
         document.getElementById("error_legend").style.display = "none";
-        browserAPI.storage.sync.get(["options"], function (t) {
+        chrome.storage.sync.get(["options"], function (t) {
           let temp = t["options"];
           temp.averageWarn = true;
-          browserAPI.storage.sync.set({
+          chrome.storage.sync.set({
             ["options"]: temp
           });
         });
@@ -954,13 +924,13 @@ function finalizeDarkTheme() {
 
   for (let selector in darkThemeAccents) {
     document.querySelectorAll(selector).forEach((e) => {
-      e.style.backgroundImage = `url(${browserAPI.runtime.getURL(darkThemeAccents[selector])})`;
+      e.style.backgroundImage = `url(${chrome.runtime.getURL(darkThemeAccents[selector])})`;
     });
   }
 
   for (let selector in darkThemeImages) {
     document.querySelectorAll(selector).forEach((e) => {
-      e.src = browserAPI.runtime.getURL(darkThemeImages[selector]);
+      e.src = chrome.runtime.getURL(darkThemeImages[selector]);
       e.style.filter = "none";
     });
   }
@@ -1156,9 +1126,10 @@ function collapseBehavior() {
     // Zwinięcie zachowania
     let injectedCode = 'showHide.ShowHide("zachowanie")';
     if (document.getElementById("przedmioty_OP_zachowanie_node")) injectedCode += ',showHideOP.ShowHide("zachowanie");';
-    const script = document.createElement('script');
-    script.appendChild(document.createTextNode(injectedCode));
-    (document.body || document.head || document.documentElement).appendChild(script);
+
+    document.documentElement.setAttribute('onreset', injectedCode);
+    document.documentElement.dispatchEvent(new CustomEvent('reset'));
+    document.documentElement.removeAttribute('onreset');
   }
 }
 
@@ -1276,7 +1247,7 @@ function adjustHeader() {
     link.rel = 'icon';
     document.getElementsByTagName('head')[0].appendChild(link);
   }
-  link.href = browserAPI.runtime.getURL('img/icon.png');
+  link.href = chrome.runtime.getURL('img/icon.png');
 }
 
 // YYYY-MM-DD
@@ -1291,7 +1262,7 @@ function insertFooter() {
   footer.innerHTML = `
   <hr>
   <span id="bottom-logo"></span>
-  <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="librusPro_icon" style="background: url(&quot;${browserAPI.runtime.getURL('img/icon.png')}&quot;);"></a>
+  <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="librusPro_icon" style="background: url(&quot;${chrome.runtime.getURL('img/icon.png')}&quot;);"></a>
   <div class="librusPro_footer">
     <span class="librusPro_greeno">» Podoba się wtyczka? <a href="${CHROME_LINK}" target="_blank" class="librusPro_link">Zostaw 5<span style="font-size: 11px;">⭐</span></a></span>
     <div class="librusPro_water">» Wbijaj na oficjalny <a href="${DISCORD_LINK}" target="_blank" class="librusPro_link">Discord</a>!</div>
@@ -1377,7 +1348,7 @@ function aprilfools(modernize = false) {
 
   document.querySelectorAll(".librusPro_aprilFools > a").forEach((e) => {
     e.addEventListener('click', () => {
-      browserAPI.storage.sync.set({
+      chrome.storage.sync.set({
         ["aprilfools"]: true
       });
     });
@@ -1416,19 +1387,6 @@ function adjustHomeworks() {
   });
 }
 
-// Automatyczne ładowanie strony w tle co 20 min, aby utrzymać sesję
-function disableAutoLogout() {
-  // Załadowanie strony w tle co 20 minut, aby nie wylogowywało
-  const code = `function refreshLibrus() {
-    fetch('https://synergia.librus.pl/wiadomosci', { cache: 'no-cache', credentials: 'same-origin' });
-    fetch('${URLS.refreshSession}');
-  }
-  setInterval(refreshLibrus, 20*60*1000);`;
-  const refreshScript = document.createElement('script');
-  refreshScript.appendChild(document.createTextNode(code));
-  (document.body || document.head || document.documentElement).appendChild(refreshScript);
-}
-
 // Modernizacja dymka
 function modernizeTitle(element) {
   let title = element.title;
@@ -1459,7 +1417,7 @@ class GradeManager {
     this.options = options;
     parent.insertAdjacentHTML("afterend", `
     <td class="librusPro_grade-manager-icon">
-      <img src="${browserAPI.runtime.getURL('img/pen.png')}">
+      <img src="${chrome.runtime.getURL('img/pen.png')}">
     </td>
     <td class="librusPro_grade-manager">
       <label class="librusPro_grade-manager-label">
@@ -1472,7 +1430,7 @@ class GradeManager {
     <div class="librusPro_overlay-body" id="librusPro_gradeManagerOverlay">
       <div class="librusPro_overlay-container">
           <div class="librusPro_header-container">
-            <img src="${browserAPI.runtime.getURL('img/icon.png')}" class="librusPro_overlay-logo">
+            <img src="${chrome.runtime.getURL('img/icon.png')}" class="librusPro_overlay-logo">
             <div class="librusPro_overlay-header-column">
               <div class="librusPro_overlay-header librusPro_overlay-header-adding">Dodaj ocenę</div>
               <div class="librusPro_overlay-header librusPro_overlay-header-editting">Edytuj ocenę</div>
@@ -1555,7 +1513,7 @@ class GradeManager {
     this.onesInput = document.getElementById("librusPro_ones");
     this.onesAverageInput = document.getElementById("librusPro_onesAverage");
     document.getElementById("librusPro_currentYear").innerText = new Date().getFullYear();
-    document.getElementById("librusPro_currentVersion").innerText = browserAPI.runtime.getManifest().version;
+    document.getElementById("librusPro_currentVersion").innerText = chrome.runtime.getManifest().version;
   
     document.addEventListener("click", (event) => {
       // Jeśli nie jest przyciskiem dodawania/edycji oraz kliknięte poza overlayem, bądź na przycisk zamknij
@@ -1584,9 +1542,9 @@ class GradeManager {
   }
 
   populateOverlay() {
-    browserAPI.storage.local.get(["colors", "gradeTypes", "gradeCategories"], (data) => {
+    chrome.storage.local.get(["colors", "gradeTypes", "gradeCategories"], (data) => {
       if (!data["colors"] || !data["gradeTypes"] || !data["gradeCategories"]) {
-        browserAPI.runtime.sendMessage({msg: 'fetchAll'}, () => { this.populateOverlay(); });
+        chrome.runtime.sendMessage({msg: 'fetchAll'}, () => { this.populateOverlay(); });
         return;
       }
 
@@ -1921,7 +1879,7 @@ class ScheduleOverlay {
     this.overlay.innerHTML = `
     <div class="librusPro_overlay-container">
       <div class="librusPro_header-container">
-        <img src="${browserAPI.runtime.getURL('img/icon.png')}" class="librusPro_overlay-logo">
+        <img src="${chrome.runtime.getURL('img/icon.png')}" class="librusPro_overlay-logo">
         <div class="librusPro_overlay-header-column">
           <div class="librusPro_overlay-header librusPro_overlay-header-adding librusPro_margin-bottom-9">Dodaj wydarzenie</div>
           <div class="librusPro_overlay-header librusPro_overlay-header-editting librusPro_margin-bottom-9">Edytuj wydarzenie</div>
@@ -2033,7 +1991,7 @@ class ScheduleOverlay {
           <input type="color" id="librusPro_customColorInput" value="#010101">
           <input type="radio" name="librusPro_color" value="#aaaaaa|#333333" id="librusPro_customColor">
           <span class="librusPro_overlay-color-preview"
-            style="background: url(${browserAPI.runtime.getURL('img/color_picker.png')})"
+            style="background: url(${chrome.runtime.getURL('img/color_picker.png')})"
             id="librusPro_customColorPreview"></span>
         </label>
       </div>
@@ -2055,7 +2013,7 @@ class ScheduleOverlay {
     </div>`;
     document.body.appendChild(this.overlay);
     document.getElementById("librusPro_currentYear").innerText = new Date().getFullYear();
-    document.getElementById("librusPro_currentVersion").innerText = browserAPI.runtime.getManifest().version;
+    document.getElementById("librusPro_currentVersion").innerText = chrome.runtime.getManifest().version;
   }
 
   addLogic() {
@@ -2097,7 +2055,7 @@ class ScheduleOverlay {
     this.typeSelect.addEventListener("change", () => this.displayInputIfOtherSelected());
 
     // Pobieranie ostatnio zaznaczonego koloru
-    browserAPI.storage.local.get(["customColor"], (data) => {
+    chrome.storage.local.get(["customColor"], (data) => {
       if (data.customColor) {
         this.lastCustomColor = data.customColor;
       }
@@ -2146,7 +2104,7 @@ class ScheduleOverlay {
       this.customColor.value = color + "|#222222";
     }
     this.customColor.checked = true;
-    browserAPI.storage.local.set({ ["customColor"]: color });
+    chrome.storage.local.set({ ["customColor"]: color });
   }
 
   // Otwieranie overlaya i jego reset
@@ -2169,7 +2127,7 @@ class ScheduleOverlay {
       this.customColor.value = "#aaaaaa|#ffffff";
       this.customColorInput.value = "#010101";
     }
-    this.customColorPreview.style.background = `url(${browserAPI.runtime.getURL('img/color_picker.png')})`;
+    this.customColorPreview.style.background = `url(${chrome.runtime.getURL('img/color_picker.png')})`;
     this.displayInputIfOtherSelected();
 
     this.overlay.style.display = "block";
@@ -2214,7 +2172,7 @@ class ScheduleOverlay {
       } else {
         this.customColorInput.value = "#010101";
       }
-      this.customColorPreview.style.background = `url(${browserAPI.runtime.getURL('img/color_picker.png')})`;
+      this.customColorPreview.style.background = `url(${chrome.runtime.getURL('img/color_picker.png')})`;
     } else {
       this.customColor.checked = true;
       this.customColor.value = color;
@@ -2332,36 +2290,36 @@ class CustomSchedule {
   }
 
   static openOverlayForEditting(date, index) {
-    browserAPI.storage.sync.get([date], (data) => {
+    chrome.storage.sync.get([date], (data) => {
       const event = data[date][index];
       overlay.openForEditting(date, event, index);
     });
   }
 
   static addCustomEvent(date, dateAdded = null) {
-    browserAPI.storage.sync.get(date, (data) => {
+    chrome.storage.sync.get(date, (data) => {
       let events = data[date];
       const event = new CustomScheduleEvent();
       if (dateAdded) {
         event.updateDate(dateAdded);
       }
       if (!events) {
-        browserAPI.storage.sync.set({ [date]: [event] });
+        chrome.storage.sync.set({ [date]: [event] });
       } else {
         events.push(event);
-        browserAPI.storage.sync.set({ [date]: events });
+        chrome.storage.sync.set({ [date]: events });
       }
     });
     
   }
 
   static removeCustomEvent(date, index) {
-    browserAPI.storage.sync.get([date], (data) => {
+    chrome.storage.sync.get([date], (data) => {
       if (data[date].length <= 1) {
-        browserAPI.storage.sync.remove([date]);
+        chrome.storage.sync.remove([date]);
       } else {
         data[date].splice(index, 1);
-        browserAPI.storage.sync.set({ [date]: data[date] });
+        chrome.storage.sync.set({ [date]: data[date] });
       }
   });
   }
@@ -2373,9 +2331,9 @@ class CustomSchedule {
 
     // Jeśli wydarzenie nie zostało przeniesione
     if (date === overlay.edittingDate) {
-      browserAPI.storage.sync.get([date], (data) => {
+      chrome.storage.sync.get([date], (data) => {
         data[date][overlay.edittingIndex] = event;
-        browserAPI.storage.sync.set({ [date]: data[date] });
+        chrome.storage.sync.set({ [date]: data[date] });
       });
     } else {
       CustomSchedule.addCustomEvent(date, overlay.edittingDateAdded);
@@ -2384,7 +2342,7 @@ class CustomSchedule {
   }
 
   displayEvents(day, date) {
-    browserAPI.storage.sync.get(date, (data) => {
+    chrome.storage.sync.get(date, (data) => {
       const events = data[date];
       if (!events) return;
 
@@ -2670,10 +2628,10 @@ class CustomSchedule {
 
   // TODO: idk jeśli nie udostępniony
   insertTimetable(days, requestedTimetable) {
-    browserAPI.storage.local.get(["timetable"], (data) => {
+    chrome.storage.local.get(["timetable"], (data) => {
       let timetable = data["timetable"];
       if (!timetable) {
-        browserAPI.runtime.sendMessage({msg: 'fetchTimetable'}, () => { this.insertTimetable(days) });
+        chrome.runtime.sendMessage({msg: 'fetchTimetable'}, () => { this.insertTimetable(days) });
         return;
       }
 
@@ -2702,7 +2660,7 @@ class CustomSchedule {
           diff = d.getDate() - day + (day == 0 ? -6:1); // niedziela
           d.setDate(diff);
           const key = getYYYYMMDD(d.getFullYear(), d.getMonth() + 1, d.getDate());
-          browserAPI.runtime.sendMessage({msg: 'fetchTimetable', data: key},
+          chrome.runtime.sendMessage({msg: 'fetchTimetable', data: key},
             (_requestedTimetable) => { this.insertTimetable(days, _requestedTimetable) });
           return;
         }
@@ -2778,12 +2736,12 @@ function main() {
   }
 
   registerOnStorageChange(window.location.href.indexOf(URLS.schedule) > -1);
-  injectjQueryHook();
+  injectjPageScript();
 
   // Co to po komu ta strona startowa?
   if (URLS.index.some((e) => window.location.href.indexOf(e) > -1)) {
     // Przekierowanie i aktualizacja danych
-    browserAPI.runtime.sendMessage({msg: 'fetchAll'});
+    chrome.runtime.sendMessage({msg: 'fetchAll'});
     document.location.replace(URLS.grades);
     return;
   }
@@ -2791,11 +2749,9 @@ function main() {
   getGradeColumns();
 
   // Nie wymagające opcji
-  printCreditsToConsole();
   adjustHeader();
   adjustNavbar();
   insertFooter();
-  disableAutoLogout();
 
   // Świąteczny banner (połowa grudnia -> połowa stycznia)
   let isChristmas = new Date();
@@ -2839,12 +2795,12 @@ function main() {
   }
 
   // Pobranie opcji i danych
-  browserAPI.storage.sync.get(["student", "options", "aprilfools"], (data) => {
+  chrome.storage.sync.get(["student", "options", "aprilfools"], (data) => {
     let options = data["options"];
     let student = data["student"];
 
     if (!options) {
-      browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
+      chrome.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
       return;
     } else {
       for (let p in OPTIONS_DEFAULT) {
@@ -2853,7 +2809,7 @@ function main() {
           for (let u in options) {
             t[u] = options[u];
           }
-          browserAPI.storage.sync.set({ ["options"]: t });
+          chrome.storage.sync.set({ ["options"]: t });
           return;
         }
       }
@@ -2920,7 +2876,7 @@ function main() {
     if (student && student.number !== null && student.class !== null) {
       displayStudentNumber(student);
     } else {
-      browserAPI.runtime.sendMessage({msg: 'fetchStudentInfo'}, displayStudentNumber);
+      chrome.runtime.sendMessage({msg: 'fetchStudentInfo'}, displayStudentNumber);
     }
 
     // Terminarz
@@ -2932,11 +2888,11 @@ function main() {
     // Debug
     if (options.debug) {
       console.log("[LibrusPro] » Debugging enabled.");
-      browserAPI.storage.sync.get(null, function (result) {
+      chrome.storage.sync.get(null, function (result) {
         console.log("[LibrusPro] » Chrome storage sync data:", result);
         // console.log("[LibrusPro] » Chrome storage data:", JSON.stringify(result));
       });
-      browserAPI.storage.local.get(null, function (result) {
+      chrome.storage.local.get(null, function (result) {
         console.log("[LibrusPro] » Chrome storage local data:", result);
       });
     }

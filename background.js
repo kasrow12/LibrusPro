@@ -36,13 +36,8 @@ const OPTIONS_DEFAULT = Object.freeze({
   hideFirstTerm: false,
 });
 
-// Kompatybilność
-let browserAPI;
-if (typeof chrome != null) browserAPI = chrome;
-else browserAPI = browser;
-
 let options = OPTIONS_DEFAULT;
-browserAPI.storage.sync.get(["options"], (data) => {
+chrome.storage.sync.get(["options"], (data) => {
   let userOptions = data["options"];
   if (userOptions) {
     options = userOptions;
@@ -50,75 +45,75 @@ browserAPI.storage.sync.get(["options"], (data) => {
 });
 
 // Nasłuchiwanie zmian ciemnego motywu
-browserAPI.storage.onChanged.addListener((changes, namespace) => {
+chrome.storage.onChanged.addListener((changes, namespace) => {
   if (changes["options"] !== undefined) {
     options = changes.options.newValue;
   }
 });
 
 // Ciemny motyw
-browserAPI.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (browserAPI.runtime.lastError) {
-    console.log(browserAPI.runtime.lastError.message);
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (chrome.runtime.lastError) {
+    console.log(chrome.runtime.lastError.message);
     return;
   }
-  browserAPI.tabs.get(tabId, (t) => {
-    if (browserAPI.runtime.lastError) {
-      console.log(browserAPI.runtime.lastError.message);
+  chrome.tabs.get(tabId, (t) => {
+    if (chrome.runtime.lastError) {
+      console.log(chrome.runtime.lastError.message);
       return;
     }
       if (t.url && t.url.indexOf(SYNERGIA_URL) > -1 && options.darkTheme) {
-      browserAPI.tabs.insertCSS({
-          file: DARKTHEME_CSS,
-          runAt: "document_start"
+      chrome.scripting.insertCSS({
+          files: [DARKTHEME_CSS],
+          target: {tabId: tabId}
         },
-        () => { if (browserAPI.runtime.lastError) console.log(browserAPI.runtime.lastError.message); }
+        () => { if (chrome.runtime.lastError) console.log(chrome.runtime.lastError.message); }
       );
     }
   });
 });
 
-browserAPI.tabs.onActivated.addListener((info) => {
-  if (browserAPI.runtime.lastError) {
-    console.log(browserAPI.runtime.lastError.message);
-    return;
-  }
-  browserAPI.tabs.get(info.tabId, (tab) => {
-    if (browserAPI.runtime.lastError) {
-      console.log(browserAPI.runtime.lastError.message);
-      return;
-    }
-    if (tab.url && tab.url.indexOf(SYNERGIA_URL) > -1 && options.darkTheme) {
-      browserAPI.tabs.insertCSS({
-          file: DARKTHEME_CSS,
-          runAt: "document_start"
-        },
-        () => { if (browserAPI.runtime.lastError) console.log(browserAPI.runtime.lastError.message); }
-      );
-    }
-  });
-});
+// chrome.tabs.onActivated.addListener((info) => {
+//   if (chrome.runtime.lastError) {
+//     console.log(chrome.runtime.lastError.message);
+//     return;
+//   }
+//   chrome.tabs.get(info.tabId, (tab) => {
+//     if (chrome.runtime.lastError) {
+//       console.log(chrome.runtime.lastError.message);
+//       return;
+//     }
+//     if (tab.url && tab.url.indexOf(SYNERGIA_URL) > -1 && options.darkTheme) {
+//       chrome.scripting.insertCSS({
+//           file: DARKTHEME_CSS,
+//           runAt: "document_start"
+//         },
+//         () => { if (chrome.runtime.lastError) console.log(chrome.runtime.lastError.message); }
+//       );
+//     }
+//   });
+// });
 
 // Otwieranie changelogu po aktualizacji
-browserAPI.runtime.onInstalled.addListener((data) => {
-  if (data.reason === browserAPI.runtime.OnInstalledReason.INSTALL) {
-    // chrome.tabs.create({
-    //   url: 'welcome.html'
-    // });
-  } else if (data.reason === browserAPI.runtime.OnInstalledReason.UPDATE) {
-    // Nie pokazywać changeloga jeśli tylko różnią się patchem aka 3.0.0 -> 3.0.1
-    const currentVersion = chrome.runtime.getManifest().version.match(/(.*)\.\d+/)[1];
-    const previousVersion = data.previousVersion.match(/(.*)\.\d+/)[1];
-    if (currentVersion === previousVersion) return;
+// chrome.runtime.onInstalled.addListener((data) => {
+//   if (data.reason === chrome.runtime.OnInstalledReason.INSTALL) {
+//     // chrome.tabs.create({
+//     //   url: 'welcome.html'
+//     // });
+//   } else if (data.reason === chrome.runtime.OnInstalledReason.UPDATE) {
+//     // Nie pokazywać changeloga jeśli tylko różnią się patchem aka 3.0.0 -> 3.0.1
+//     const currentVersion = chrome.runtime.getManifest().version.match(/(.*)\.\d+/)[1];
+//     const previousVersion = data.previousVersion.match(/(.*)\.\d+/)[1];
+//     if (currentVersion === previousVersion) return;
 
-    browserAPI.tabs.create({
-      url: CHANGELOG_URL
-    });
-    // Pre 3.0
-    browserAPI.storage.sync.remove(["dane"]);
-    browserAPI.storage.sync.remove(["plan"]);
-  }
-});
+//     chrome.tabs.create({
+//       url: CHANGELOG_URL
+//     });
+//     // Pre 3.0
+//     chrome.storage.sync.remove(["dane"]);
+//     chrome.storage.sync.remove(["plan"]);
+//   }
+// });
 
 async function fetchFromApi(endpoint, func) {
   let req = await fetch(`${API}/${endpoint}`)
@@ -176,7 +171,7 @@ async function fetchStudentInfo() {
     class: studentClass,
   }
 
-  browserAPI.storage.sync.set({
+  chrome.storage.sync.set({
     ["student"]: studentInfo
   });
 
@@ -191,6 +186,7 @@ async function fetchMultipleTimetables(weekStart, prevOrNext) {
     let [timetable, url] = await fetch(`${TIMETABLE_API_URL}${week}`)
     .then(response => response.json())
     .then(data => {
+      console.log("🚀 ~ file: background.js ~ line 189 ~ fetchMultipleTimetables ~ data", data)
       return [data["Timetable"], data["Pages"][prevOrNext].split("=")[1]];
     });
     timetables = {...timetables, ...timetable};
@@ -218,7 +214,7 @@ async function fetchTimetable(weekStart) {
   let timetables = {...prevTimetables, ...currentTimetable, ...nextTimetables};
 
   // Jeśli aktualny plan, zapisywanie go
-  if (!weekStart) browserAPI.storage.local.set({ ["timetable"]: timetables });
+  if (!weekStart) chrome.storage.local.set({ ["timetable"]: timetables });
 
   return timetables;
 }
@@ -228,11 +224,11 @@ async function fetchConstants() {
 
   // Nauczyciele
   let users = await fetchFromApi("Users", (r, e) => { r[e["Id"]] = `${e["LastName"]} ${e["FirstName"]}` });
-  browserAPI.storage.local.set({ ["users"]: users });
+  chrome.storage.local.set({ ["users"]: users });
 
   // Nazwy przedmiotów
   let subjects = await fetchFromApi("Subjects", (r, e) => { r[e["Id"]] = e["Name"] });
-  browserAPI.storage.local.set({ ["subjects"]: subjects });
+  chrome.storage.local.set({ ["subjects"]: subjects });
 
   // Przedmioty
   let lessons = await fetchFromApi("Lessons", (r, e) => { 
@@ -241,15 +237,15 @@ async function fetchConstants() {
       s: e["Subject"]["Id"],
     }
   });
-  browserAPI.storage.local.set({ ["lessons"]: lessons });
+  chrome.storage.local.set({ ["lessons"]: lessons });
 
   // Kolory
   let colors = await fetchFromApi("Colors", (r, e) => { r[e["Id"]] = `#${e["RGB"]}` });
-  browserAPI.storage.local.set({ ["colors"]: colors });
+  chrome.storage.local.set({ ["colors"]: colors });
 
   // Typy ocen (1,1+,...)
   let gradeTypes = await fetchFromApi("Grades/Types", (r, e) => { r[e["Name"]] = e["Value"] });
-  browserAPI.storage.local.set({ ["gradeTypes"]: gradeTypes });
+  chrome.storage.local.set({ ["gradeTypes"]: gradeTypes });
 
   // Kategorie ocen
   let gradeCategories = await fetchFromApi("Grades/Categories", (r, e) => { 
@@ -260,7 +256,7 @@ async function fetchConstants() {
       count: e["CountToTheAverage"],
     }
   });
-  browserAPI.storage.local.set({ ["gradeCategories"]: gradeCategories });
+  chrome.storage.local.set({ ["gradeCategories"]: gradeCategories });
 
   // Kategorie frekwencji
   let attendanceTypes = await fetchFromApi("Attendances/Types", (r, e) => { 
@@ -270,7 +266,7 @@ async function fetchConstants() {
       c: e["ColorRGB"] ? "#" + e["ColorRGB"] : colors[e["Color"]["Id"]],
     }
   });
-  browserAPI.storage.local.set({ ["attendanceTypes"]: attendanceTypes });
+  chrome.storage.local.set({ ["attendanceTypes"]: attendanceTypes });
 }
 
 async function fetchAttendances() {
@@ -298,9 +294,9 @@ async function fetchAttendances() {
 }
 
 // Nasłuchiwanie skryptów ze stron
-browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (browserAPI.runtime.lastError) {
-    console.log(browserAPI.runtime.lastError.message);
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (chrome.runtime.lastError) {
+    console.log(chrome.runtime.lastError.message);
     return;
   }
   (async () => {
