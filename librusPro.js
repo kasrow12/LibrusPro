@@ -2648,7 +2648,7 @@ function initMessageTemplate() {
   const refButton = document.querySelector("input[name='anuluj_wysylanie']");
   if (!refButton) return;
 
-  browserAPI.storage.local.get(["messageTemplate"], (data) => {
+  chrome.storage.local.get(["messageTemplate"], (data) => {
     const insertTemplateButton = document.createElement("input");
     insertTemplateButton.classList.add("medium", "ui-button", "ui-widget", "ui-state-default", "ui-corner-all", "librusPro_jqueryTitle");
     insertTemplateButton.value = "Wstaw schemat";
@@ -2666,7 +2666,7 @@ function initMessageTemplate() {
     const message = document.querySelector("textarea[name='tresc']");
 
     saveTemplateButton.addEventListener("click", () => {
-      browserAPI.storage.local.set({ ["messageTemplate"]: message.value });
+      chrome.storage.local.set({ ["messageTemplate"]: message.value });
       insertTemplateButton.messageTemplate = message.value;
     });
 
@@ -2674,7 +2674,7 @@ function initMessageTemplate() {
     if (!messageTemplate) {
       const studentName = document.querySelector("#user-section > b").innerText.split("(")[0];
       messageTemplate = DEFAULT_MESSAGE_TEMPLATE + studentName;
-      browserAPI.storage.local.set({ ["messageTemplate"]: messageTemplate });
+      chrome.storage.local.set({ ["messageTemplate"]: messageTemplate });
     }
 
     insertTemplateButton.messageTemplate = messageTemplate;
