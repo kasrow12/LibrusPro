@@ -4,25 +4,21 @@
 // Contact: kasrow12 (at) gmail.com
 
 // Config
-const API = "https://synergia.librus.pl/gateway/api/2.0";
 const DISCORD_LINK = "https://discord.gg/e9EkVEvsDr";
 const CHROME_LINK = "https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews";
 const NO_DATA = "-";
 const ADD_EDIT_SYMBOL = "✎";
 const REMOVE_SYMBOL = "⨉";
 const TIMETABLE_SYMBOL = "≡";
-/*const PROXIMITY_COMMENTS_NUMBER = 100;*/
 const TYPE_SUBJECT_LENGTH = 30;
 const DESCRIPTION_LENGTH = 200;
 const REGEXS = Object.freeze({
-  gradeId: /https:\/\/synergia.librus.pl\/przegladaj_oceny\/szczegoly\/(\d*)/,
   weight: /(<br>Waga: )(\d+?)(<br>)/,
   category: /(Kategoria: )(.*?)(<br>)/,
   grade: /[0-6][+-]?/,
   countToAverage: /<br>Licz do średniej: (tak|nie)<br>/,
   gradeImprovement: /<br \/>Poprawa oceny:(.*)/,
   class: /^(([0-9\[\]](.+?))|([A-Za-z]{1,2}\d(.*?)))$/gm,
-  proximityComment: /<tr class="line1"><td >(.*?)<\/td>/,
   homework: /(otworz_w_nowym_oknie\(\'\/moje_zadania\/podglad\/)(\d*?)(\',\'o1\',650,600\);)/,
   cancelled: /Odwołane zajęcia(\n.*) na lekcji nr: (\d+) \((.*)\)$/,
   substitution: /(Zastępstwo|Przesunięcie) z (.*) na lekcji nr: (\d+) \((.*)\)$/,
@@ -31,23 +27,25 @@ const REGEXS = Object.freeze({
   lastLoginHeader: /<b>ostatnie (udane|nieudane) logowania:<\/b><br \/>(brak)?/g,
 });
 const URLS = Object.freeze({
-  grades: "https://synergia.librus.pl/przegladaj_oceny/uczen",
-  attendance: "https://synergia.librus.pl/przegladaj_nb/uczen",
-  schedule: "https://synergia.librus.pl/terminarz",
-  scheduleDetails: "https://synergia.librus.pl/terminarz/szczegoly",
-  scheduleNew: "https://synergia.librus.pl/terminarz/dodane_od_ostatniego_logowania",
-  timetable: "https://synergia.librus.pl/przegladaj_plan_lekcji",
-  homework: "https://synergia.librus.pl/moje_zadania",
-  index: ["https://synergia.librus.pl/uczen/index", "https://synergia.librus.pl/rodzic/index"],
-  comment: "https://synergia.librus.pl/komentarz_oceny/1",
-  gradeDetails: "https://synergia.librus.pl/przegladaj_oceny/szczegoly",
-  attendanceDetails: "https://synergia.librus.pl/przegladaj_nb/szczegoly",
-  textGradeDetails: "https://synergia.librus.pl/przegladaj_oceny/szczegoly/ksztaltujace",
+  base: "https://synergia.librus.pl/",
+  api: "https://synergia.librus.pl/gateway/api/2.0",
+  index: ["uczen/index", "rodzic/index"],
+  grades: "przegladaj_oceny/uczen",
+  gradeDetails: "przegladaj_oceny/szczegoly",
+  textGradeDetails: "przegladaj_oceny/szczegoly/ksztaltujace",
+  attendance: "przegladaj_nb/uczen",
+  attendanceDetails: "przegladaj_nb/szczegoly",
+  schedule: "terminarz",
+  scheduleDetails: "terminarz/szczegoly",
+  scheduleNew: "terminarz/dodane_od_ostatniego_logowania",
+  timetable: "przegladaj_plan_lekcji",
+  homework: "moje_zadania",
+  notes: "uwagi",
+  newMessage: "wiadomosci/2",
+  lessons: "zrealizowane_lekcje",
   gdpr: "https://synergia.librus.pl/wydruki/wydruk_danych_osobowych/2137.pdf",
-  newVersion: "https://synergia.librus.pl/gateway/ms/studentdatapanel/ui/",
+  newVersion: "gateway/ms/studentdatapanel/ui/",
   refreshSession: "https://synergia.librus.pl/refreshToken",
-  notes: "https://synergia.librus.pl/uwagi",
-  lessons: "https://synergia.librus.pl/zrealizowane_lekcje",
 });
 const ONLINE_LESSON = 'a[href^="https://liblink.pl/"]';
 const OPTIONS_DEFAULT = Object.freeze({
@@ -122,6 +120,7 @@ const PAGE_TITLES = Object.freeze({
   "zrealizowane_lekcje": "Zrealizowane",
 });
 const WEEK_DAYS = Object.freeze(['pon.', 'wt.', 'śr.', 'czw.', 'pt.', 'sb.', 'ndz.']);
+const DEFAULT_MESSAGE_TEMPLATE = "Dzień dobry,\n\n\nPozdrawiam\n";
 // Jak nie ma proponowanych to kolumny z nimi się w ogóle nie wyświetlają, więc trzeba wiedzieć, gdzie co jest. Pozdro
 // JS liczy od 0, CSS od 1
 const OFFSET_JS = 2;
@@ -322,94 +321,8 @@ function displayAttendances(attendances) {
   });
 }
 
-// Wyświetlanie komentarzy w pobliżu --- 10.01.22 fixed by Librus
-/*function displayComments(comments) {
-  // Pomijanie 'undefined' z początku i końca listy, ale pozostawienie ich w środku
-  let start = comments.length;
-  let end = 0;
-  for (let i = 0; i < comments.length; i++) {
-    if (comments[i] !== undefined) {
-      end = i;
-      if (i < start) start = i;
-    }
-  }
-  const parent = document.querySelector(".container-background");
-  if (start > end) {
-    const header = document.createElement("H3");
-    header.classList.add("center", "librusPro_header");
-    header.innerText = "Nie znaleziono żadnych komentarzy w pobliżu!";
-    parent.appendChild(header);
-    return;
-  }
-  const template = document.createElement("template");
-  const html = `
-  <table class="decorated medium center">	
-    <thead>
-      <tr class="line1">
-        <td style="width: 40px;">Pozycja</td>
-        <td>Komentarz</td>
-      </tr>
-    </thead>
-    <tbody id="librusPro_commentsBody">
-    </tbody>
-    <tfoot>
-      <tr><td colspan="2">&nbsp;</td></tr>
-    </tfoot>
-  </table>`
-  template.innerHTML = html.trim();
-  parent.appendChild(template.content.firstChild);
-  for (let i = start; i <= end; i++) {
-    let pos = i - PROXIMITY_COMMENTS_NUMBER;
-    const rowTemplate = document.createElement("template");
-    const rowHtml = `
-    <tr class="line1 ${pos === 0 ? "librusPro_comment-yours" : ""}">
-      <td class="center">${(pos) > 0 ? "+" : ""}${pos}</td>
-      <td>${comments[i] ?? ""}</td>
-    </tr>`
-    rowTemplate.innerHTML = rowHtml.trim();
-    document.getElementById("librusPro_commentsBody").appendChild(rowTemplate.content.firstChild);
-  }
-}
+// Wyświetlanie komentarzy w pobliżu --- 10.01.22 fixed by Librus --- code removed on 09.06.2022
 
-// Pobieranie komentarzy w otoczeniu
-async function getCommentsInProximity() {
-  try {
-    await fetch(URLS.refreshSession);
-    const id = window.location.href.match(REGEXS.gradeId)?.[1] ?? 0;
-    const comments = [];
-    for (let i = 0; i <= 2 * PROXIMITY_COMMENTS_NUMBER; i++) {
-      fetch(`${URLS.comment}/${+id + i - PROXIMITY_COMMENTS_NUMBER}`)
-      .then(response => response.text())
-      .then(data => {
-        comments[i] = data.match(REGEXS.proximityComment)?.[1];
-
-        // Jeśli wykonały się wszystkie poprzednie żądania, a to jest ostatnie, wyświetlamy
-        if (Object.keys(comments).length > 2 * PROXIMITY_COMMENTS_NUMBER) {
-          displayComments(comments);
-        }
-      });
-    }
-  } catch(error) {
-    console.log(error);
-    return;
-  }
-}
-
-// Aktywacja komentarzy w pobliżu
-function initCommentsInProximity() {
-  const template = document.createElement("template");
-  const html = `
-  <div class="center">
-    <input type="submit" id="librusPro_commentsButton" class="librusPro_comments-button ui-button ui-widget ui-state-default ui-corner-all" value="Wyświetl komentarze innych">
-    <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Podglądanie komentarzy</span></article><article style='text-align: justify;'>Jeżeli Twój nauczyciel wstawił oceny <span class='librusPro_lightgreen'>kilku osobom jednocześnie</span> np. ze sprawdzianu (dodawanie seryjne) i&nbsp;wpisał komentarze np. zawierające liczbę uzyskanych punktów przez każdego ucznia, bądź wynik procentowy, to korzystając z tego przycisku <span class='librusPro_water'>możesz podejrzeć te komentarze</span> ocen wpisanych w tym samym czasie co Tobie.</article><br><i class='librusPro_gray'>Przykładowa sytuacja:</i><article class='librusPro_seaweed librusPro_justify'>Nauczyciel wstawia wszystkim oceny ze sprawdzianu z&nbsp;rozdziału I. W komentarzu zamieścił informację ile miałeś(-aś) punktów na 20. Twój komentarz wygląda przykładowo:</article><b>&nbsp;Rozdział I - 19/20 95%</b><article class='librusPro_seaweed librusPro_justify'>Gdy użyjesz tego przycisku, wyświetli Ci się lista komentarzy wraz z odpowiednimi ich numerami.<br><span class='librusPro_lightgray'>&nbsp;-1 | Rozdział I - 15/20 75%<br>&nbsp;0 | Rozdział I - 19/20 95%<br>&nbsp;+1 | Rozdział I - 20/20 100%</span><br><span class='librusPro_white'>'0'</span> to Twój komentarz, więc te przed nim są wynikami osób <u>przed Tobą</u> na liście, a analogicznie za nim (z&nbsp;plusami), <u>po Tobie</u> na liście.</article><b class='librusPro_lightblue'>Podejrzeć możesz jedynie <u class='librusPro_greeno'>komentarze</u>!</b>" src="/images/pomoc_ciemna.png">
-  </div>`
-  template.innerHTML = html.trim();
-  document.querySelector(".container-background").appendChild(template.content.firstChild);
-  document.getElementById("librusPro_commentsButton").addEventListener("click", function(event) {
-    event.target.parentElement.remove() ;
-    getCommentsInProximity();
-  });
-}*/
 
 // Aktywacja wykazu uczęszczania
 function prepareAttendanceStatistics() {
@@ -462,7 +375,7 @@ function prepareAttendanceStatistics() {
 async function displayAttendanceStatistics() {
   try {
     await fetch(URLS.refreshSession);
-    let userID = await fetch(`${API}/Me`)
+    let userID = await fetch(`${URLS.api}/Me`)
     .then(response => response.json())
     .then(data => {return data["Me"]["Account"]["UserId"]});
 
@@ -493,7 +406,7 @@ async function displayAttendanceStatistics() {
 
       for (let lessonKey in data["lessons"]) {
         const lesson = data["lessons"][lessonKey];
-        fetch(`${API}/Attendances/LessonsStatistics/${lessonKey}`)
+        fetch(`${URLS.api}/Attendances/LessonsStatistics/${lessonKey}`)
         .then(response => response.json())
         .then(async (data) => {
           for (let lessonStats of data["LessonsStatistics"]) {
@@ -1141,7 +1054,7 @@ function adjustNavbar() {
   const timetableIcon = document.createElement("template");
   const html = `
   <li>
-    <a href="javascript:void(window.open('${URLS.timetable}'))" id="icon-planlekcji">
+    <a href="javascript:void(window.open('${URLS.base + URLS.timetable}'))" id="icon-planlekcji">
       <span class="circle"></span>
       Plan lekcji
     </a>
@@ -1273,9 +1186,9 @@ function insertFooter() {
 
 function insertNote() {
   const lastNote = document.querySelector("#body > div > div > table > tbody > tr:last-child");
+  let date = new Date();
+  date = getYYYYMMDD(date.getFullYear(), date.getMonth() + 1, date.getDate());
   if (lastNote) {
-    let date = new Date();
-    date = getYYYYMMDD(date.getFullYear(), date.getMonth() + 1, date.getDate());
     lastNote.insertAdjacentHTML('afterend', `
     <tr class="line1">
       <td>Korzystanie z wtyczki LibrusPro</td>
@@ -1294,7 +1207,7 @@ function insertNote() {
       <tbody>
           <tr class="line1">
             <td>Korzystanie z wtyczki LibrusPro</td>
-            <td class="small">2022-01-09</td>
+            <td class="small">${date}</td>
             <td>Maks Kowalski</td>
             <td>pozytywna</td>
             <td>inna</td>
@@ -2105,6 +2018,7 @@ class ScheduleOverlay {
     }
     this.customColor.checked = true;
     chrome.storage.local.set({ ["customColor"]: color });
+    this.lastCustomColor = color;
   }
 
   // Otwieranie overlaya i jego reset
@@ -2711,9 +2625,15 @@ async function insertCreationDate(isTextGrade = false, isAttendance = false) {
 
   await fetch(URLS.refreshSession);
   const endpoint = isAttendance ? "Attendances" : (isTextGrade ? "TextGrades" : "Grades");
-  let date = await fetch(`${API}/${endpoint}/${id}`)
+  let date = await fetch(`${URLS.api}/${endpoint}/${id}`)
   .then(response => response.json())
   .then(data => {return data[isAttendance ? "Attendance" : "Grade"]?.["AddDate"]});
+
+  if (!date && isTextGrade) {
+    date = await fetch(`${URLS.api}/DescriptiveTextGrades/${id}`)
+    .then(response => response.json())
+    .then(data => {return data["Grade"]?.["AddDate"]});
+  }
   
   const refRow = document.querySelector("table.decorated.medium.center > tbody > tr:first-child");
   if (!refRow) return;
@@ -2721,6 +2641,54 @@ async function insertCreationDate(isTextGrade = false, isAttendance = false) {
   row.children[0].innerText = "Data dodania";
   row.children[1].innerText = date;
   refRow.parentElement.appendChild(row);
+}
+
+// Wstawianie schematów wiadomości użytkownika
+function initMessageTemplate() {
+  const refButton = document.querySelector("input[name='anuluj_wysylanie']");
+  if (!refButton) return;
+
+  browserAPI.storage.local.get(["messageTemplate"], (data) => {
+    const insertTemplateButton = document.createElement("input");
+    insertTemplateButton.classList.add("medium", "ui-button", "ui-widget", "ui-state-default", "ui-corner-all", "librusPro_jqueryTitle");
+    insertTemplateButton.value = "Wstaw schemat";
+    insertTemplateButton.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Wstaw schemat wiadomości</span></article><article class='librusPro_justify'>Po naciśnięciu tego przycisku, <span class='librusPro_lightgreen'>treść wiadomości</span> zostanie zastąpiona schematem zapisanym w pamięci, który możesz edytować dzięki przyciskowi <span class='librusPro_greeno'>Zapisz schemat</span>.</article>";
+    insertTemplateButton.setAttribute("type", "button");
+    refButton.parentElement.insertBefore(insertTemplateButton, refButton);
+
+    const saveTemplateButton = document.createElement("input");
+    saveTemplateButton.classList.add("medium", "ui-button", "ui-widget", "ui-state-default", "ui-corner-all", "librusPro_jqueryTitle");
+    saveTemplateButton.value = "Zapisz schemat";
+    saveTemplateButton.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Zapisz schemat wiadomości</span></article><article class='librusPro_justify'>Po naciśnięciu tego przycisku, Twój schemat zostanie zastąpiony <span class='librusPro_lightgreen'>aktualną treścią wiadomości</span> i zapisany w&nbsp;pamięci. Możesz go później wstawić dzięki przyciskowi <span class='librusPro_water'>Wstaw schemat</span>.</article>";
+    saveTemplateButton.setAttribute("type", "button");
+    refButton.parentElement.insertBefore(saveTemplateButton, refButton);
+
+    const message = document.querySelector("textarea[name='tresc']");
+
+    saveTemplateButton.addEventListener("click", () => {
+      browserAPI.storage.local.set({ ["messageTemplate"]: message.value });
+      insertTemplateButton.messageTemplate = message.value;
+    });
+
+    let messageTemplate = data.messageTemplate;
+    if (!messageTemplate) {
+      const studentName = document.querySelector("#user-section > b").innerText.split("(")[0];
+      messageTemplate = DEFAULT_MESSAGE_TEMPLATE + studentName;
+      browserAPI.storage.local.set({ ["messageTemplate"]: messageTemplate });
+    }
+
+    insertTemplateButton.messageTemplate = messageTemplate;
+
+    insertTemplateButton.addEventListener("click", () => {
+      if (message.value !== "" && message.value !== insertTemplateButton.messageTemplate) {
+        if (!confirm("[LibrusPro] » Czy chcesz nadpisać aktualną wiadomość?")) return;
+      }
+
+      message.value = insertTemplateButton.messageTemplate;
+    });
+
+    refreshjQueryTitles();
+  });
 }
 
 // Tu się dzieje cała magia
@@ -2731,7 +2699,7 @@ function main() {
 
   if (window.location.href.indexOf(URLS.newVersion) > -1) {
     alert("[LibrusPro] » Rozszerzenie nie jest przeznaczone do widoku alternatywnego systemu Librus Synergia, który nie jest i nie będzie wspierany. Po zamknięciu tego komunikatu powrócisz do widoku standardowego. Jeżeli jednak chcesz skorzystać z nowszej wersji dziennika, wyłącz na ten czas rozszerzenie LibrusPro.");
-    window.location.replace(URLS.schedule);
+    window.location.replace(URLS.base + URLS.schedule);
     return;
   }
 
@@ -2742,7 +2710,7 @@ function main() {
   if (URLS.index.some((e) => window.location.href.indexOf(e) > -1)) {
     // Przekierowanie i aktualizacja danych
     chrome.runtime.sendMessage({msg: 'fetchAll'});
-    document.location.replace(URLS.grades);
+    document.location.replace(URLS.base + URLS.grades);
     return;
   }
 
@@ -2776,7 +2744,6 @@ function main() {
     insertCreationDate(true);
   } else if (window.location.href.indexOf(URLS.gradeDetails) > -1) {
     insertCreationDate();
-    //initCommentsInProximity();
   }
 
   // Frekwencja
@@ -2792,6 +2759,11 @@ function main() {
   // Uwagi
   if (window.location.href.indexOf(URLS.notes) > -1) {
     insertNote();
+  }
+
+  // Wiadomości
+  if (window.location.href.indexOf(URLS.newMessage) > -1) {
+    initMessageTemplate();
   }
 
   // Pobranie opcji i danych

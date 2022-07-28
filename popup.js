@@ -43,8 +43,10 @@ function restoreDefaults() {
   browserAPI.storage.sync.set({
     ["options"]: OPTIONS_DEFAULT
   }, function() {
-    browserAPI.storage.sync.remove(["aprilfools"], function() {
-      window.location.replace(window.location.href);
+    browserAPI.storage.sync.remove(["aprilfools"], () => {
+      browserAPI.storage.local.remove(["messageTemplate", "customColor"], () => {
+        window.location.replace(window.location.href);
+      });
     });
   });
 }

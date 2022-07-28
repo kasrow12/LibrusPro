@@ -81,9 +81,6 @@ td[style^="height: 25px"] {
 .librusPro_yourNumber {
   color: #000000;
 }
-.librusPro_comment-yours > * {
-  background: #cae9e6 !important;
-}
 #user-section > b {
   color: #744465;
   transition: color 0.2s;
