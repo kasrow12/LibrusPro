@@ -4,7 +4,6 @@
     <img src="img/icon.png" alt="Logo" width="30%" height="30%">
   </a>
   <h1 align="center">📚 LibrusPro 🎉</h1>
-  <h0 align="center"> Olsztyn PUO Fork </h0>
   <h4 align="center">💠 Browser extension for the Polish Librus e-diary, introducing a dark theme, displaying grade point averages despite being disabled by the School Administrator, allowing to add custom events in the schedule and some minor improvements to its features. 💠</h4>
 </p>
 
