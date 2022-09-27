@@ -4,6 +4,7 @@
     <img src="img/icon.png" alt="Logo" width="30%" height="30%">
   </a>
   <hr>
+  <h0 align="center"> Olsztyn PUO Fork </h0>
   <h1 align="center">📚 LibrusPro 🎉</h1>
   <h4 align="center">💠 Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, liczące średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, wyświetlające procentową obecność/frekwencję z każdego przedmiotu, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz dodające wiele usprawnień funkcjonalności i wyglądu Librusa. 💠</h4>
 </p>
