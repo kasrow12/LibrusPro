@@ -5,7 +5,7 @@
 	"manifest_version": 2,
 	"author": "Maks Kowalski",
 	"short_name": "LibrusPro",
-	"permissions": [ "storage", "https://synergia.librus.pl/*", "https://portal.librus.pl/*" ],
+	"permissions": [ "storage", "https://synergia.librus.pl/*", "https://portal.librus.pl/*","https://synergia.edukacja.olsztyn.eu/*" ],
 	"icons": {
 		"512": "img/icon.png"
 	},
@@ -19,17 +19,17 @@
 	},
 	"content_scripts": [
 		{
-			"matches": [ "https://synergia.librus.pl/*" ],
+			"matches": [ "https://synergia.librus.pl/*","https://synergia.edukacja.olsztyn.eu/*" ],
 			"js": [ "librusPro.js" ],
 			"all_frames": true
 		},
 		{
-			"matches": [ "https://synergia.librus.pl/*" ],
+			"matches": [ "https://synergia.librus.pl/*","https://synergia.edukacja.olsztyn.eu/*" ],
 			"css": [ "librusPro.css" ],
 			"run_at": "document_start"
 		},
 		{
-			"matches": [ "https://portal.librus.pl/*" ],
+			"matches": [ "https://portal.librus.pl/*","https://synergia.edukacja.olsztyn.eu/*" ],
 			"js": [ "portal.js" ]
 		}
 	],
