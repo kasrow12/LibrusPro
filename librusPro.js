@@ -894,15 +894,6 @@ function finalizeDarkTheme() {
     document.querySelectorAll("#body > div > div > form > table.decorated.plan-lekcji > tbody > tr > td").forEach((e) => {
       e.style.setProperty("border-bottom", "0", "important");
     });
-
-    // Ukrywanie soboty i niedzieli
-    const saturdaysSundays = document.querySelectorAll("#timetableEntryBox:nth-child(8), #timetableEntryBox:nth-child(9)");
-    if ([...saturdaysSundays].every((e) => e.children.length <= 0)) {
-      saturdaysSundays.forEach((e) => e.remove());
-      // Ukrywanie nagłówków
-      document.querySelector("#body > div > div > form > table.decorated.plan-lekcji > thead > tr > td:nth-child(8)").remove();
-      document.querySelector("#body > div > div > form > table.decorated.plan-lekcji > thead > tr > td:nth-child(8)").remove();
-    }
   }
 
   document.querySelectorAll("table.decorated.filters td, table.decorated.filters th").forEach((e) => {
@@ -2733,6 +2724,32 @@ function initMessageTemplate() {
   });
 }
 
+// Poprawki w planie lekcji
+function refineTimetable() {
+  // Ukrywanie soboty i niedzieli
+  const weekend = document.querySelectorAll("#timetableEntryBox:nth-child(8), #timetableEntryBox:nth-child(9)");
+  if ([...weekend].every((e) => e.children.length <= 0)) {
+    weekend.forEach((e) => e.remove());
+    // Ukrywanie nagłówków
+    document.querySelector("#body > div > div > form > table.decorated.plan-lekcji > thead > tr > td:nth-child(8)").remove();
+    document.querySelector("#body > div > div > form > table.decorated.plan-lekcji > thead > tr > td:nth-child(8)").remove();
+  }
+
+  // Dodanie przycisku strony głównej
+  const refButton = document.querySelector("#body > div > span:nth-child(2)")
+  if (!refButton) return;
+
+  // Usuwanie onclick, bo i tak przechodziło
+  const button = refButton.cloneNode(true);
+  button.firstElementChild.removeAttribute("onclick");
+
+  const homeButton = button.cloneNode(true);
+  homeButton.firstElementChild.href = `${URLS.base}${URLS.grades}`;
+  homeButton.firstElementChild.firstElementChild.innerText = "Strona główna";
+  refButton.parentElement.insertBefore(homeButton, refButton.nextElementSibling);
+  
+}
+
 // Tu się dzieje cała magia
 function main() {
   setTimeout(otherAddons, 500);
@@ -2808,6 +2825,11 @@ function main() {
   // Wiadomości
   if (window.location.href.indexOf(URLS.newMessage) > -1) {
     initMessageTemplate();
+  }
+
+  // Plan lekcji
+  if (window.location.href.indexOf(URLS.timetable) > -1) {
+    refineTimetable();
   }
 
   // Pobranie opcji i danych
