@@ -1471,7 +1471,8 @@ class GradeManager {
           this.overlay.classList.remove("librusPro_overlay-adding");
           this.overlay.classList.remove("librusPro_overlay-editting");
           this.overlay.classList.remove("librusPro_overlay-grade-final");
-        }
+          document.body.classList.remove("librusPro_overlay-grades");
+      }
     }, false);
   
     this.switch.onchange = (e) => {
@@ -1573,6 +1574,7 @@ class GradeManager {
         }
         this.addGrade(element, isFinal);
         this.overlay.style.display = "none";
+        document.body.classList.remove("librusPro_overlay-grades");
       }
 
       // Liczenie ile jedynek
