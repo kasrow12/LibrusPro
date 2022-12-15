@@ -105,6 +105,7 @@ const TITLE_MODERNIZATION = Object.freeze([
   [/<b>(Nauczyciel:)<\/b> (.*?)(( -> )(.*?))?(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2<span class="librusPro_title-brackets">$4</span>$5</span>$6'],
   [/<b>(Przedmiot:)<\/b> (.*?)(( -> )(.*?))?(<br ?\/?>|$)/g, '<span class="librusPro_title-grade">$2<span class="librusPro_title-brackets">$4</span>$5</span>$6'],
   [/<b>(Sala:)<\/b> (.*?)(( -> )(.*?))?(<br ?\/?>|$)/g, '<span class="librusPro_title-weight">$2<span class="librusPro_title-brackets">$4</span>$5</span>$6'],
+  [/<b>(Uwaga:)<\/b> (Przesunięcie)/g, '<span class="librusPro_title-grade">$2</span>'],
 ]);
 const PAGE_TITLES = Object.freeze({
   "default": "Synergia",
@@ -2556,18 +2557,21 @@ class CustomSchedule {
     if (!entry) {
       text.push("-");
     } else {
+      let isShifted = entry["IsSubstitutionClass"] && entry["IsCanceled"];
+      let isSubstitution = entry["IsSubstitutionClass"] && !entry["IsCanceled"];
       text.push(`<span class="librusPro_timetable-time">${entry["HourFrom"]}-${entry["HourTo"]}</span>`);
-      text.push(`<span class="${entry["IsCanceled"] ? ' librusPro_timetable-cancelled' : ''} ${entry["IsSubstitutionClass"] ? ' librusPro_timetable-info' : ''}">${entry["Subject"]["Name"]}</span>`);
+      text.push(`<span class="${entry["IsCanceled"] ? ' librusPro_timetable-cancelled' : ''} ${isSubstitution ? ' librusPro_timetable-info' : ''}">${entry["Subject"]["Name"]}</span>`);
       if (entry["VirtualClassName"]) {
         text.push(`<span class="librusPro_timetable-class">${entry["VirtualClassName"]}</span>`);
       }
-      if (entry["IsCanceled"]) {
+      if (isShifted) {
+        text.push(`<span class="librusPro_timetable-info">Przesunięcie</span>`);
+      } else if (entry["IsCanceled"]) {
         text.push(`<span class="librusPro_timetable-info">Odwołane</span>`);
       }
-      if (entry["IsSubstitutionClass"]) {
+      if (isSubstitution) {
         text.push(`<span class="librusPro_timetable-teacher">(${entry["Teacher"]["FirstName"]} ${entry["Teacher"]["LastName"]})</span>`);
       }
-      // TODO: idk z przesunięciami
     }
 
     return "<article>" + text.join(" ") + "</article>";
