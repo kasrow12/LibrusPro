@@ -1010,6 +1010,10 @@ function otherAddons() {
   if (document.getElementsByTagName("TBODY")?.[5]?.lastElementChild?.innerText === decodeURIComponent(atob("JUM1JTlBcmVkbmlhJTIwb3JheiUyMEZyZWt3ZW5jamElMjBvYmxpY3pvbmElMjBkemklQzQlOTlraSUyMG9wcm9ncmFtb3dhbml1JTIwRG9taW5pa2ElMjBTenBpbHNraWVnbyUyMGklMjBQYXclQzUlODJhJTIwU3pld2N6eWth"))) {
     alert(decodeURIComponent(atob("JTVCTGlicnVzUHJvJTVEJTIwJUMyJUJCJTIwV3lrcnl0byUyMGlubmUlMjByb3pzemVyemVuaWUlMjB6d2klQzQlODV6YW5lJTIweiUyMGZ1bmtjam9ub3dhbmllbSUyMGR6aWVubmlrYSUyMExpYnJ1cyUyMChBc3lzdGVudCUyMExpYnJ1cykuJTIwQWJ5JTIwdW5pa24lQzQlODUlQzQlODclMjBwb3RlbmNqYWxueWNoJTIwcHJvYmxlbSVDMyVCM3clMjBpJTIwa29uZmxpa3QlQzMlQjN3JTIweiUyMExpYnJ1c1BybyUyQyUyMHd5JUM1JTgyJUM0JTg1Y3olMjBwcm9zeiVDNCU5OSUyMHBvem9zdGElQzUlODJlJTIwcm96c3plcnplbmlhJTIwZG8lMjBMaWJydXNhLg==")));
   }
+
+  if (document.querySelector(atob("YnV0dG9uLmZhbmN5"))) {
+    alert(decodeURIComponent(atob("JTVCTGlicnVzUHJvJTVEJTIwJUMyJUJCJTIwV3lrcnl0byUyMGlubmUlMjByb3pzemVyemVuaWUlMjB6d2klQzQlODV6YW5lJTIweiUyMGZ1bmtjam9ub3dhbmllbSUyMGR6aWVubmlrYSUyMExpYnJ1cyUyMChKZWR5bmtpJTIweiUyMExpYnJ1c2VtKS4lMjBBYnklMjB1bmlrbiVDNCU4NSVDNCU4NyUyMHBvdGVuY2phbG55Y2glMjBwcm9ibGVtJUMzJUIzdyUyMGklMjBrb25mbGlrdCVDMyVCM3clMjB6JTIwTGlicnVzUHJvLCUyMHd5JUM1JTgyJUM0JTg1Y3olMjBwcm9zeiVDNCU5OSUyMHBvem9zdGElQzUlODJlJTIwcm96c3plcnplbmlhJTIwZG8lMjBMaWJydXNhLg")));
+  }
 }
 
 // Proponowane zachowanie do tabeli głównej
@@ -1197,7 +1201,7 @@ function insertFooter() {
   <hr>
   <span id="bottom-logo"></span>
   <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="librusPro_icon" style="background: url(&quot;${browserAPI.runtime.getURL('img/icon.png')}&quot;);"></a>
-  <div class="librusPro_footer">
+  <div class="librusPro_footer-text">
     <span class="librusPro_greeno">» Podoba się wtyczka? <a href="${CHROME_LINK}" target="_blank" class="librusPro_link">Zostaw 5<span style="font-size: 11px;">⭐</span></a></span>
     <div class="librusPro_water">» Wbijaj na oficjalny <a href="${DISCORD_LINK}" target="_blank" class="librusPro_link">Discord</a>!</div>
     
