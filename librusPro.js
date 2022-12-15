@@ -259,7 +259,7 @@ function prepareAttendances(modernizeTitles) {
   const button = document.getElementById("librusPro_attendancesButton");
   button.addEventListener("click", () => {
     button.parentElement.parentElement.style.display = "none";
-    browserAPI.runtime.sendMessage({msg: 'fetchAttendances'}, displayAttendances);
+    browserAPI.runtime.sendMessage({ msg: 'fetchAttendances' }, displayAttendances);
   });
 }
 
@@ -277,8 +277,8 @@ function displayAttendances(attendances) {
 
     // jeśli nie ma czegoś w local storage, pobieramy
     if (!lessons || !subjects || !users || !types) {
-      browserAPI.runtime.sendMessage({msg: 'fetchConstants'}, () => {
-        browserAPI.runtime.sendMessage({msg: 'fetchAttendances'}, displayAttendances);
+      browserAPI.runtime.sendMessage({ msg: 'fetchConstants' }, () => {
+        browserAPI.runtime.sendMessage({ msg: 'fetchAttendances' }, displayAttendances);
       });
       return;
     }
@@ -407,12 +407,12 @@ async function displayAttendanceStatistics() {
   try {
     await fetch(URLS.refreshSession);
     let userID = await fetch(`${URLS.api}/Me`)
-    .then(response => response.json())
-    .then(data => {return data["Me"]["Account"]["UserId"]});
+      .then(response => response.json())
+      .then(data => { return data["Me"]["Account"]["UserId"] });
 
     browserAPI.storage.local.get(["lessons", "subjects", "users"], (data) => {
       if (!data["lessons"] || !data["subjects"] || !data["users"]) {
-        browserAPI.runtime.sendMessage({msg: 'fetchAll'}, () => { displayAttendanceStatistics(); });
+        browserAPI.runtime.sendMessage({ msg: 'fetchAll' }, () => { displayAttendanceStatistics(); });
         return;
       }
       const subjects = data["subjects"];
@@ -438,39 +438,39 @@ async function displayAttendanceStatistics() {
       for (let lessonKey in data["lessons"]) {
         const lesson = data["lessons"][lessonKey];
         fetch(`${URLS.api}/Attendances/LessonsStatistics/${lessonKey}`)
-        .then(response => response.json())
-        .then(async (data) => {
-          for (let lessonStats of data["LessonsStatistics"]) {
-            if (lessonStats["Student"]["Id"] !== userID) continue;
+          .then(response => response.json())
+          .then(async (data) => {
+            for (let lessonStats of data["LessonsStatistics"]) {
+              if (lessonStats["Student"]["Id"] !== userID) continue;
 
-            const subjectName = subjects[lesson.s];
-            const teacherName = users[lesson.t];
-            const absences = lessonStats["Absences"];
-            const attendances = lessonStats["Attendances"];
-            const percent = ((attendances - absences) / attendances * 100).toFixed(2);
+              const subjectName = subjects[lesson.s];
+              const teacherName = users[lesson.t];
+              const absences = lessonStats["Absences"];
+              const attendances = lessonStats["Attendances"];
+              const percent = ((attendances - absences) / attendances * 100).toFixed(2);
 
-            const rowTemplate = document.createElement("template");
-            const rowHtml = `<tr class="line0"><td></td><td></td><td></td><td></td><td></td></tr>`;
-            rowTemplate.innerHTML = rowHtml.trim();
+              const rowTemplate = document.createElement("template");
+              const rowHtml = `<tr class="line0"><td></td><td></td><td></td><td></td><td></td></tr>`;
+              rowTemplate.innerHTML = rowHtml.trim();
 
-            const td = rowTemplate.content.firstElementChild.children;
-            td[0].textContent = subjectName;
-            td[1].textContent = teacherName;
-            td[2].textContent = absences;
-            td[3].textContent = attendances;
-            td[4].textContent = `${percent}%`;
-            if (percent < 50) td[4].classList.add('librusPro_lessons-attendance-low');
-            container.insertBefore(rowTemplate.content.firstChild, container.firstElementChild);
+              const td = rowTemplate.content.firstElementChild.children;
+              td[0].textContent = subjectName;
+              td[1].textContent = teacherName;
+              td[2].textContent = absences;
+              td[3].textContent = attendances;
+              td[4].textContent = `${percent}%`;
+              if (percent < 50) td[4].classList.add('librusPro_lessons-attendance-low');
+              container.insertBefore(rowTemplate.content.firstChild, container.firstElementChild);
 
-            totalAbsencesEl.innerText = +totalAbsencesEl.innerText + absences;
-            totalAttendancesEl.innerText = +totalAttendancesEl.innerText + attendances;
-            const totalPercent = ((+totalAttendancesEl.innerText - +totalAbsencesEl.innerText) / +totalAttendancesEl.innerText * 100).toFixed(2);
-            totalAttendancePercentEl.innerText = totalPercent + "%";
-          }
-        });
+              totalAbsencesEl.innerText = +totalAbsencesEl.innerText + absences;
+              totalAttendancesEl.innerText = +totalAttendancesEl.innerText + attendances;
+              const totalPercent = ((+totalAttendancesEl.innerText - +totalAbsencesEl.innerText) / +totalAttendancesEl.innerText * 100).toFixed(2);
+              totalAttendancePercentEl.innerText = totalPercent + "%";
+            }
+          });
       }
     });
-  } catch(error) {
+  } catch (error) {
     console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu statystyk frekwencji!", `color: ${COLORS.error};`);
     console.log(error);
     const container = document.getElementById("librusPro_lessonsAttendance");
@@ -673,7 +673,7 @@ function handleGrades(options, recalculate = false) {
     // Możliwość dodawania nowych ocen
     if (!recalculate && gradeManager) {
       // (Proponowane) (śród)roczne
-      for (let u of Object.keys(midtermGrades).filter((e) => { return INDICES[e] >= 0})) {
+      for (let u of Object.keys(midtermGrades).filter((e) => { return INDICES[e] >= 0 })) {
         const td = rows[i].children[INDICES[u] + OFFSET_JS];
         // Jeśli nie ma oceny, dodajemy po kliknięciu nową
         if (!td.firstElementChild) {
@@ -724,11 +724,11 @@ function handleGrades(options, recalculate = false) {
         // Jeśli była już jakaś średnia, która się różni od wyliczonej
         if (elem.innerText !== averages[i][j].average && elem.innerText.length > 2 && !options.debug && (recalculate || !options.hideOnes)) {
           if (!recalculate && !options.hideOnes) errors.push(elem);
-            const correctAverage = document.createElement("SPAN");
-            correctAverage.innerText = elem.firstElementChild ? elem.firstElementChild.innerText : ` (${elem.innerText})`;
-            elem.innerText = averages[i][j].average;
-            elem.appendChild(correctAverage);
-        // Jeśli inna średnia po modyfikacji | [Jeśli przeliczamy średnie na nowo, (?) są już zastąpione]
+          const correctAverage = document.createElement("SPAN");
+          correctAverage.innerText = elem.firstElementChild ? elem.firstElementChild.innerText : ` (${elem.innerText})`;
+          elem.innerText = averages[i][j].average;
+          elem.appendChild(correctAverage);
+          // Jeśli inna średnia po modyfikacji | [Jeśli przeliczamy średnie na nowo, (?) są już zastąpione]
         } else if (elem.innerText !== averages[i][j].average && recalculate) {
           const correctAverage = document.createElement("SPAN");
           if (options.debug) {
@@ -743,7 +743,7 @@ function handleGrades(options, recalculate = false) {
             const debugInfo = document.createElement("SPAN");
             debugInfo.innerText = ` (${elem.innerText}) [${averages[i][j].sum}; ${averages[i][j].weights}]`;
             elem.innerText = averages[i][j].average;
-            elem.appendChild(debugInfo);  
+            elem.appendChild(debugInfo);
           } else {
             elem.innerText = averages[i][j].average;
           }
@@ -760,7 +760,7 @@ function handleGrades(options, recalculate = false) {
       legend.id = "error_legend";
       const closeButton = document.createElement("DIV");
       closeButton.innerText = REMOVE_SYMBOL;
-      closeButton.addEventListener("click", function()  {
+      closeButton.addEventListener("click", function () {
         document.getElementById("error_legend").style.display = "none";
         browserAPI.storage.sync.get(["options"], function (t) {
           let temp = t["options"];
@@ -1070,7 +1070,7 @@ function collapseBehavior() {
 function adjustNavbar() {
   const ref = document.querySelector("#icon-oceny")?.parentElement;
   if (!ref) return;
-  
+
   // Plan lekcji z Organizacji do głównego menu
   const timetableIcon = document.createElement("template");
   const html = `
@@ -1106,7 +1106,7 @@ function displayStudentNumber(student) {
   const studentNumberEl = document.createElement("B");
   studentNumberEl.classList.add("librusPro_yourNumber");
   studentNumberWrapper.appendChild(studentNumberEl);
-  
+
   studentNumberEl.innerText = student.number ?? "?";
   if (luckyNumber) {
     if (+document.querySelector("#user-section > span.luckyNumber > b").innerText === student.number) {
@@ -1266,7 +1266,7 @@ function aprilfools(modernize = false) {
     if (polski && matma) return;
     const rowName = e.innerText.toLowerCase();
     if (!rowName.includes("polski") && !rowName.includes("matematyka")) return;
-    
+
     const grade = document.createElement("SPAN");
     const secondTerm = e.parentElement.children[secondTermIndex];
     if (secondTerm.innerText === "Brak ocen") secondTerm.innerText = "";
@@ -1461,29 +1461,29 @@ class GradeManager {
     this.onesAverageInput = document.getElementById("librusPro_onesAverage");
     document.getElementById("librusPro_currentYear").innerText = new Date().getFullYear();
     document.getElementById("librusPro_currentVersion").innerText = browserAPI.runtime.getManifest().version;
-  
+
     document.addEventListener("click", (event) => {
       // Jeśli nie jest przyciskiem dodawania/edycji oraz kliknięte poza overlayem, bądź na przycisk zamknij
-      if (!event.target.matches(".librusPro_add-grade, .librusPro_no-grade, .ocena, .grade-box") 
-        && (event.target.matches("#librusPro_closeButton") 
-        || !event.target.closest(".librusPro_overlay-container"))) {
-          this.overlay.style.display = "none";
-          this.overlay.classList.remove("librusPro_overlay-adding");
-          this.overlay.classList.remove("librusPro_overlay-editting");
-          this.overlay.classList.remove("librusPro_overlay-grade-final");
-          document.body.classList.remove("librusPro_overlay-grades");
+      if (!event.target.matches(".librusPro_add-grade, .librusPro_no-grade, .ocena, .grade-box")
+        && (event.target.matches("#librusPro_closeButton")
+          || !event.target.closest(".librusPro_overlay-container"))) {
+        this.overlay.style.display = "none";
+        this.overlay.classList.remove("librusPro_overlay-adding");
+        this.overlay.classList.remove("librusPro_overlay-editting");
+        this.overlay.classList.remove("librusPro_overlay-grade-final");
+        document.body.classList.remove("librusPro_overlay-grades");
       }
     }, false);
-  
+
     this.switch.onchange = (e) => {
       this.enabled = this.switch.checked;
       document.querySelectorAll(".librusPro_no-grade").forEach((el) => {
         el.innerText = this.enabled ? ADD_EDIT_SYMBOL : NO_DATA;
         el.classList.toggle("cursor-pointer");
-      });    
+      });
       document.querySelectorAll(".librusPro_add-grade").forEach((el) => {
         el.classList.toggle("librusPro_add-grade-enabled");
-      });    
+      });
     }
 
     this.populateOverlay();
@@ -1492,7 +1492,7 @@ class GradeManager {
   populateOverlay() {
     browserAPI.storage.local.get(["colors", "gradeTypes", "gradeCategories"], (data) => {
       if (!data["colors"] || !data["gradeTypes"] || !data["gradeCategories"]) {
-        browserAPI.runtime.sendMessage({msg: 'fetchAll'}, () => { this.populateOverlay(); });
+        browserAPI.runtime.sendMessage({ msg: 'fetchAll' }, () => { this.populateOverlay(); });
         return;
       }
 
@@ -1695,8 +1695,8 @@ class GradeManager {
       };
       gradeParent.appendChild(noGradesPlaceholder);
       gradeParent.classList.add("librusPro_no-grade", "cursor-pointer");
-    // Poprawione znajdują się w dodatkowym spanie z []
-  } else if (gradeParent.tagName == "SPAN") {
+      // Poprawione znajdują się w dodatkowym spanie z []
+    } else if (gradeParent.tagName == "SPAN") {
       for (let u of gradeParent.childNodes) {
         if (u.nodeType === Node.TEXT_NODE) u.remove();
       }
@@ -1707,7 +1707,7 @@ class GradeManager {
         }
         gradeParent.remove();
       }
-    // Wstawianie "Brak ocen"
+      // Wstawianie "Brak ocen"
     } else if (gradeParent.children.length <= 2) {
       const noGradesPlaceholder = document.createTextNode("Brak ocen");
       gradeParent.insertBefore(noGradesPlaceholder, gradeParent.firstElementChild);
@@ -1818,7 +1818,7 @@ class ScheduleOverlay {
     this.customColorInput = document.getElementById("librusPro_customColorInput");
     this.addCustomEventButton = document.getElementById("librusPro_addCustomEventButton");
     this.editCustomEventButton = document.getElementById("librusPro_editCustomEventButton");
-    
+
     this.addLogic();
   }
 
@@ -1985,13 +1985,13 @@ class ScheduleOverlay {
 
     document.addEventListener("click", (event) => {
       // Jeśli nie jest przyciskiem dodawania/edycji oraz kliknięte poza overlayem, bądź na przycisk zamknij
-      if (!event.target.matches(".librusPro_new-event-button, .librusPro_edit-event-button") 
-        && (event.target.matches("#librusPro_closeButton") 
-        || !event.target.closest(".librusPro_overlay-container"))) {
-          this.overlay.style.display = "none";
-          this.overlay.classList.remove("librusPro_overlay-adding");
-          this.overlay.classList.remove("librusPro_overlay-editting");
-          document.body.classList.remove("librusPro_overlay");
+      if (!event.target.matches(".librusPro_new-event-button, .librusPro_edit-event-button")
+        && (event.target.matches("#librusPro_closeButton")
+          || !event.target.closest(".librusPro_overlay-container"))) {
+        this.overlay.style.display = "none";
+        this.overlay.classList.remove("librusPro_overlay-adding");
+        this.overlay.classList.remove("librusPro_overlay-editting");
+        document.body.classList.remove("librusPro_overlay");
       }
     }, false);
 
@@ -2011,7 +2011,7 @@ class ScheduleOverlay {
     });
   }
 
-    // Ukrywanie/Pokazywanie inputa dla "Inny" w select
+  // Ukrywanie/Pokazywanie inputa dla "Inny" w select
   displayInputIfOtherSelected() {
     if (!this.noSubjectSelect) {
       if (this.subjectSelect.value === "Inny" && this.subjectInputHidden) {
@@ -2260,7 +2260,7 @@ class CustomSchedule {
         browserAPI.storage.sync.set({ [date]: events });
       }
     });
-    
+
   }
 
   static removeCustomEvent(date, index) {
@@ -2271,7 +2271,7 @@ class CustomSchedule {
         data[date].splice(index, 1);
         browserAPI.storage.sync.set({ [date]: data[date] });
       }
-  });
+    });
   }
 
   static editCustomEvent() {
@@ -2421,9 +2421,9 @@ class CustomSchedule {
           // Opis
           if (event.description && this.options.addDescriptions) {
             if (event.description.length > DESCRIPTION_LENGTH) {
-                temp.push(`Opis: ${event.description.replaceAll("<br />", "\n").slice(0, DESCRIPTION_LENGTH)}` + "\n[...]");
+              temp.push(`Opis: ${event.description.replaceAll("<br />", "\n").slice(0, DESCRIPTION_LENGTH)}` + "\n[...]");
             } else {
-                temp.push(`Opis: ${event.description.replaceAll("<br />", "\n")}`);
+              temp.push(`Opis: ${event.description.replaceAll("<br />", "\n")}`);
             }
           }
           eventEl.innerText = temp.join("\n");
@@ -2584,7 +2584,7 @@ class CustomSchedule {
     browserAPI.storage.local.get(["timetable"], (data) => {
       let timetable = data["timetable"];
       if (!timetable) {
-        browserAPI.runtime.sendMessage({msg: 'fetchTimetable'}, () => { this.insertTimetable(days) });
+        browserAPI.runtime.sendMessage({ msg: 'fetchTimetable' }, () => { this.insertTimetable(days) });
         return;
       }
 
@@ -2610,10 +2610,10 @@ class CustomSchedule {
         if (!dayTimetable) {
           let d = new Date(date);
           let day = d.getDay(),
-          diff = d.getDate() - day + (day == 0 ? -6:1); // niedziela
+            diff = d.getDate() - day + (day == 0 ? -6 : 1); // niedziela
           d.setDate(diff);
           const key = getYYYYMMDD(d.getFullYear(), d.getMonth() + 1, d.getDate());
-          browserAPI.runtime.sendMessage({msg: 'fetchTimetable', data: key},
+          browserAPI.runtime.sendMessage({ msg: 'fetchTimetable', data: key },
             (_requestedTimetable) => { this.insertTimetable(days, _requestedTimetable) });
           return;
         }
@@ -2665,15 +2665,15 @@ async function insertCreationDate(isTextGrade = false, isAttendance = false) {
   await fetch(URLS.refreshSession);
   const endpoint = isAttendance ? "Attendances" : (isTextGrade ? "TextGrades" : "Grades");
   let date = await fetch(`${URLS.api}/${endpoint}/${id}`)
-  .then(response => response.json())
-  .then(data => {return data[isAttendance ? "Attendance" : "Grade"]?.["AddDate"]});
+    .then(response => response.json())
+    .then(data => { return data[isAttendance ? "Attendance" : "Grade"]?.["AddDate"] });
 
   if (!date && isTextGrade) {
     date = await fetch(`${URLS.api}/DescriptiveTextGrades/${id}`)
-    .then(response => response.json())
-    .then(data => {return data["Grade"]?.["AddDate"]});
+      .then(response => response.json())
+      .then(data => { return data["Grade"]?.["AddDate"] });
   }
-  
+
   const refRow = document.querySelector("table.decorated.medium.center > tbody > tr:first-child");
   if (!refRow) return;
   const row = refRow.cloneNode(true);
@@ -2753,7 +2753,7 @@ function refineTimetable() {
   homeButton.firstElementChild.href = `${URLS.base}${URLS.grades}`;
   homeButton.firstElementChild.firstElementChild.innerText = "Strona główna";
   refButton.parentElement.insertBefore(homeButton, refButton.nextElementSibling);
-  
+
 }
 
 // Tu się dzieje cała magia
@@ -2774,7 +2774,7 @@ function main() {
   // Co to po komu ta strona startowa?
   if (URLS.index.some((e) => window.location.href.indexOf(e) > -1)) {
     // Przekierowanie i aktualizacja danych
-    browserAPI.runtime.sendMessage({msg: 'fetchAll'});
+    browserAPI.runtime.sendMessage({ msg: 'fetchAll' });
     document.location.replace(URLS.base + URLS.grades);
     return;
   }
@@ -2920,7 +2920,7 @@ function main() {
     if (student && student.number !== null && student.class !== null) {
       displayStudentNumber(student);
     } else {
-      browserAPI.runtime.sendMessage({msg: 'fetchStudentInfo'}, displayStudentNumber);
+      browserAPI.runtime.sendMessage({ msg: 'fetchStudentInfo' }, displayStudentNumber);
     }
 
     // Terminarz
