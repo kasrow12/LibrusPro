@@ -13,7 +13,7 @@
 ### 🖥 <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Google Chrome</a>
 ### 🦊 <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Firefoxa</a>
 ### 🌍 <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Microsoft Edge (XD)</a>
-### ⭕ Opery: Najpierw pobierz <a href="https://addons.opera.com/en/extensions/details/install-chrome-extensions/">ten dodatek</a>, a następnie <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">zainstaluj stąd</a>.
+### ⭕ <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Opery</a>
 ### 📱 <a href="https://github.com/kasrow12/LibrusPro/blob/master/docs/LibrusPro%20-%20wersja%20mobilna.pdf">Androida</a>
 <hr>
 
@@ -66,6 +66,9 @@ Gdy włączysz to ustawienie w widoku ocen, będziesz mógł(a) tymczasowo, loka
 (Po odświeżeniu strony wszystko wróci do stanu sprzed modyfikacji! Zmiany zachodzą jedynie lokalnie i nie mają wpływu na Twoje rzeczywiste oceny!)
 Możesz zobaczyć także ile jedynek możesz jeszcze dostać, aby nadal znajdować się powyżej danej średniej, w menu dodawania nowych ocen cząstkowych.
 
+## ⭐️ • Schemat wiadomości 📩
+Może nudzi Cię ciągłe podpisywanie się w wiadomościach? Wystaczy jedno kliknięcie, aby wstawić swoją formułkę, którą możesz dowolnie edytować.
+
 ## ⭐️ • Wersja depresyjna 🕶
 Stonowane kolory ocen i wydarzeń w terminarzu, gdy czujesz się nie najlepiej. Wersja możliwa do włączenia w opcjach rozszerzenia.
 
@@ -86,7 +89,7 @@ Dopóki karta z e-dziennikiem będzie otwarta, Twoja sesja nie wygaśnie! Koniec
   - poświetlenie średniej rocznej kwalifikującej się na **czerwony pasek**,
   - wyświetlanie **daty dodania ocen i frekwencji** w widoku ich szczegółów (po kliknięciu na nie),
   - możliwość wyłączenia wyświetlania ocen i frekwencji z **I semestru**,
-  - wyświetlanie danych osobowych po kliknięciu na pole *jesteś zalogowany(-a) jako:*,
+  - wyświetlanie swoich danych osobowych w dzienniku po kliknięciu na pole *jesteś zalogowany(-a) jako:*,
   - zaciemnianie **przeszłych oraz wolnych dni** w terminarzu,
   - **oraz wiele innych pomniejszych zmian i smaczków!**
 <hr>
@@ -105,4 +108,4 @@ Ten projekt jest licencjonowany zgodnie z warunkami licencji MIT. Zobacz plik [L
 ## ❗ Informacja
 Wszystkie znaki towarowe są własnością ich prawowitych właścicieli i są używane wyłącznie w celach informacyjnych.
 <hr>
-<i>LibrusPro © 2022 Maks Kowalski</i>
+<i>LibrusPro © 2023 Maks Kowalski</i>
