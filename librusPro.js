@@ -1032,8 +1032,8 @@ function insertProposedBehavior() {
   const propZachRoczneElement = zachRoczneElement.cloneNode(true);
 
   // "-", bądź ocena z zachowania
-  propZachSrodroczneElement.innerText = propZachSrodroczne;
-  propZachRoczneElement.innerText = propZachRoczne;
+  propZachSrodroczneElement.innerText = propZachSrodroczne ?? NO_DATA;
+  propZachRoczneElement.innerText = propZachRoczne ?? NO_DATA;
 
   // Stylizacja proponowanych zachowań
   propZachSrodroczneElement.classList.add("librusPro_proposed-behavior");
