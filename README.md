@@ -1,13 +1,25 @@
-[English](README_en.md)
-<p align="center">
+<div align="center" style="text-align: center">
+
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/users/hoceldjnkcboafconokadmmbijbegdkf?color=blue&label=U%C5%BCytkownicy&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf)
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/stars/hoceldjnkcboafconokadmmbijbegdkf?label=Ocena&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews) 
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/rating-count/hoceldjnkcboafconokadmmbijbegdkf?color=blue&label=Ocen&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews)<br>
+[![Mozilla Add-on](https://img.shields.io/amo/users/libruspro?color=red&label=U%C5%BCytkownicy&logo=firefoxbrowser&style=for-the-badge)](https://addons.mozilla.org/pl/firefox/addon/libruspro/)
+[![Mozilla Add-on](https://img.shields.io/amo/stars/libruspro?label=Ocena&logo=firefoxbrowser&style=for-the-badge)](https://addons.mozilla.org/pl/firefox/addon/libruspro/reviews/)
+[![Mozilla Add-on](https://img.shields.io/amo/dw/libruspro?color=red&label=Pobra%C5%84&logo=firefoxbrowser&style=for-the-badge)](https://addons.mozilla.org/pl/firefox/addon/libruspro/)<br>
+[![](https://img.shields.io/badge/dynamic/json?label=U%C5%BCytkownicy&color=white&logo=microsoftedge&style=for-the-badge&query=%24.activeInstallCount&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbijfjkaobehfdealffkgiljlmbjmmgpm)](https://microsoftedge.microsoft.com/addons/detail/bijfjkaobehfdealffkgiljlmbjmmgpm)
+[![](https://img.shields.io/badge/dynamic/json?label=Ocena&color=lime&logo=microsoftedge&style=for-the-badge&suffix=/5&query=%24.averageRating&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbijfjkaobehfdealffkgiljlmbjmmgpm)](https://microsoftedge.microsoft.com/addons/detail/bijfjkaobehfdealffkgiljlmbjmmgpm)
+[![](https://img.shields.io/badge/dynamic/json?label=Ocen&color=white&logo=microsoftedge&style=for-the-badge&query=%24.ratingCount&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbijfjkaobehfdealffkgiljlmbjmmgpm)](https://microsoftedge.microsoft.com/addons/detail/bijfjkaobehfdealffkgiljlmbjmmgpm)
+
   <a href="https://github.com/kasrow12/LibrusPro">
-    <img src="img/icon.png" alt="Logo" width="30%" height="30%">
+    <img src="img/icon.png" alt="Logo" width="20%" height="20%">
   </a>
   <hr>
   <h1 align="center">📚 LibrusPro 🎉</h1>
   <h4 align="center">💠 Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, liczące średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, wyświetlające procentową obecność/frekwencję z każdego przedmiotu, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz dodające wiele usprawnień funkcjonalności i wyglądu Librusa. 💠</h4>
-</p>
+</div>
 <hr>
+
+[English](README_en.md)
 
 # ⏩ Obecnie dostępne dla:
 ### 🖥 <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Google Chrome</a>
