@@ -15,7 +15,7 @@
   </a>
   <hr>
   <h1 align="center">📚 LibrusPro 🎉</h1>
-  <h4 align="center">💠 Rozszerzenie dla przeglądarek do Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, liczące średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, wyświetlające procentową obecność/frekwencję z każdego przedmiotu, pozwalające na dodawanie własnych wydarzeń w terminarzu oraz dodające wiele usprawnień funkcjonalności i wyglądu Librusa. 💠</h4>
+  <h4 align="center">💠 Rozszerzenie do przeglądarek dla Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, liczące średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, wyświetlające procentową obecność/frekwencję z każdego przedmiotu, pozwalające na tworzenie własnych wydarzeń w terminarzu oraz dodające wiele usprawnień funkcjonalności i wyglądu Librusa. 💠</h4>
 </div>
 <hr>
 
@@ -50,24 +50,24 @@ Nie jesteś sam(a), na szczęście to już nie jest problem. W końcu Librus nie
 <hr>
 
 ## ⭐️ • Własne wydarzenia w terminarzu 📆
-Chcesz dodać własne wydarzenie do swojego terminarza? Planowane kartkówki, odpowiedzi ustne, a może prace domowe, o których nie chcesz zapomnieć, a nie zostały wpisane przez nauczyciela? Z tym rozszerzeniem jest to wreszcie możliwe! Idealne na problemy z pamięcią.
+Chcesz dodać _własne_ wydarzenie do swojego terminarza? Zapowiedziane kartkówki, odpowiedzi ustne, a może prace domowe, projekty, o których nie chcesz zapomnieć, a nie zostały wpisane przez nauczyciela? Z tym rozszerzeniem jest to wreszcie możliwe **a to wszystko w jednym miejscu**!
 
 ## ⭐️ • Obliczanie średniej ocen 📈
-Niektóre szkoły wyłączają możliwość wyświetlania średniej ocen dla ich uczniów i rodziców. Na szczęście Twój komputer potrafi dodawać, mnożyć i dzielić, więc sobie sam poradzi :) W tabeli znajdziesz także odpowiednio średnią z całego semestru, z ocen proponowanych, ze śródrocznych, a także ze wszystkich ocen cząstkowych (średnia roczna).
+Niektóre szkoły wyłączają możliwość wyświetlania średniej ocen dla ich uczniów i rodziców. Na szczęście Twój komputer świetnie sobie radzi z dodawaniem, mnożeniem i dzieleniem, więc sobie poradzi :) W tabeli znajdziesz także odpowiednio średnie: z całego semestru, z ocen proponowanych, ze (śród)rocznych, a także ze wszystkich ocen cząstkowych (średnia roczna).
 
 ## ⭐️ • Wyświetlanie procentowej frekwencji z przedmiotów 🎓
-Zastanawiasz się ile masz procent frekwencji z danego przedmiotu? Może chcesz wiedzieć, ile jeszcze lekcji możesz opuścić, aby nadal być klasyfikowanym? Nie ma sprawy. W zakładce Frekwencja wystarczy, że naciśniesz odpowiedni przycisk, a Twoje procenty obecności magicznie się pojawią.
-Znajdziesz tam także możliwość pobrania i wyświetlenia wszystkich wpisanych obecności, jeżeli będziesz zainteresowany(-a) tym, czy nauczyciele spełniają swoje obowiązki.
+Zastanawiasz się ile masz **procent frekwencji** z danego przedmiotu? Może chcesz wiedzieć, ile jeszcze lekcji możesz opuścić, aby nie mieć problemu z klasyfikacją? Nie ma sprawy. W zakładce *Frekwencja* wystarczy, że naciśniesz odpowiedni przycisk, a Twoje procenty obecności się pojawią.
+Znajdziesz tam także możliwość pobrania i wyświetlenia wszystkich wpisanych obecności, jeżeli np. będziesz zainteresowany(-a) tym, czy nauczyciele spełniają swoje obowiązki.
 
 ## ⭐️ • Ukrywanie przedmiotów bez ocen 🚫
-Po co w ogóle mają się wyświetlać, skoro przez cały rok nie dostaniesz z nich ani jednej oceny?
+Po co w ogóle mają się wyświetlać i zaśmiecać, skoro przez cały rok nie dostajesz z nich żadnych ocen?
 
 ## ⭐️ • Wyświetlanie numerka z dziennika i "Szczęśliwy Numerek" 🔢
-Nie możesz nigdy zapamiętać, który masz numerek w dzienniku? Od teraz będzie zawsze widniał na górze strony obok "Szczęśliwego Numerka", abyś go już nigdy nie zapomniał(a). Jeśli w Twojej szkole jest włączona opcja jego losowania, to już nigdy nie przegapisz tego, kiedy będzie nim Twój!
+Nie możesz nigdy zapamiętać, który masz **numerek w dzienniku**? Od teraz będzie zawsze widniał na górze strony obok "Szczęśliwego Numerka", abyś go już nigdy nie zapomniał(a). Jeśli w Twojej szkole jest włączona opcja jego losowania, to już nigdy _nie przegapisz_ tego, kiedy będzie nim Twój!
 
 ## ⭐️ • Modernizacja terminarza 📅
-Po co najeżdżać na każdą rzecz w terminarzu, aby przeczytać jej opis? Od teraz znajdziesz wszystko na wierzchu, bez konieczności najeżdżania! Wygoda ponad wszystko. Możesz także wyłączyć wyświetlanie swojej klasy pod każdym zdarzeniem, a także skorzystać z trybu modernizacji terminarza, który sprawia go trochę bardziej czytelnym i odchudzonym.
-Jeśli Twoja szkoła udostępniła plan lekcji, to będziesz go również widzieć po najechaniu na symbol '≡' znajdujący się w kafelkach.
+Po co najeżdżać na każdą rzecz w terminarzu, aby przeczytać jej opis? Od teraz znajdziesz wszystko **na wierzchu**, bez konieczności najeżdżania! _Wygoda ponad wszystko._ Możesz także wyłączyć wyświetlanie swojej klasy pod każdym zdarzeniem, a także skorzystać z trybu **modernizacji terminarza**, który sprawia go trochę bardziej **czytelnym** i odchudzonym.
+Jeśli Twoja szkoła udostępniła **plan lekcji**, to będziesz go również widzieć po najechaniu na symbol '≡' znajdujący się w kafelkach.
 (Zajrzyj do opcji rozszerzenia, aby włączyć/wyłączyć poszczególne funkcje)
 
 ## ⭐️ • Modernizacja dymków 📢
@@ -75,20 +75,17 @@ Dymki z dodatkowymi informacjami, które pojawiają się po najechaniu na oceny,
 
 ## ⭐️ • Tymczasowa modyfikacja ocen i kalkulator jedynek 📝
 Gdy włączysz to ustawienie w widoku ocen, będziesz mógł(a) tymczasowo, lokalnie dodawać nowe oceny, bądź edytować i usuwać bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.
-(Po odświeżeniu strony wszystko wróci do stanu sprzed modyfikacji! Zmiany zachodzą jedynie lokalnie i nie mają wpływu na Twoje rzeczywiste oceny!)
-Możesz zobaczyć także ile jedynek możesz jeszcze dostać, aby nadal znajdować się powyżej danej średniej, w menu dodawania nowych ocen cząstkowych.
+_(Po odświeżeniu strony wszystko wróci do stanu sprzed modyfikacji! Zmiany zachodzą jedynie lokalnie i nie mają wpływu na Twoje rzeczywiste oceny!)_
+Możesz zobaczyć także **ile jedynek** możesz jeszcze dostać, aby nadal znajdować się powyżej danej średniej, w menu dodawania nowych ocen cząstkowych.
 
 ## ⭐️ • Schemat wiadomości 📩
 Może nudzi Cię ciągłe podpisywanie się w wiadomościach? Wystaczy jedno kliknięcie, aby wstawić swoją formułkę, którą możesz dowolnie edytować.
 
-## ⭐️ • Wersja depresyjna 🕶
-Stonowane kolory ocen i wydarzeń w terminarzu, gdy czujesz się nie najlepiej. Wersja możliwa do włączenia w opcjach rozszerzenia.
-
 ## ⭐️ • Wyłączenie mrugania zagrożeń 🚨
-Nauczyciel postanowił Cię zagrozić i teraz cały rok mruga Ci jedynka? Spokojnie, załatwione. Już nie mruga.
+Nauczyciel postanowił Cię _zagrozić_ i teraz cały rok mruga Ci jedynka? Spokojnie, mam na to sposób :)
 
 ## ⭐️ • Zapobieganie automatycznemu wylogowaniu 🎉
-Dopóki karta z e-dziennikiem będzie otwarta, Twoja sesja nie wygaśnie! Koniec nieprzyjemnych komunikatów "STOP".
+Dopóki karta z Librusem będzie otwarta, Twoja **sesja nie wygaśnie**! Koniec nieprzyjemnych komunikatów "STOP".
 
 ## ⭐️ • Poprawki oraz dodatki wizualne 🔨
   - możliwość wyłączenia wyświetlania **jedynek** w menu rozszerzenia,
