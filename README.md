@@ -1,23 +1,24 @@
 <div align="center" style="text-align: center">
-
-[![Chrome Web Store](https://img.shields.io/chrome-web-store/users/hoceldjnkcboafconokadmmbijbegdkf?color=blue&label=U%C5%BCytkownicy&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf)
-[![Chrome Web Store](https://img.shields.io/chrome-web-store/stars/hoceldjnkcboafconokadmmbijbegdkf?label=Ocena&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews) 
-[![Chrome Web Store](https://img.shields.io/chrome-web-store/rating-count/hoceldjnkcboafconokadmmbijbegdkf?color=blue&label=Ocen&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews)<br>
-[![Mozilla Add-on](https://img.shields.io/amo/users/libruspro?color=red&label=U%C5%BCytkownicy&logo=firefoxbrowser&style=for-the-badge)](https://addons.mozilla.org/pl/firefox/addon/libruspro/)
-[![Mozilla Add-on](https://img.shields.io/amo/stars/libruspro?label=Ocena&logo=firefoxbrowser&style=for-the-badge)](https://addons.mozilla.org/pl/firefox/addon/libruspro/reviews/)
-[![Mozilla Add-on](https://img.shields.io/amo/dw/libruspro?color=red&label=Pobra%C5%84&logo=firefoxbrowser&style=for-the-badge)](https://addons.mozilla.org/pl/firefox/addon/libruspro/)<br>
-[![](https://img.shields.io/badge/dynamic/json?label=U%C5%BCytkownicy&color=white&logo=microsoftedge&style=for-the-badge&query=%24.activeInstallCount&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbijfjkaobehfdealffkgiljlmbjmmgpm)](https://microsoftedge.microsoft.com/addons/detail/bijfjkaobehfdealffkgiljlmbjmmgpm)
-[![](https://img.shields.io/badge/dynamic/json?label=Ocena&color=lime&logo=microsoftedge&style=for-the-badge&suffix=/5&query=%24.averageRating&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbijfjkaobehfdealffkgiljlmbjmmgpm)](https://microsoftedge.microsoft.com/addons/detail/bijfjkaobehfdealffkgiljlmbjmmgpm)
-[![](https://img.shields.io/badge/dynamic/json?label=Ocen&color=white&logo=microsoftedge&style=for-the-badge&query=%24.ratingCount&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbijfjkaobehfdealffkgiljlmbjmmgpm)](https://microsoftedge.microsoft.com/addons/detail/bijfjkaobehfdealffkgiljlmbjmmgpm)
-
   <a href="https://github.com/kasrow12/LibrusPro">
     <img src="img/icon.png" alt="Logo" width="20%" height="20%">
   </a>
-  <hr>
   <h1 align="center">📚 LibrusPro 🎉</h1>
+  
+  [![Chrome Web Store](https://img.shields.io/chrome-web-store/stars/hoceldjnkcboafconokadmmbijbegdkf?label=Google%20Chrome&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews) 
+  [![Chrome Web Store](https://img.shields.io/chrome-web-store/users/hoceldjnkcboafconokadmmbijbegdkf?color=blue&label=U%C5%BCytkownicy&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf)
+  [![Chrome Web Store](https://img.shields.io/chrome-web-store/rating-count/hoceldjnkcboafconokadmmbijbegdkf?color=blue&label=Ocen&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews)<br>
+  [![Mozilla Add-on](https://img.shields.io/amo/stars/libruspro?label=Firefox&logo=firefoxbrowser&style=for-the-badge)](https://addons.mozilla.org/pl/firefox/addon/libruspro/reviews/)
+  [![Mozilla Add-on](https://img.shields.io/amo/users/libruspro?color=red&label=U%C5%BCytkownicy&logo=firefoxbrowser&style=for-the-badge)](https://addons.mozilla.org/pl/firefox/addon/libruspro/)
+  [![Mozilla Add-on](https://img.shields.io/amo/dw/libruspro?color=red&label=Pobra%C5%84&logo=firefoxbrowser&style=for-the-badge)](https://addons.mozilla.org/pl/firefox/addon/libruspro/)<br>
+  [![](https://img.shields.io/badge/dynamic/json?label=Microsoft%20Edge&color=lime&logo=microsoftedge&style=for-the-badge&suffix=/5&query=%24.averageRating&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbijfjkaobehfdealffkgiljlmbjmmgpm)](https://microsoftedge.microsoft.com/addons/detail/bijfjkaobehfdealffkgiljlmbjmmgpm)
+  [![](https://img.shields.io/badge/dynamic/json?label=U%C5%BCytkownicy&color=white&logo=microsoftedge&style=for-the-badge&query=%24.activeInstallCount&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbijfjkaobehfdealffkgiljlmbjmmgpm)](https://microsoftedge.microsoft.com/addons/detail/bijfjkaobehfdealffkgiljlmbjmmgpm)
+  [![](https://img.shields.io/badge/dynamic/json?label=Ocen&color=white&logo=microsoftedge&style=for-the-badge&query=%24.ratingCount&url=https%3A%2F%2Fmicrosoftedge.microsoft.com%2Faddons%2Fgetproductdetailsbycrxid%2Fbijfjkaobehfdealffkgiljlmbjmmgpm)](https://microsoftedge.microsoft.com/addons/detail/bijfjkaobehfdealffkgiljlmbjmmgpm)<br>
+  [![Discord](https://img.shields.io/discord/826130693078908990?color=7289da&label=Discord&logo=discord&logoColor=7289da&style=for-the-badge)](https://discord.gg/e9EkVEvsDr)
+  
+  <hr>
   <h4 align="center">💠 Rozszerzenie do przeglądarek dla Librusa - najpopularniejszego e-dziennika w Polsce - wprowadzające ciemny motyw, liczące średnie ocen, mimo ich wyłączenia przez Administratora Szkoły, wyświetlające procentową obecność/frekwencję z każdego przedmiotu, pozwalające na tworzenie własnych wydarzeń w terminarzu oraz dodające wiele usprawnień funkcjonalności i wyglądu Librusa. 💠</h4>
-</div>
 <hr>
+</div>
 
 [English](README_en.md)
 
@@ -41,11 +42,11 @@ Nie jesteś sam(a), na szczęście to już nie jest problem. W końcu Librus nie
 <details>
   <summary>Tutaj znajdziesz kilka zrzutów ekranu:</summary>
 
-![Ciemny motyw 1](docs/librusPro_1.png?raw=true)
-![Ciemny motyw 2](docs/librusPro_2.png?raw=true)
-![Ciemny motyw 3](docs/librusPro_3.png?raw=true)
-![Ciemny motyw 4](docs/librusPro_4.png?raw=true)
-![Ciemny motyw 5](docs/librusPro_5.png?raw=true)
+  ![Ciemny motyw 1](docs/librusPro_1.png?raw=true)
+  ![Ciemny motyw 2](docs/librusPro_2.png?raw=true)
+  ![Ciemny motyw 3](docs/librusPro_3.png?raw=true)
+  ![Ciemny motyw 4](docs/librusPro_4.png?raw=true)
+  ![Ciemny motyw 5](docs/librusPro_5.png?raw=true)
 </details>
 <hr>
 
