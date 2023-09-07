@@ -25,6 +25,7 @@ const OPTIONS_DEFAULT = {
   insertTimetable: true,
   keepBlinker: false,
   hideFirstTerm: false,
+  incognitoMode: false,
 };
 const CHANGELOG_URL = "changelog.html";
 
@@ -35,7 +36,7 @@ if (typeof chrome != null) {
   browserAPI = browser;
 }
 
-const boolOptions = ['hideSubjects', 'calculateAverages', 'depressionMode', 'modernizeSchedule', 'removeClasses', 'addDescriptions', 'darkTheme', 'hideOnes', 'countZeros', 'countToAverage', 'modernizeTitles', 'debug', 'averageWarn', 'showTeacherFreeDays', 'enableGradeManager', 'insertTimetable', 'keepBlinker', 'hideFirstTerm'];
+const boolOptions = ['hideSubjects', 'calculateAverages', 'depressionMode', 'modernizeSchedule', 'removeClasses', 'addDescriptions', 'darkTheme', 'hideOnes', 'countZeros', 'countToAverage', 'modernizeTitles', 'debug', 'averageWarn', 'showTeacherFreeDays', 'enableGradeManager', 'insertTimetable', 'keepBlinker', 'hideFirstTerm', 'incognitoMode'];
 const valueOptions = ['plusValue', 'minusValue', 'averageValue'];
 const extraOptions = ['debug', 'averageWarn'];
 

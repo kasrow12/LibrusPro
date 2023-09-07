@@ -34,6 +34,7 @@ const OPTIONS_DEFAULT = Object.freeze({
   insertTimetable: true,
   keepBlinker: false,
   hideFirstTerm: false,
+  incognitoMode: false,
 });
 
 // Kompatybilność

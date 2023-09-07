@@ -31,6 +31,7 @@ const URLS = Object.freeze({
   api: "https://synergia.librus.pl/gateway/api/2.0",
   index: ["uczen/index", "rodzic/index"],
   grades: "przegladaj_oceny/uczen",
+  details: "/szczegoly",
   gradeDetails: "przegladaj_oceny/szczegoly",
   textGradeDetails: "przegladaj_oceny/szczegoly/ksztaltujace",
   attendance: "przegladaj_nb/uczen",
@@ -41,6 +42,8 @@ const URLS = Object.freeze({
   timetable: "przegladaj_plan_lekcji",
   homework: "moje_zadania",
   notes: "uwagi",
+  info: "informacja",
+  settings: "ustawienia",
   newMessage: "wiadomosci/2",
   lessons: "zrealizowane_lekcje",
   gdpr: "https://synergia.librus.pl/wydruki/wydruk_danych_osobowych/2137.pdf",
@@ -70,6 +73,7 @@ const OPTIONS_DEFAULT = Object.freeze({
   insertTimetable: true,
   keepBlinker: false,
   hideFirstTerm: false,
+  incognitoMode: false,
 });
 const DEPRESSION_MODE_COLORS = Object.freeze({
   proposed: "#aaad84",
@@ -92,7 +96,6 @@ const TITLE_MODERNIZATION = Object.freeze([
   [/(Kategoria:|Rodzaj:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-type">$2</span>$3'],
   [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:| wystawienia:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
   [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
-  [/(Nauczyciel:|Dodał:|Uczeń:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2</span>$3'],
   [/(Waga:|Zakres od:|Zakres do:) (\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
   [/(Komentarz:|Temat zajęć:) ([\D\d]*?)($)/g, '<span class="librusPro_title-comment">$2</span>$3'],
   [/(Opis:) ([\D\d]*?)Data dodania:/g, '<span class="librusPro_title-comment">$2</span>Data dodania:'],
@@ -107,6 +110,11 @@ const TITLE_MODERNIZATION = Object.freeze([
   [/<b>(Sala:)<\/b> (.*?)(( -> )(.*?))?(<br ?\/?>|$)/g, '<span class="librusPro_title-weight">$2<span class="librusPro_title-brackets">$4</span>$5</span>$6'],
   [/<b>(Uwaga:)<\/b> (Przesunięcie)/g, '<span class="librusPro_title-grade">$2</span>'],
 ]);
+const NAME_TITLE_MODERNIZATIONS = Object.freeze({
+  normal: [/(Nauczyciel:|Dodał:|Uczeń:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-user">$2</span>$3'],
+  incognito: [/(Nauczyciel:|Dodał:|Uczeń:) (.*?)(<br ?\/?>|$)/g, `<span class="librusPro_title-user">${randomName()}</span>$3`],
+});
+let NAME_TITLE_MODERNIZATION = NAME_TITLE_MODERNIZATIONS.normal;
 const PAGE_TITLES = Object.freeze({
   "default": "Synergia",
   "przegladaj_oceny": "Oceny",
@@ -420,6 +428,7 @@ async function displayAttendanceStatistics() {
 
       document.querySelector(".librusPro_tfoot-text").innerText = "Widok przedstawia aktualne dane pobrane z dziennika Librus Synergia.";
       const container = document.getElementById("librusPro_lessonsAttendance");
+      const isIncognito = document.body.classList.contains("librusPro_incognito");
       const template = document.createElement("template");
       const html = `
         <tr class="line0 bolded">
@@ -455,7 +464,7 @@ async function displayAttendanceStatistics() {
 
               const td = rowTemplate.content.firstElementChild.children;
               td[0].textContent = subjectName;
-              td[1].textContent = teacherName;
+              td[1].textContent = isIncognito ? randomName() : teacherName;
               td[2].textContent = absences;
               td[3].textContent = attendances;
               td[4].textContent = `${percent}%`;
@@ -1133,8 +1142,9 @@ function displayStudentNumber(student) {
   refreshjQueryTitles();
 }
 
-// GDPR, delikatne zmiany headera oraz zmiana tytułu i ikony strony
+// RODO, delikatne zmiany headera oraz zmiana tytułu i ikony strony
 function adjustHeader() {
+  // Ostatnie logowania (easter egg)
   let lastLogin = document.querySelectorAll("#user-section > .tooltip");
   if (lastLogin.length > 0) {
     let title = lastLogin[0].title;
@@ -1150,11 +1160,13 @@ function adjustHeader() {
     lastLogin[1].title = title;
   }
 
+  // Otwieranie okna z danymi osobowymi po kliknięciu na nazwę użytkownika
   const gdprLink = document.querySelector("#user-section > b");
   if (gdprLink) {
     gdprLink.onclick = () => window.open(URLS.gdpr, '_blank').focus();
   }
 
+  // Creditsy
   const loggedInAs = document.querySelector("#user-section > b > img");
   if (loggedInAs) {
     loggedInAs.title = `<b class="librusPro_lightgreen">Dzięki za korzystanie z rozszerzenia <b class='librusPro_accent'>LibrusPro</b>!</b><br><b class="librusPro_yellow">Jeżeli Ci się spodobało, nie zapomnij zostawić<br>5 gwiazdek w sklepie oraz polecić znajomym!</b><br><b class="librusPro_salmon"><i>Jedz Buraczki!</i></b>`;
@@ -1166,7 +1178,7 @@ function adjustHeader() {
   let pageTitle = "LibrusPro | ";
 
   // Ilość nowych rzeczy
-  let num = [...document.querySelectorAll(".button.counter")].reduce((total, e) => total + +e.innerText, 0);
+  let num = [...document.querySelectorAll(".button.counter")].reduce((total, e) => total + Number(e.innerText), 0);
   if (num > 0) {
     pageTitle = `(${num}) ${pageTitle}`;
   }
@@ -1344,6 +1356,7 @@ function modernizeTitle(element) {
   for (let i of TITLE_MODERNIZATION) {
     title = title.replaceAll(i[0], '<b class="librusPro_title-label">$1</b> ' + i[1]);
   }
+  title = title.replaceAll(NAME_TITLE_MODERNIZATION[0], '<b class="librusPro_title-label">$1</b> ' + NAME_TITLE_MODERNIZATION[1]);
   element.title = title;
 }
 
@@ -2215,7 +2228,9 @@ class CustomSchedule {
         this.adjustEventContent(event);
 
         // Modernizacja dymków
-        if (this.options.modernizeTitles) modernizeTitle(event);
+        if (this.options.modernizeTitles) {
+          modernizeTitle(event);
+        }
       });
 
       // Klucz
@@ -2264,7 +2279,6 @@ class CustomSchedule {
         browserAPI.storage.sync.set({ [date]: events });
       }
     });
-
   }
 
   static removeCustomEvent(date, index) {
@@ -2516,18 +2530,24 @@ class CustomSchedule {
         el.innerText = substitution_res[4];
         event.appendChild(el);
         const el2 = document.createElement("ARTICLE");
-        el2.innerText = `(${substitution_res[2]})`;
         // Tryb incognito, do screenów
-        // el2.innerText = `(${randomName()})`;
+        if (this.options.incognitoMode) {
+          el2.innerText = `(${randomName()})`;
+        } else {
+          el2.innerText = `(${substitution_res[2]})`;
+        }
         el2.classList.add("librusPro_event-teacher");
         event.appendChild(el2);
       }
 
       // Odchudzenie nieobecności nauczycieli
       if (event.innerText.includes("\nNauczyciel:")) {
-        event.innerText = event.innerText.replace("\nNauczyciel:", "");
-        // Tryb incognito, do screenshotów
-        // event.innerText = event.innerText.replace(/\nNauczyciel:.*/, " " + randomName());
+        // Tryb incognito, do screenów
+        if (this.options.incognitoMode) {
+          event.innerText = event.innerText.replace(/\nNauczyciel:.*/, " " + randomName());
+        } else {
+          event.innerText = event.innerText.replace("\nNauczyciel:", "");
+        }
       }
 
       // Usuwanie linków ze starych lekcji online
@@ -2757,7 +2777,36 @@ function refineTimetable() {
   homeButton.firstElementChild.href = `${URLS.base}${URLS.grades}`;
   homeButton.firstElementChild.firstElementChild.innerText = "Strona główna";
   refButton.parentElement.insertBefore(homeButton, refButton.nextElementSibling);
+}
 
+// Tryb incognito, do screenów
+function incognitoMode() {
+  // Prawy górny
+  const user = document.querySelector("#user-section > b");
+  if (user) {
+    user.innerText = "Użytkownik LibrusPro";
+  }
+
+  // Numerek
+  const yourNumber = document.querySelector(".librusPro_yourNumber");
+  if (yourNumber) {
+    yourNumber.innerText = "-1";
+  }
+
+  // Uczeń po lewej w widoku ocen
+  const student = document.querySelector("#body > form > .container > .container-background > .container-icon > table > tbody > tr > td > p");
+  if (student) {
+    student.innerText = "Użytkownik LibrusPro";
+  }
+
+  // Nauczyciele w planie lekcji
+  if (document.querySelector("form[name='formPrzegladajPlan']")) {
+    const entries = document.querySelectorAll(".text > b");
+    entries.forEach((e) => {
+      e.parentElement.style.fontWeight = "bold";
+      e.parentElement.innerText = e.innerText;
+    });
+  }
 }
 
 // Tu się dzieje cała magia
@@ -2868,6 +2917,11 @@ function main() {
       if (d.getMonth() === 3 && d.getDate() === 1) aprilfools(options.modernizeTitles);
     }
 
+    if (options.incognitoMode) {
+      NAME_TITLE_MODERNIZATION = NAME_TITLE_MODERNIZATIONS.incognito;
+      document.body.classList.add("librusPro_incognito");
+    }
+
     // Oceny
     if (window.location.href.indexOf(URLS.grades) > -1) {
       // Tymczasowa modyfikacja ocen
@@ -2931,6 +2985,29 @@ function main() {
     if (window.location.href.indexOf(URLS.schedule) > -1 && window.location.href.indexOf(URLS.scheduleDetails) < 0 && window.location.href.indexOf(URLS.scheduleNew) < 0) {
       overlay = new ScheduleOverlay();
       const schedule = new CustomSchedule(options, student?.class ?? "[klasa]");
+    }
+
+    // Tryb incognito, do screenów
+    if (options.incognitoMode) {
+      incognitoMode();
+      if (window.location.href.indexOf(URLS.info) > -1 || window.location.href.indexOf(URLS.settings) > -1) {
+        const container = document.querySelector(".container-background");
+        if (container) {
+          container.innerText = "[LibrusPro] » Tryb Incognito";
+          container.style.color = "#ff5252";
+          container.style.textAlign = "center";
+        }
+      }
+
+      if (window.location.href.indexOf(URLS.details) > -1) {
+        const ths = document.querySelectorAll("th");
+        ths.forEach((e) => {
+          if (e.innerText === "Nauczyciel" || e.innerText === "Dodał") {
+            e.nextElementSibling.innerText = randomName();
+          }
+        });
+      }
+
     }
 
     // Debug
