@@ -181,41 +181,15 @@ function registerOnStorageChange(isSchedule = false) {
   });
 }
 
-// Wyświetlanie charakterystycznych dymków po najechaniu na dane elementy
-function injectjQueryHook() {
-  const code = `
-    document.addEventListener('refreshjQueryTitles', () => {
-      $('.librusPro_jqueryTitle').tooltip({
-        track: true,
-        show: {
-          delay: 200,
-          duration: 200
-        },
-        hide: {
-          delay: 100,
-          duration: 200
-        }
-      }).removeClass("librusPro_jqueryTitle");
-    });`;
-  const script = document.createElement('script');
-  script.appendChild(document.createTextNode(code));
-  (document.body || document.head || document.documentElement).appendChild(script);
+function injectLibrusScript() {
+  const script = document.createElement("script");
+  script.src = browserAPI.runtime.getURL("librus.js");
+  (document.body || document.head).appendChild(script);
 }
 
 // Dodawanie dymka do nowych elementów
 function refreshjQueryTitles() {
   document.dispatchEvent(new CustomEvent('refreshjQueryTitles'));
-}
-
-// Wiadomość w konsoli
-function printCreditsToConsole() {
-  const code = `
-    console.log("%cDzięki za korzystanie z rozszerzenia LibrusPro!", "color:#ce84c8;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
-    console.log("%cJeżeli znajduje się tutaj cokolwiek czerwonego, bądź nie działa coś związanego z wtyczką, proszę zgłoś to.", "color:#d63d4a;font-size:1rem;font-weight:bold");
-    console.log(" %cOficjalny Discord: ${DISCORD_LINK}", "color:#90e9f0;");`;
-  const script = document.createElement('script');
-  script.appendChild(document.createTextNode(code));
-  (document.body || document.head || document.documentElement).appendChild(script);
 }
 
 // Świąteczne logo
@@ -1060,26 +1034,6 @@ function insertProposedBehavior() {
   zachRoczneElement.colSpan = INDICES.proponowaneR != -1 ? "3" : "2";
 }
 
-// Schowanie paska z zachowaniem
-function collapseBehavior() {
-  if (sinceLastLoginView) {
-    // Ukrycie zachowania, jeśli nie zostało zmienione
-    const zachowanieTr = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table > tbody > tr.bolded");
-    let toHide = true;
-    zachowanieTr.querySelectorAll(".center:not(:first-child)").forEach((e) => {
-      if (e.innerText !== "-") toHide = false;
-    })
-    if (toHide) zachowanieTr.style.display = "none";
-  } else {
-    // Zwinięcie zachowania
-    let injectedCode = 'showHide.ShowHide("zachowanie")';
-    if (document.getElementById("przedmioty_OP_zachowanie_node")) injectedCode += ',showHideOP.ShowHide("zachowanie");';
-    const script = document.createElement('script');
-    script.appendChild(document.createTextNode(injectedCode));
-    (document.body || document.head || document.documentElement).appendChild(script);
-  }
-}
-
 function adjustNavbar() {
   const ref = document.querySelector("#icon-oceny")?.parentElement;
   if (!ref) return;
@@ -1335,19 +1289,6 @@ function adjustHomeworks() {
   document.querySelectorAll(`input[onclick*="otworz_w_nowym_oknie('/moje_zadania/podglad/"]`).forEach((e) => {
     e.outerHTML = e.outerHTML.replace(REGEXS.homework, `window.open('https://synergia.librus.pl/moje_zadania/podglad/$2');`);
   });
-}
-
-// Automatyczne ładowanie strony w tle co 20 min, aby utrzymać sesję
-function disableAutoLogout() {
-  // Załadowanie strony w tle co 20 minut, aby nie wylogowywało
-  const code = `function refreshLibrus() {
-    fetch('https://synergia.librus.pl/wiadomosci', { cache: 'no-cache', credentials: 'same-origin' });
-    fetch('${URLS.refreshSession}');
-  }
-  setInterval(refreshLibrus, 20*60*1000);`;
-  const refreshScript = document.createElement('script');
-  refreshScript.appendChild(document.createTextNode(code));
-  (document.body || document.head || document.documentElement).appendChild(refreshScript);
 }
 
 // Modernizacja dymka
@@ -2176,6 +2117,7 @@ class CustomSchedule {
     this.studentClass = studentClass;
     this.month = document.getElementsByName("miesiac")[0].value;
     this.year = document.getElementsByName("rok")[0].value;
+    this.noTimetable = false;
 
     const daysIds = document.getElementsByClassName("kalendarz-numer-dnia");
 
@@ -2603,12 +2545,17 @@ class CustomSchedule {
     return "<article>" + text.join(" ") + "</article>";
   }
 
-  // TODO: idk jeśli nie udostępniony
   insertTimetable(days, requestedTimetable) {
     browserAPI.storage.local.get(["timetable"], (data) => {
       let timetable = data["timetable"];
       if (!timetable) {
-        browserAPI.runtime.sendMessage({ msg: 'fetchTimetable' }, () => { this.insertTimetable(days) });
+        if (!this.noTimetable) {
+          this.noTimetable = true;
+          this.options.debug && console.log("[LibrusPro] Pobieranie aktualnego planu lekcji");
+          browserAPI.runtime.sendMessage({ msg: 'fetchTimetable' }, () => { this.insertTimetable(days) });
+        } else {
+          this.options.debug && console.log(`[LibrusPro] Pobranie planu lekcji nie powiodło się!`);
+        }
         return;
       }
 
@@ -2616,14 +2563,23 @@ class CustomSchedule {
         timetable = requestedTimetable;
       }
 
+      if (timetable === null) {
+        this.options.debug && console.log(`[LibrusPro] Błąd przy pobieraniu planu lekcji`);
+      }
+
       const subjects = new Set();
       for (let day of days) {
+        if (day.classList.contains("librusPro_withTimetable"))
+          continue;
+
         const timetableElement = document.createElement("ARTICLE");
         timetableElement.innerText = TIMETABLE_SYMBOL;
         timetableElement.classList.add("librusPro_lesson-plan", "librusPro_jqueryTitle");
 
-        if (requestedTimetable === null) {
+        // Insert error messages
+        if (timetable === null) {
           timetableElement.title = '<article class="librusPro_timetable-header">LibrusPro <span class="librusPro_white">|</span> <span class="librusPro_error">Wystąpił błąd!</span></article><article>Skontaktuj się z developerem!</article>';
+          day.classList.add("librusPro_withTimetable");
           day.after(timetableElement);
           continue;
         }
@@ -2633,10 +2589,11 @@ class CustomSchedule {
         let dayTimetable = timetable[date];
         if (!dayTimetable) {
           let d = new Date(date);
-          let day = d.getDay(),
-            diff = d.getDate() - day + (day == 0 ? -6 : 1); // niedziela
+          let day = d.getDay();
+          let diff = d.getDate() - day + (day == 0 ? -6 : 1); // niedziela
           d.setDate(diff);
           const key = getYYYYMMDD(d.getFullYear(), d.getMonth() + 1, d.getDate());
+          this.options.debug && console.log(`[LibrusPro] Pobieranie planu lekcji na ${key}`);
           browserAPI.runtime.sendMessage({ msg: 'fetchTimetable', data: key },
             (_requestedTimetable) => { this.insertTimetable(days, _requestedTimetable) });
           return;
@@ -2661,6 +2618,7 @@ class CustomSchedule {
         if (timetableText.length <= 0) continue;
 
         timetableElement.title = '<article class="librusPro_timetable-header">LibrusPro <span class="librusPro_white">|</span> <span class="librusPro_lightblue">Plan lekcji:</span></article>' + timetableText.join("");
+        day.classList.add("librusPro_withTimetable");
         day.after(timetableElement);
       }
 
@@ -2821,8 +2779,8 @@ function main() {
     return;
   }
 
+  injectLibrusScript();
   registerOnStorageChange(window.location.href.indexOf(URLS.schedule) > -1);
-  injectjQueryHook();
 
   // Co to po komu ta strona startowa?
   if (URLS.index.some((e) => window.location.href.indexOf(e) > -1)) {
@@ -2835,11 +2793,9 @@ function main() {
   getGradeColumns();
 
   // Nie wymagające opcji
-  printCreditsToConsole();
   adjustHeader();
   adjustNavbar();
   insertFooter();
-  disableAutoLogout();
 
   // Świąteczny banner (połowa grudnia -> połowa stycznia)
   let isChristmas = new Date();
@@ -2847,8 +2803,6 @@ function main() {
 
   // Oceny
   if (window.location.href.indexOf(URLS.grades) > -1) {
-    collapseBehavior();
-
     if (!sinceLastLoginView) {
       insertProposedBehavior();
     }
@@ -3007,7 +2961,6 @@ function main() {
           }
         });
       }
-
     }
 
     // Debug
@@ -3025,6 +2978,7 @@ function main() {
     refreshjQueryTitles();
   });
   refreshjQueryTitles();
+  setTimeout(refreshjQueryTitles, 200);
 }
 
 // Niech się dzieje wola nieba, 

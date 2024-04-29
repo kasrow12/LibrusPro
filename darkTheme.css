@@ -133,6 +133,7 @@ img {
 	color: var(--textcolor2);
 }
 #main-menu > ul > li > a,
+body .container.green .container-background,
 #body
 	> form:nth-child(5)
 	> div
@@ -410,6 +411,8 @@ img[src*="attachment.png"] {
 #body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:nth-child(2n + 1) > th,
 #zmienEmailDialog > div.warning-content > form > table > tbody td,
 #zmienEmailDialog > div.warning-content > form > table > tbody th,
+#blokWgGodzinContent > table > tbody > tr > td,
+#blokWgGodzinContent > table > tbody > tr > th,
 #formDanePoprzednieLata > div > div > table > tbody > tr:nth-child(2n + 1) > th,
 #formDanePoprzednieLata > div > div > table > tbody > tr:nth-child(2n + 1) > td {
 	background: var(--line0) !important;
@@ -498,6 +501,7 @@ td > table > tbody > tr.line1.bolded > td {
 }
 input[type="text"],
 input[type="password"],
+textarea,
 #tresc_wiadomosci {
 	background: var(--inputbackground) !important;
 	color: var(--textcolor2) !important;
@@ -795,6 +799,12 @@ table.decorated {
 /* Inne */
 [style*="rgb(189, 183, 107)"] {
 	background: #e0dd6b !important;
+}
+[style*="rgb(186, 85, 211)"] {
+	color: #ffffff !important;
+}
+[style*="rgb(123, 104, 238)"] {
+	color: #ffffff !important;
 }
 .librusPro_new-event-button, .librusPro_lesson-plan {
 	color: #bbb;

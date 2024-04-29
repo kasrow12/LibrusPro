@@ -546,10 +546,10 @@ body {
 .librusPro_margin-bottom-9 {
   margin-bottom: 9px;
 }
-#librusPro_date::after {
+/* #librusPro_date::after {
   content: "*";
   color: #dd1414;
-}
+} */
 #librusPro_lesson:focus,
 #librusPro_subject:focus,
 #librusPro_type:focus,
