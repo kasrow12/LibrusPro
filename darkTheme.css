@@ -36,6 +36,12 @@ body {
 #top-banner-container {
 	background: var(--darkbackground) !important;
 }
+.librusPro_yellow {
+	color: #ffd128;
+}
+.librusPro_lightgreen {
+	color: #8debe3;
+}
 img {
 	-webkit-filter: brightness(0.7) contrast(1.2);
 	filter: brightness(0.7) contrast(1.2);

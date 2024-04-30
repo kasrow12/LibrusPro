@@ -22,19 +22,19 @@ Contact: kasrow12 (at) gmail.com
   color: #6fa5e3;
 }
 .librusPro_lightgreen {
-  color: #8debe3;
+  color: #3f7c4e;
 }
 .librusPro_yellow {
-  color: #ffd128;
+  color: #d89d23;
 }
 .librusPro_salmon {
   color: #ff7ca0;
 }
 .librusPro_greeno {
-  color: #96c5b4;
+  color: #73b39b;
 }
 .librusPro_water {
-  color: #94cae4;
+  color: #73a7c2;
 }
 .librusPro_title-nieudane,
 .librusPro_error {
@@ -763,4 +763,9 @@ body {
 }
 #language {
   display: none;
+}
+body .ui-tooltip {
+  background: #fff;
+  border: 1px solid #c3c3c3;
+  color: #222;
 }

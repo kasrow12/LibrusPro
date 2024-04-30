@@ -1089,7 +1089,7 @@ function displayStudentNumber(student) {
   }
 
   studentNumberWrapper.classList.add("librusPro_jqueryTitle");
-  studentNumberWrapper.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Twój numerek</span></article><b style='color: #b6dc3f'>Funkcja dostępna tylko z rozszerzeniem <b class='librusPro_accent'>LibrusPro</b>!</b>";
+  studentNumberWrapper.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Twój numerek</span></article><b class='librusPro_lightgreen'>Funkcja dostępna tylko z rozszerzeniem <b class='librusPro_accent'>LibrusPro</b>!</b>";
   if (student.number === null) {
     studentNumberWrapper.title = `<b class="librusPro_error">Nie udało się pobrać Twojego numerka!</b>`;
   }

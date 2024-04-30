@@ -59,5 +59,5 @@ function collapseBehavior() {
 }
 
 if (window.location.href.indexOf("przegladaj_oceny/uczen") > -1) {
-    collapseBehavior();
+  collapseBehavior();
 }
