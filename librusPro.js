@@ -2669,20 +2669,27 @@ function initMessageTemplate() {
   const refButton = document.querySelector("input[name='anuluj_wysylanie']");
   if (!refButton) return;
 
+  refButton.classList.remove("medium");
+  refButton.classList.add("small");
+
   browserAPI.storage.local.get(["messageTemplate"], (data) => {
     const insertTemplateButton = document.createElement("input");
-    insertTemplateButton.classList.add("medium", "ui-button", "ui-widget", "ui-state-default", "ui-corner-all", "librusPro_jqueryTitle");
+    insertTemplateButton.classList.add("medium", "ui-button", "ui-widget", "ui-state-default", "ui-corner-all");
     insertTemplateButton.value = "Wstaw schemat";
-    insertTemplateButton.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Wstaw schemat wiadomości</span></article><article class='librusPro_justify'>Po naciśnięciu tego przycisku, <span class='librusPro_lightgreen'>treść wiadomości</span> zostanie zastąpiona schematem zapisanym w pamięci, który możesz edytować dzięki przyciskowi <span class='librusPro_greeno'>Zapisz schemat</span>.</article>";
     insertTemplateButton.setAttribute("type", "button");
     refButton.parentElement.insertBefore(insertTemplateButton, refButton);
 
     const saveTemplateButton = document.createElement("input");
-    saveTemplateButton.classList.add("medium", "ui-button", "ui-widget", "ui-state-default", "ui-corner-all", "librusPro_jqueryTitle");
+    saveTemplateButton.classList.add("medium", "ui-button", "ui-widget", "ui-state-default", "ui-corner-all");
     saveTemplateButton.value = "Zapisz schemat";
-    saveTemplateButton.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Zapisz schemat wiadomości</span></article><article class='librusPro_justify'>Po naciśnięciu tego przycisku, Twój schemat zostanie zastąpiony <span class='librusPro_lightgreen'>aktualną treścią wiadomości</span> i zapisany w&nbsp;pamięci. Możesz go później wstawić dzięki przyciskowi <span class='librusPro_water'>Wstaw schemat</span>.</article>";
     saveTemplateButton.setAttribute("type", "button");
     refButton.parentElement.insertBefore(saveTemplateButton, refButton);
+
+    const helper = document.createElement("img");
+    helper.src = "/images/pomoc_ciemna.png";
+    helper.classList.add("tooltip", "helper-icon", "librusPro_jqueryTitle");
+    helper.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Schemat wiadomości</span></article><article class='librusPro_justify'>Po naciśnięciu przycisku <span class='librusPro_water'>Wstaw schemat</span>, <span class='librusPro_lightgreen'>treść wiadomości</span> zostanie zastąpiona schematem zapisanym w pamięci, który możesz edytować dzięki przyciskowi <span class='librusPro_greeno'>Zapisz schemat</span>. Po jego naciśnięciu, Twój schemat zostanie zastąpiony <span class='librusPro_lightgreen'>aktualną treścią wiadomości</span> i&nbsp;zapisany w&nbsp;pamięci.</article>";
+    refButton.parentElement.insertBefore(helper, refButton);
 
     const message = document.querySelector("textarea[name='tresc']");
 
