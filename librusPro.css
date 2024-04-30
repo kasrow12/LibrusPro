@@ -69,6 +69,7 @@ td[style^="height: 25px"] {
 }
 .grade-box {
   border-radius: 10%;
+  font-weight: normal;
 }
 .kalendarz-dzien td {
   border-left: none !important;
@@ -244,13 +245,13 @@ td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
   color: #cb997e;
 }
 .librusPro_title-user {
-  color: #aaaaaa;
+  color: #7e7e7e;
 }
 .librusPro_title-weight {
   color: #f3722c;
 }
 .librusPro_title-comment {
-  color: #a2a9ba;
+  color: #66769b;
 }
 .librusPro_title-improved {
   color: #f19c79;

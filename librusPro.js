@@ -22,9 +22,12 @@ const REGEXS = Object.freeze({
   homework: /(otworz_w_nowym_oknie\(\'\/moje_zadania\/podglad\/)(\d*?)(\',\'o1\',650,600\);)/,
   cancelled: /Odwołane zajęcia(\n.*) na lekcji nr: (\d+) \((.*)\)$/,
   substitution: /(Zastępstwo|Przesunięcie) z (.*) na lekcji nr: (\d+) \((.*)\)$/,
+  parentTeacherMeeting: /(Wywiadówka): (.*?)(\n(godz\.:.)(\d\d:\d\d))?(\nSala:.)(.*)/s,
   description: /Opis: (.+?)(<br>|<br \/>)Data/,
   lastLogin: /(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}), IP: ((?:[0-9]{1,3}\.){3}[0-9]{1,3})<br \/>/g,
   lastLoginHeader: /<b>ostatnie (udane|nieudane) logowania:<\/b><br \/>(brak)?/g,
+  other: /^Inne$/,
+  trip: /^Wycieczka$/,
 });
 const URLS = Object.freeze({
   base: "https://synergia.librus.pl/",
@@ -2433,8 +2436,27 @@ class CustomSchedule {
 
     // Modernizacja
     if (this.options.modernizeSchedule) {
-      // Typ (np. sprawdzian)
       [...event.childNodes].forEach((e) => {
+        // Inne (bez przedmiotu)
+        if (e.nodeValue?.match(REGEXS.other)) {
+          const el = document.createElement("SPAN");
+          el.innerText = e.nodeValue;
+          el.classList.add("librusPro_event-type");
+          e.after(el);
+          e.remove();
+        }
+
+        // Wycieczka
+        if (e.nodeValue?.match(REGEXS.trip)) {
+          const el = document.createElement("ARTICLE");
+          el.innerText = e.nodeValue;
+          el.classList.add("librusPro_event-type");
+          e.after(el);
+          e.previousSibling?.remove();
+          e.remove();
+        }
+        
+        // Typ (np. sprawdzian)
         if (e.nodeValue?.[0] === ",") {
           let el;
           if (event.querySelector(`${ONLINE_LESSON}:last-child`)) {
@@ -2480,6 +2502,25 @@ class CustomSchedule {
         }
         el2.classList.add("librusPro_event-teacher");
         event.appendChild(el2);
+      }
+
+      // Wywiadówki
+      const parentTeacher_res = event.innerText.match(REGEXS.parentTeacherMeeting);
+      if (event.innerText && parentTeacher_res) {
+        event.innerText = parentTeacher_res[3] ? 'Godz: ' + parentTeacher_res[5] : '';
+        const el = document.createElement("ARTICLE");
+        el.classList.add("librusPro_event-subject");
+        el.innerText = parentTeacher_res[1];
+        event.appendChild(el);
+        
+        const el2 = document.createElement("SPAN");
+        el2.classList.add("librusPro_event-type");
+        el2.innerText = parentTeacher_res[2];
+        event.appendChild(el2);
+
+        const el3 = document.createElement("SPAN");
+        el3.innerText = parentTeacher_res[6] + parentTeacher_res[7];
+        event.appendChild(el3);
       }
 
       // Odchudzenie nieobecności nauczycieli
