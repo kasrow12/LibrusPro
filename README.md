@@ -25,7 +25,7 @@
 # ⏩ Obecnie dostępne dla:
 ### 🖥 <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Google Chrome</a>
 ### 🦊 <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Firefoxa</a>
-### 🌍 <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Microsoft Edge (XD)</a>
+### 🌍 <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Microsoft Edge</a>
 ### ⭕ <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Opery</a>
 ### 📱 <a href="https://github.com/kasrow12/LibrusPro/blob/master/docs/LibrusPro%20-%20wersja%20mobilna.pdf">Androida</a>
 <hr>
@@ -51,14 +51,15 @@ Nie jesteś sam(a), na szczęście to już nie jest problem. W końcu Librus nie
 <hr>
 
 ## ⭐️ • Własne wydarzenia w terminarzu 📆
-Chcesz dodać _własne_ wydarzenie do swojego terminarza? Zapowiedziane kartkówki, odpowiedzi ustne, a może prace domowe, projekty, o których nie chcesz zapomnieć, a nie zostały wpisane przez nauczyciela? Z tym rozszerzeniem jest to wreszcie możliwe **a to wszystko w jednym miejscu**!
+Chcesz dodać _własne_ wydarzenie do swojego terminarza? Zapowiedziane kartkówki, odpowiedzi ustne, a może prace domowe, czy projekty, o których nie chcesz zapomnieć, a nie zostały wpisane przez nauczyciela?Z tym rozszerzeniem jest to wreszcie możliwe! Teraz znajdziesz **wszystko w jednym miejscu**!
 
-## ⭐️ • Obliczanie średniej ocen 📈
-Niektóre szkoły wyłączają możliwość wyświetlania średniej ocen dla ich uczniów i rodziców. Na szczęście Twój komputer świetnie sobie radzi z dodawaniem, mnożeniem i dzieleniem, więc sobie poradzi :) W tabeli znajdziesz także odpowiednio średnie: z całego semestru, z ocen proponowanych, ze (śród)rocznych, a także ze wszystkich ocen cząstkowych (średnia roczna).
+## ⭐️ • Obliczanie średniej ocen* 📈
+Niektóre szkoły wyłączają możliwość wyświetlania średniej ocen dla ich uczniów i rodziców. Na szczęście Twój komputer świetnie sobie radzi z dodawaniem, mnożeniem i dzieleniem. W tabeli znajdziesz także odpowiednio średnie: z całego semestru, z ocen proponowanych, ze (śród)rocznych, a także ze wszystkich ocen cząstkowych (średnia roczna).
 
 ## ⭐️ • Wyświetlanie procentowej frekwencji z przedmiotów 🎓
 Zastanawiasz się ile masz **procent frekwencji** z danego przedmiotu? Może chcesz wiedzieć, ile jeszcze lekcji możesz opuścić, aby nie mieć problemu z klasyfikacją? Nie ma sprawy. W zakładce *Frekwencja* wystarczy, że naciśniesz odpowiedni przycisk, a Twoje procenty obecności się pojawią.
 Znajdziesz tam także możliwość pobrania i wyświetlenia wszystkich wpisanych obecności, jeżeli np. będziesz zainteresowany(-a) tym, czy nauczyciele spełniają swoje obowiązki.
+*(Nie ma podglądu frekwencji tylko z drugiego semestru, przecież na koniec roku podsumowuje się cały rok, a nie tylko ostatnich pięć miesięcy)*
 
 ## ⭐️ • Ukrywanie przedmiotów bez ocen 🚫
 Po co w ogóle mają się wyświetlać i zaśmiecać, skoro przez cały rok nie dostajesz z nich żadnych ocen?
@@ -77,7 +78,7 @@ Dymki z dodatkowymi informacjami, które pojawiają się po najechaniu na oceny,
 ## ⭐️ • Tymczasowa modyfikacja ocen i kalkulator jedynek 📝
 Gdy włączysz to ustawienie w widoku ocen, będziesz mógł(a) tymczasowo, lokalnie dodawać nowe oceny, bądź edytować i usuwać bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.
 _(Po odświeżeniu strony wszystko wróci do stanu sprzed modyfikacji! Zmiany zachodzą jedynie lokalnie i nie mają wpływu na Twoje rzeczywiste oceny!)_
-Możesz zobaczyć także **ile jedynek** możesz jeszcze dostać, aby nadal znajdować się powyżej danej średniej, w menu dodawania nowych ocen cząstkowych.
+Możesz także zobaczyć w menu dodawania nowych ocen - **ile możesz jeszcze dostać jedynek**, aby nadal znajdować się powyżej danej średniej.
 
 ## ⭐️ • Schemat wiadomości 📩
 Może nudzi Cię ciągłe podpisywanie się w wiadomościach? Wystaczy jedno kliknięcie, aby wstawić swoją formułkę, którą możesz dowolnie edytować.
@@ -86,10 +87,9 @@ Może nudzi Cię ciągłe podpisywanie się w wiadomościach? Wystaczy jedno kli
 Nauczyciel postanowił Cię _zagrozić_ i teraz cały rok mruga Ci jedynka? Spokojnie, mam na to sposób :)
 
 ## ⭐️ • Zapobieganie automatycznemu wylogowaniu 🎉
-Dopóki karta z Librusem będzie otwarta, Twoja **sesja nie wygaśnie**! Koniec nieprzyjemnych komunikatów "STOP".
+Dopóki karta z Librusem będzie otwarta, Twoja **sesja nie wygaśnie**! Koniec nieprzyjemnych komunikatów "🛑 STOP 🛑".
 
 ## ⭐️ • Poprawki oraz dodatki wizualne 🔨
-  - możliwość wyłączenia wyświetlania **jedynek** w menu rozszerzenia,
   - wyświetlanie **proponowanego zachowania** w tabeli głównej,
   - wyeksponowanie nowych (i oddanych) **prac domowych** oraz wiadomości,
   - usunięcie przycisku **Wersja Alternatywna**, kto normalny z tego korzysta...,
@@ -101,8 +101,17 @@ Dopóki karta z Librusem będzie otwarta, Twoja **sesja nie wygaśnie**! Koniec 
   - możliwość wyłączenia wyświetlania ocen i frekwencji z **I semestru**,
   - wyświetlanie swoich danych osobowych w dzienniku po kliknięciu na pole *jesteś zalogowany(-a) jako:*,
   - zaciemnianie **przeszłych oraz wolnych dni** w terminarzu,
-  - **oraz wiele innych pomniejszych zmian i smaczków!**
+
+**oraz wiele innych pomniejszych zmian i smaczków!**
 <hr>
+
+> [!CAUTION]
+> ### (*) Rozszerzenie nie jest przeznaczone i nie będzie w pełni działać dla szkół, które:
+> ❌ wykorzystują system punktowy,<br>
+> ❌ używają własnej skali ocen (innej niż standardowe 1-6, np. A-F),<br>
+> ❌ wykorzystują procenty jako oceny (0-100).
+> 
+> W związku z tym, że takich szkół w Polsce jest bardzo niewiele (zgłosiły się pojedyncze osoby na dziesiątki tysięcy zadowolonych użytkowników), nie została wprowadzona ich obsługa.
 
 ## 👑 Z rozszerzeniem LibrusPro, to Ty stajesz się władcą tego e-dziennika. Nie przegap takiej okazji!
 
@@ -116,6 +125,6 @@ Ten projekt jest licencjonowany zgodnie z warunkami licencji MIT. Zobacz plik [L
 <hr>
 
 ## ❗ Informacja
-Wszystkie znaki towarowe są własnością ich prawowitych właścicieli i są używane wyłącznie w celach informacyjnych.
+Autor nie jest w żadnym stopniu powiązany ze spółką Librus, a rozszerzenie powstało bezinteresownie wyłącznie w celach edukacyjnych. Wszystkie znaki towarowe są własnością ich prawowitych właścicieli i są używane wyłącznie w celach informacyjnych.
 <hr>
-<i>LibrusPro © 2023 Maks Kowalski</i>
+<i>LibrusPro © 2024 Maks Kowalski</i>
