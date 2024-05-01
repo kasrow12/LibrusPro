@@ -5,7 +5,7 @@
 
 // Config
 const DISCORD_LINK = "https://discord.gg/e9EkVEvsDr";
-const CHROME_LINK = "https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews";
+const CHROME_LINK = "https://chromewebstore.google.com/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews";
 const NO_DATA = "-";
 const ADD_EDIT_SYMBOL = "✎";
 const REMOVE_SYMBOL = "⨉";
@@ -2455,7 +2455,7 @@ class CustomSchedule {
           e.previousSibling?.remove();
           e.remove();
         }
-        
+
         // Typ (np. sprawdzian)
         if (e.nodeValue?.[0] === ",") {
           let el;
