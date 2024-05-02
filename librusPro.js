@@ -99,7 +99,7 @@ const TITLE_MODERNIZATION = Object.freeze([
   [/(Ocena:|Lekcja:) ([\D\d]*?)(<br\/?>|$)/g, '<span class="librusPro_title-grade">$2</span>$3'],
   [/(Kategoria:|Rodzaj:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-type">$2</span>$3'],
   [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:| wystawienia:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
-  [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
+  [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:|Licz do puli:|Licz do wyniku:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
   [/(Waga:|Zakres od:|Zakres do:) (-?\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
   [/(Komentarz:|Temat zajęć:) ([\D\d]*?)($)/g, '<span class="librusPro_title-comment">$2</span>$3'],
   [/(Opis:) ([\D\d]*?)Data dodania:/g, '<span class="librusPro_title-comment">$2</span>Data dodania:'],
@@ -831,6 +831,13 @@ function handleGrades(options, recalculate = false) {
         modernizeTitle(e);
       });
     }
+  }
+
+  // Modernizacja dymków ocen punktowych, bez możliwości zmiany
+  if (options.modernizeTitles) {
+    document.querySelectorAll(".grade-box > a:not([data-title])").forEach((e) => {
+      modernizeTitle(e);
+    });
   }
 }
 
