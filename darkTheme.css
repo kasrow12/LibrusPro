@@ -93,7 +93,7 @@ img {
 #body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr > td,
 #przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr > td,
-#przedmioty_OP_zachowanie > td:nth-child(2) > table > tbody > tr > td {
+#przedmioty_OP_zachowanie > td > table > tbody > tr > td {
 	color: var(--textcolor3) !important;
 }
 #przedmioty_zachowanie > td,
@@ -101,15 +101,15 @@ img {
 	background: var(--darkbackground) !important;
 }
 #przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr:nth-child(2n) > td,
-#przedmioty_OP_zachowanie > td:nth-child(2) > table > tbody > tr:nth-child(2n) > td {
+#przedmioty_OP_zachowanie > td > table > tbody > tr:nth-child(2n) > td {
 	background: var(--line0) !important;
 }
 #przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr:nth-child(2n + 1) > td,
-#przedmioty_OP_zachowanie > td:nth-child(2) > table > tbody > tr:nth-child(2n + 1) > td {
+#przedmioty_OP_zachowanie > td > table > tbody > tr:nth-child(2n + 1) > td {
 	background: var(--line1) !important;
 }
 #przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr:hover > td,
-#przedmioty_OP_zachowanie > td:nth-child(2) > table > tbody > tr:hover > td {
+#przedmioty_OP_zachowanie > td > table > tbody > tr:hover > td {
 	background: var(--lightbackground) !important;
 }
 .WierszTab2 {
@@ -711,7 +711,8 @@ table.decorated {
 #timetableEntryBox .plan-lekcji-info {
 	background: #6e801e;
 }
-#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan="9"],
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan^="9"],
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan="6"],
 #body > form:nth-child(5) > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan="9"] {
 	background-color: var(--line1);
 	color: var(--line01color);
