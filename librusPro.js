@@ -10,7 +10,7 @@ const NO_DATA = "-";
 const ADD_EDIT_SYMBOL = "✎";
 const REMOVE_SYMBOL = "⨉";
 const TIMETABLE_SYMBOL = "≡";
-const TYPE_SUBJECT_LENGTH = 30;
+const TYPE_SUBJECT_LENGTH = 32;
 const DESCRIPTION_LENGTH = 200;
 const REGEXS = Object.freeze({
   weight: /(<br>Waga: )(\d+?)(<br>)/,
@@ -37,6 +37,7 @@ const URLS = Object.freeze({
   details: "/szczegoly",
   gradeDetails: "przegladaj_oceny/szczegoly",
   textGradeDetails: "przegladaj_oceny/szczegoly/ksztaltujace",
+  behaviourDetails: "przegladaj_oceny/zachowanie_szczegoly",
   attendance: "przegladaj_nb/uczen",
   attendanceDetails: "przegladaj_nb/szczegoly",
   schedule: "terminarz",
@@ -2675,8 +2676,34 @@ function randomName() {
   return x[Math.floor(Math.random() * x.length)];
 }
 
+const DIVISIONS = [
+  { amount: 60, name: "seconds" },
+  { amount: 60, name: "minutes" },
+  { amount: 24, name: "hours" },
+  { amount: 7, name: "days" },
+  { amount: 4.34524, name: "weeks" },
+  { amount: 12, name: "months" },
+  { amount: Number.POSITIVE_INFINITY, name: "years" },
+]
+
+const formatter = new Intl.RelativeTimeFormat(undefined, {
+  numeric: "auto",
+})
+
+function formatTimeAgo(date) {
+  let duration = (date - new Date()) / 1000
+
+  for (let i = 0; i < DIVISIONS.length; i++) {
+    const division = DIVISIONS[i]
+    if (Math.abs(duration) < division.amount) {
+      return formatter.format(Math.round(duration), division.name)
+    }
+    duration /= division.amount
+  }
+}
+
 // Dopisywanie daty dodania oceny/frekwencji w widoku szczegółów
-async function insertCreationDate(isTextGrade = false, isAttendance = false) {
+async function insertCreationDate(isTextGrade = false, isAttendance = false, isBehaviour = false) {
   const selector = isAttendance ? 'form#absence_form' : 'form[name="PrzegladajOceny"]';
   const el = document.querySelector(selector)?.action;
   if (!el) return;
@@ -2686,7 +2713,10 @@ async function insertCreationDate(isTextGrade = false, isAttendance = false) {
 
 
   await fetch(URLS.refreshSession);
-  const endpoint = isAttendance ? "Attendances" : (isTextGrade ? "TextGrades" : "Grades");
+  let endpoint = "Grades";
+  if (isAttendance) endpoint = "Attendances";
+  if (isTextGrade) endpoint = "TextGrades";
+  if (isBehaviour) endpoint = "BehaviourGrades/Points";
   let date = await fetch(`${URLS.api}/${endpoint}/${id}`)
     .then(response => response.json())
     .then(data => { return data[isAttendance ? "Attendance" : "Grade"]?.["AddDate"] });
@@ -2701,8 +2731,10 @@ async function insertCreationDate(isTextGrade = false, isAttendance = false) {
   if (!refRow) return;
   const row = refRow.cloneNode(true);
   row.children[0].innerText = "Data dodania";
-  row.children[1].innerText = date;
+  row.children[1].innerText = `${date} (${formatTimeAgo(new Date(date))})`;
   refRow.parentElement.appendChild(row);
+  row.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Data dodania</span></article><b class='librusPro_water'>Funkcja dostępna tylko z rozszerzeniem <b class='librusPro_accent'>LibrusPro</b>!</b>";
+  row.classList.add("librusPro_jqueryTitle");
 }
 
 // Wstawianie schematów wiadomości użytkownika
@@ -2729,7 +2761,7 @@ function initMessageTemplate() {
     const helper = document.createElement("img");
     helper.src = "/images/pomoc_ciemna.png";
     helper.classList.add("tooltip", "helper-icon", "librusPro_jqueryTitle");
-    helper.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Schemat wiadomości</span></article><article class='librusPro_justify'>Po naciśnięciu przycisku <span class='librusPro_water'>Wstaw schemat</span>, <span class='librusPro_lightgreen'>treść wiadomości</span> zostanie zastąpiona schematem zapisanym w pamięci, który możesz edytować dzięki przyciskowi <span class='librusPro_greeno'>Zapisz schemat</span>. Po jego naciśnięciu, Twój schemat zostanie zastąpiony <span class='librusPro_lightgreen'>aktualną treścią wiadomości</span> i&nbsp;zapisany w&nbsp;pamięci.</article>";
+    helper.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Schemat wiadomości</span></article><article class='librusPro_justify'>Po kliknięciu przycisku <span class='librusPro_water'>Wstaw schemat</span>, treść wiadomości zostanie zastąpiona wcześniej zapisanym schematem, który możesz edytować za pomocą przycisku <span class='librusPro_greeno'>Zapisz schemat</span>. Po kliknięciu tego przycisku, Twój schemat zostanie zastąpiony przez <span class='librusPro_lightgreen'>obecną treść wiadomości</span> i zapisany w pamięci.</article>";
     refButton.parentElement.insertBefore(helper, refButton);
 
     const message = document.querySelector("textarea[name='tresc']");
@@ -2866,6 +2898,8 @@ function main() {
     insertCreationDate(true);
   } else if (window.location.href.indexOf(URLS.gradeDetails) > -1) {
     insertCreationDate();
+  } else if (window.location.href.indexOf(URLS.behaviourDetails) > -1) {
+    insertCreationDate(false, false, true);
   }
 
   // Frekwencja
