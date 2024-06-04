@@ -27,7 +27,9 @@
 ### 🦊 <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Firefoxa</a>
 ### 🌍 <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Microsoft Edge</a>
 ### ⭕ <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Opery</a>
-### 📱 <a href="https://github.com/kasrow12/LibrusPro/blob/master/docs/LibrusPro%20-%20wersja%20mobilna.pdf">Androida</a>
+- Pobierz wersję ze sklepu Chrome
+### 📱 <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Androida</a>
+- Zainstaluj przeglądarkę [Firefox ze Sklepu Play](https://play.google.com/store/apps/details?id=org.mozilla.firefox), a następnie "Dodaj do Firefoxa" <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">korzystając z linku dla Firefoxa</a>.
 <hr>
 
 # 🛠 Funkcje
