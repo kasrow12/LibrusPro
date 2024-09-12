@@ -96,12 +96,12 @@ const COLORS = Object.freeze({
 });
 const TITLE_MODERNIZATION = Object.freeze([
   [/(^)([\D\d]*?)(<br ?\/?>(Zakres od:|Data wystawienia:))/g, '<span class="librusPro_title-type">$2</span>$3'],
-  [/(Ocena:|Lekcja:) ([\D\d]*?)(<br\/?>|$)/g, '<span class="librusPro_title-grade">$2</span>$3'],
+  [/(Ocena:|Lekcja:|Temat:) ([\D\d]*?)(<br\/?>|$)/g, '<span class="librusPro_title-grade">$2</span>$3'],
   [/(Kategoria:|Rodzaj:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-type">$2</span>$3'],
-  [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:| wystawienia:)) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
+  [/(Data(:| zapowiedzi:| realizacji:| dodania:| ostatniej modyfikacji:| wystawienia:| udostępnienia:)|Termin wykonania:) (.*?)(<br ?\/?>|$)/g, '<span class="librusPro_title-date">$3</span>$4'],
   [/(Licz do średniej:|Obowiązek wyk. zadania:|Czy wycieczka:|Licz do puli:|Licz do wyniku:) (Tak|tak|TAK|Nie|nie|NIE)/g, '<span class="librusPro_title-$2">$2</span>'],
   [/(Waga:|Zakres od:|Zakres do:) (-?\d+?)(<br ?\/?>|$)/g, '<b><span class="librusPro_title-weight">$2</span></b>$3'],
-  [/(Komentarz:|Temat zajęć:) ([\D\d]*?)($)/g, '<span class="librusPro_title-comment">$2</span>$3'],
+  [/(Komentarz:|Temat zajęć:|Treść:) ([\D\d]*?)($)/g, '<span class="librusPro_title-comment">$2</span>$3'],
   [/(Opis:) ([\D\d]*?)Data dodania:/g, '<span class="librusPro_title-comment">$2</span>Data dodania:'],
   [/(Poprawa oceny:) (.{0,2}) \((.*?)\)(<br ?\/?>|$)/g, '<b class="librusPro_title-improved">$2</b> <span class="librusPro_title-brackets">(<span class="librusPro_title-type">$3</span>)</span>$4'],
   [/(Godzina lekcyjna:) (\d+?)<\/b>(<br ?\/?>|$)/g, '<span class="librusPro_title-improved">$2</span>$3'],
@@ -3010,6 +3010,11 @@ function main() {
     // Plan lekcji
     if (window.location.href.indexOf(URLS.timetable) > -1) {
       if (options.modernizeTitles) document.querySelectorAll('#timetableEntryBox > a[href="javascript:void(0);"]').forEach(e => modernizeTitle(e));
+    }
+
+    // Prace domowe
+    if (window.location.href.indexOf(URLS.homework) > -1) {
+      if (options.modernizeTitles) document.querySelectorAll('[style*="wykres_zadania"]').forEach(e => modernizeTitle(e));
     }
 
     // Ciemny motyw
