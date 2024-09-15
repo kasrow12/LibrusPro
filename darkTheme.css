@@ -625,6 +625,10 @@ img[src*="pomoc_ciemna"] {
 [style*="rgb(124, 252, 0)"] {
 	background: #6dac30 !important;
 }
+/* blanchedalmond */
+[style*="rgb(255, 235, 205)"] {
+	color: #222 !important;
+}
 /* lightsalmon */
 [style*="rgb(255, 160, 122)"] {
 	color: #fff !important;
