@@ -59,11 +59,19 @@ browserAPI.storage.sync.get(["options"], function (t) {
     restoreDefaults();
     return;
   } else {
+    let optionMissing = false;
     for (let p in OPTIONS_DEFAULT) {
       if (!options.hasOwnProperty(p)) {
-        restoreDefaults();
-        return;
+        optionMissing = true;
+        options[p] = OPTIONS_DEFAULT[p];
       }
+    }
+
+    if (optionMissing) {
+      browserAPI.storage.sync.set({
+        ["options"]: options
+      }, () => { window.location.reload(); });
+      return;
     }
   }
   for (let e of boolOptions) {
