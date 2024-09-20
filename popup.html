@@ -247,35 +247,40 @@ input[type="number"]:focus {
 			<label for="optionsGrades" class="option-category">Oceny <span class="emoji">🎓</span></label>
 		</div>
 		<div class="options" id="optionsGeneralElement" style="display: block">
-			<label class="option-container">
+			<label class="option-container" title="Włącz/wyłącz ciemny motyw">
 				Ciemny motyw
 				<input class="tgl tgl-light" id="darkTheme" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="darkTheme"></label>
 			</label>
-			<label class="option-container">
+			<label class="option-container" title="Kolorowe opisy w dymkach, po najechaniu na oceny i nieobecności">
 				Modernizacja dymków
 				<input class="tgl tgl-light" id="modernizeTitles" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="modernizeTitles"></label>
 			</label>
-			<label class="option-container">
+			<label class="option-container" title="Włącz/wyłącz moduł tymczasowej modyfikacji ocen">
 				Modyfikacja ocen
 				<input class="tgl tgl-light" id="enableGradeManager" type="checkbox" checked="true"/>
 				<label class="tgl-btn" for="enableGradeManager"></label>
 			</label>
-			<label class="option-container">
+			<label class="option-container" title="Podmienia kolory ocen na ciemne, w zależności od ich wagi">
 				Wersja depresyjna
 				<input class="tgl tgl-light" id="depressionMode" type="checkbox"/>
 				<label class="tgl-btn" for="depressionMode"></label>
 			</label>
-			<label class="option-container">
+			<label class="option-container" title="Podmienia nazwiska w widoku ocen, nieobecności, w terminarzu i planie lekcji">
 				Tryb incognito (do screenów)
 				<input class="tgl tgl-light" id="incognitoMode" type="checkbox"/>
 				<label class="tgl-btn" for="incognitoMode"></label>
 			</label>
-			<label class="option-container">
+			<label class="option-container" title="Ukrywanie ocen oraz nieobecności z I. semestru">
 				Ukrywanie I semestru
 				<input class="tgl tgl-light" id="hideFirstTerm" type="checkbox"/>
 				<label class="tgl-btn" for="hideFirstTerm"></label>
+			</label>
+			<label class="option-container" title="Przeznaczone tylko dla szkół z systemem punktowym, które nie korzystają z tabelki z ocenami bieżącymi">
+				Ukrywanie ocen bieżących
+				<input class="tgl tgl-light" id="hideGrades" type="checkbox"/>
+				<label class="tgl-btn" for="hideGrades"></label>
 			</label>
 			<button class="button small" id="changelog">Co nowego?</button>
 		</div>

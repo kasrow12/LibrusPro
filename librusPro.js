@@ -832,13 +832,6 @@ function handleGrades(options, recalculate = false) {
       });
     }
   }
-
-  // Modernizacja dymków ocen punktowych, bez możliwości zmiany
-  if (options.modernizeTitles) {
-    document.querySelectorAll(".grade-box > a:not([data-title])").forEach((e) => {
-      modernizeTitle(e);
-    });
-  }
 }
 
 // Obrazki i bordery w css ustawione przez librusa na important
@@ -854,6 +847,7 @@ function finalizeDarkTheme() {
   }
   const darkThemeImages = {
     '#gradeAverangeGraph > a > img': 'img/pobierz_wykres_ocen2_dark.png',
+    '#scoresGradeAverangeGraph > a > img': 'img/pobierz_wykres_ocen_punktowych_dark.png',
     '#absenceGraph > img': 'img/pobierz_wykres_absencji_dark.png',
     'img[src="/images/strzalka_prawo.gif"]': 'img/strzalka_prawo.png',
     'img[src="/images/strzalka_lewo.gif': 'img/strzalka_lewo.png',
@@ -908,7 +902,7 @@ function finalizeDarkTheme() {
 
 // Ukrywanie przedmiotów
 function hideSubjects() {
-  document.querySelectorAll("tr[name=przedmioty_all]").forEach((e) => {
+  document.querySelectorAll("tr[name=przedmioty_all], tr[name=przedmioty_OP_all]").forEach((e) => {
     const el = e.previousElementSibling;
     // Wiersz z zachowaniem nie zostaje usunięty, poza nim wszystkie bez ocen
     if (el && !el.classList.contains("bolded") && (!el.querySelectorAll(".grade-box") || el.querySelectorAll(".grade-box").length < 1)) {
@@ -2799,6 +2793,20 @@ function initMessageTemplate() {
   });
 }
 
+// Ukrywanie ocen bieżących, przeznaczone dla szkół z systemem punktowym, które z nich nie korzystają
+function hideGrades() {
+  const header = document.querySelector("h3.center");
+  if (!header) return;
+
+  header.nextElementSibling.remove(); // sortuj
+  header.nextElementSibling.remove(); // <table>
+  header.nextElementSibling.remove(); // script showHide
+  header.nextElementSibling.remove(); // legenda
+  header.nextElementSibling.remove(); // <p>nbsp;</p>
+  header.remove();
+  document.getElementById("gradeAverangeGraph")?.remove();
+}
+
 // Poprawki w planie lekcji
 function refineTimetable() {
   // Ukrywanie soboty i niedzieli
@@ -2967,28 +2975,40 @@ function main() {
 
     // Oceny
     if (window.location.href.indexOf(URLS.grades) > -1) {
-      // Tymczasowa modyfikacja ocen
-      if (options.enableGradeManager && options.calculateAverages) {
-        const gradeManagerParent = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p")?.parentElement;
-        if (gradeManagerParent) {
-          gradeManager = new GradeManager(gradeManagerParent, options);
+      if (options.hideGrades && document.querySelector("[name='sortowanieOcen2']")) {
+        // Ukrywanie ocen bieżących tylko w przypadku szkół z systemem punktowym
+        hideGrades();
+      } else {
+        // Tymczasowa modyfikacja ocen
+        if (options.enableGradeManager && options.calculateAverages) {
+          const gradeManagerParent = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p")?.parentElement;
+          if (gradeManagerParent) {
+            gradeManager = new GradeManager(gradeManagerParent, options);
+          }
         }
+
+        // Ukrywanie jedynek
+        if (options.hideOnes) hideOnes();
+
+        // Wstawianie średnich i dostosowanie kolorów w wersji depresyjnej
+        handleGrades(options);
+
+        // Ukrywanie ocen i średnich z I semestru (na razie nie działa z ocenami punktowymi, bo czasem są kolumny Wynik, czasem nie, idk)
+        if (options.hideFirstTerm) hideFirstTermGrades();
       }
 
-      // Ukrywanie jedynek
-      if (options.hideOnes) hideOnes();
+      // Modernizacja dymków ocen punktowych
+      if (options.modernizeTitles) {
+        document.querySelectorAll(".grade-box > a:not([data-title])").forEach((e) => {
+          modernizeTitle(e);
+        });
+      }
 
       // Wyłączenie mrugania zagrożeń
       if (!options.keepBlinker) removeBlinker();
 
       // Ukrywanie przedmiotów bez ocen
       if (options.hideSubjects) hideSubjects();
-
-      // Wstawianie średnich i dostosowanie kolorów w wersji depresyjnej
-      handleGrades(options);
-
-      // Ukrywanie ocen i średnich z I semestru
-      if (options.hideFirstTerm) hideFirstTermGrades();
     }
 
     // Frekwencja

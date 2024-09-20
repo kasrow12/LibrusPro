@@ -198,7 +198,7 @@ img[src*="usun_kosz.png"] {
 	-webkit-filter: brightness(1) contrast(1);
 	filter: brightness(1) contrast(1);
 }
-#gradeAverangeGraph, #absenceGraph {
+#gradeAverangeGraph, #absenceGraph, #scoresGradeAverangeGraph {
 	-webkit-filter: brightness(0.7) contrast(1.2) !important;
 	filter: brightness(0.7) contrast(1.2) !important;
 }
@@ -624,10 +624,6 @@ img[src*="pomoc_ciemna"] {
 /* lawngreen */
 [style*="rgb(124, 252, 0)"] {
 	background: #6dac30 !important;
-}
-/* blanchedalmond */
-[style*="rgb(255, 235, 205)"] {
-	color: #222 !important;
 }
 /* lightsalmon */
 [style*="rgb(255, 160, 122)"] {
