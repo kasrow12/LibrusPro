@@ -1,0 +1,899 @@
+/* LibrusPro
+Browser Extension
+Author: Maks Kowalski
+Contact: kasrow12 (at) gmail.com
+*/
+
+html {
+	--darkbackground: #272727;
+	--lightbackground: #323232;
+	--bordercolor: #222222;
+	--textcolor: #949494;
+	--textcolor2: #dddddd;
+	--textcolor3: #bbbbbb;
+	--textcolor4: #b4b4b4;
+	--textcolor5: #adadad;
+	--inputbackground: #454545;
+	--line0: #343434;
+	--line1: #393939;
+	--line01color: #b9b9b9;
+	--accent: #291e28;
+	background: #323232;
+}
+body {
+	background: var(--lightbackground) !important;
+}
+* {
+	border-color: var(--bordercolor) !important;
+	border-width: 1px !important;
+}
+#page {
+	background: var(--lightbackground) !important;
+}
+#header {
+	background: var(--darkbackground) !important;
+}
+#top-banner-container {
+	background: var(--darkbackground) !important;
+}
+.librusPro_yellow {
+	color: #ffd128;
+}
+.librusPro_lightgreen {
+	color: #8debe3;
+}
+.librusPro_title-comment {
+	color: #a2a9ba;
+}
+.librusPro_title-user {
+	color: #aaaaaa;
+}
+img {
+	-webkit-filter: brightness(0.7) contrast(1.2);
+	filter: brightness(0.7) contrast(1.2);
+	border: 0;
+}
+[id^="icon"] {
+	color: var(--textcolor) !important;
+}
+[id^="icon"] > span {
+	color: #444444 !important;
+}
+[id^="przedmioty"] {
+	-webkit-filter: brightness(1) !important;
+	filter: brightness(1) !important;
+}
+#user-section {
+	color: var(--textcolor) !important;
+}
+#top-banner {
+	-webkit-filter: brightness(0.8) contrast(0.7) !important;
+	filter: brightness(0.8) contrast(0.7) !important;
+}
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:nth-child(4n + 1) > td,
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:nth-child(4n + 2) > td,
+#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(4n + 1) > td,
+#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(4n + 2) > td {
+	background: var(--line0) !important;
+	transition: background-color 0.1s;
+}
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:nth-child(4n + 3) > td,
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:nth-child(4n) > td,
+#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(4n + 3) > td,
+#body > form:nth-child(5) > div > div > table > tbody > tr:nth-child(4n) > td {
+	background: var(--line1) !important;
+	transition: background-color 0.1s;
+}
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:hover > th,
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:hover > td,
+#body > form:nth-child(5) > div > div > table > tbody > tr:hover > th,
+#body > form:nth-child(5) > div > div > table > tbody > tr:hover > td {
+	background: var(--lightbackground) !important;
+}
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr > td,
+#body > form:nth-child(5) > div > div > table > tbody > tr > td,
+#przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr > td,
+#przedmioty_OP_zachowanie > td > table > tbody > tr > td {
+	color: var(--textcolor3) !important;
+}
+#przedmioty_zachowanie > td,
+#przedmioty_OP_zachowanie > td {
+	background: var(--darkbackground) !important;
+}
+#przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr:nth-child(2n) > td,
+#przedmioty_OP_zachowanie > td > table > tbody > tr:nth-child(2n) > td {
+	background: var(--line0) !important;
+}
+#przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr:nth-child(2n + 1) > td,
+#przedmioty_OP_zachowanie > td > table > tbody > tr:nth-child(2n + 1) > td {
+	background: var(--line1) !important;
+}
+#przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr:hover > td,
+#przedmioty_OP_zachowanie > td > table > tbody > tr:hover > td {
+	background: var(--lightbackground) !important;
+}
+.WierszTab2 {
+	background: var(--line1) !important;
+	color: var(--line01color) !important;
+}
+[name="przedmioty_all"] > td {
+	background: var(--lightbackground) !important;
+}
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr.line0 > td,
+#body > form:nth-child(5) > div > div > table > tbody > tr.line0 > td {
+	color: var(--textcolor3) !important;
+}
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr.line1 > td,
+#body > form:nth-child(5) > div > div > table > tbody > tr.line1 > td {
+	color: var(--textcolor3) !important;
+}
+#header {
+	background: var(--darkbackground) !important;
+}
+#top-banner-container {
+	background: var(--darkbackground) !important;
+}
+#body > form[name="PrzegladajOceny"] > div > div,
+#body > form:nth-child(5) > div > div {
+	background: var(--lightbackground) !important;
+}
+#main-navigation-container {
+	background: var(--accent) !important;
+}
+#user-section > span.luckyNumber {
+	background-color: #310926 !important;
+	color: var(--textcolor2);
+}
+#main-menu > ul > li > a,
+body .container.green .container-background,
+#body
+	> form:nth-child(5)
+	> div
+	> div
+	> div:nth-child(8)
+	> table
+	> tbody
+	> tr
+	> td
+	> table
+	> tbody
+	> tr
+	> td:nth-child(1),
+#body > form[name="PrzegladajOceny"] > div > div > div:nth-child(8) > table > tbody > tr > td > table > tbody > tr > td:nth-child(1) {
+	color: #dcdcdc !important;
+}
+.legend ul li span:not([style*="wykres_zadania"]) {
+	background: var(--lightbackground) !important;
+}
+span.fold-start,
+span.fold-end {
+	color: #cccccc !important;
+}
+table.decorated thead th,
+table.decorated thead td,
+table.decorated tfoot td {
+	background: #2f2f2f !important;
+}
+table.decorated thead td.colspan span {
+	background: var(--accent) !important;
+}
+table.decorated thead td {
+	color: var(--textcolor3) !important;
+}
+table.decorated tr.bolded td {
+	background: #3c3c3c !important;
+}
+.detail-grades {
+	-webkit-filter: brightness(0.8) !important;
+	filter: brightness(0.8) !important;
+}
+.detail-grades > td {
+	color: #000000 !important;
+}
+img[src*="naglowek_uczen.png"] {
+	-webkit-filter: invert(1);
+	filter: invert(1);
+}
+img[src*="usun_kosz.png"] {
+	-webkit-filter: brightness(1) contrast(1);
+	filter: brightness(1) contrast(1);
+}
+#gradeAverangeGraph, #absenceGraph {
+	-webkit-filter: brightness(0.7) contrast(1.2) !important;
+	filter: brightness(0.7) contrast(1.2) !important;
+}
+#user-section > img {
+	-webkit-filter: invert(1);
+	filter: invert(1);
+}
+.ui-tooltip {
+	background: #474747 !important;
+	color: #dbdbdb !important;
+	border: var(--bordercolor) 1px solid !important;
+}
+hr {
+	background-color: #131313 !important;
+}
+table.decorated tfoot tr td:last-child:not(.no-border-right) {
+	border-right: 1px var(--bordercolor) solid !important;
+}
+table.decorated thead tr td:last-child:not(.no-border-right) {
+	border-right: 1px var(--bordercolor) solid !important;
+}
+.container-background {
+	border: 1px var(--bordercolor) solid !important;
+	-webkit-box-shadow: none !important;
+	box-shadow: none !important;
+	background: var(--lightbackground) !important;
+}
+.grade-box {
+	-webkit-filter: brightness(0.6);
+	filter: brightness(0.6);
+}
+select {
+	background-color: #4a4a4a !important;
+	color: #bbb !important;
+	border-color: var(--bordercolor) !important;
+}
+select:not([name="rgbKoloru"]) > option {
+	background-color: #4a4a4a !important;
+	color: #bbb !important;
+}
+#body > form[name="PrzegladajOceny"] > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p,
+#body > form:nth-child(5) > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p {
+	color: var(--textcolor5) !important;
+}
+.legend {
+	color: var(--textcolor5) !important;
+}
+/* frekwencja */
+.inside {
+	background: var(--accent) !important;
+	color: var(--textcolor3) !important;
+}
+.box[style="float: left; background-color:#F7F8FA; "] {
+	background-color: #888888 !important;
+}
+.box[style="float: left; background-color:#F7F8FA;"] {
+	background-color: #888888 !important;
+	color: #ffffff;
+}
+.box {
+	-webkit-filter: brightness(0.6);
+	filter: brightness(0.6);
+	border-color: #555555 !important;
+}
+.box[style="float: left; background-color:#F7F8FA; "] > a {
+	color: #ffffff !important;
+}
+div.warning-content tr:nth-child(2n + 1) > td,
+#absence_form > div > div > table.center.decorated > tbody > tr:nth-child(2n + 1) > td {
+	background: var(--line0) !important;
+	color: var(--textcolor5);
+	transition: background-color 0.1s;
+}
+div.warning-content tr:nth-child(2n) > td,
+#absence_form > div > div > table.center.decorated > tbody > tr:nth-child(2n) > td {
+	color: var(--textcolor5);
+	background: var(--line1) !important;
+	transition: background-color 0.1s;
+}
+div.warning-content tr:hover > td,
+#absence_form > div > div > table.center.decorated > tbody > tr:hover > td {
+	background: var(--lightbackground) !important;
+}
+#AbsencesArchiveGraphDiv,
+#GradeArchiveGraphDiv,
+#GradeAverangeGraphDiv {
+	-webkit-filter: brightness(0.8);
+	filter: brightness(0.8);
+}
+#AbsenceGraphDiv {
+	-webkit-filter: brightness(0.7);
+	filter: brightness(0.7);
+}
+text {
+	fill: #ffffff !important;
+}
+div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-child(12) text {
+	fill: #333333 !important;
+}
+#AbsenceGraphDiv > div:nth-child(1) > svg > g:nth-child(12) > g > text {
+	fill: #000000 !important;
+}
+#balloons > g > rect {
+	fill: var(--darkbackground) !important;
+	stroke: var(--darkbackground) !important;
+}
+/* ogloszenia */
+#adresaci > table tr > td,
+#adresaci > table > tbody > tr:nth-child(2n + 1) > td,
+#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_new):not(.librusPro_doneHomework) > th,
+#body > div > div > table > tbody > tr:nth-child(2n + 1):not(.librusPro_new):not(.librusPro_doneHomework) > td {
+	background: var(--line0) !important;
+	color: var(--line01color);
+	transition: background-color 0.1s;
+}
+#adresaci > table > tbody > tr:nth-child(2n) > td,
+#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_new):not(.librusPro_doneHomework) > th,
+#body > div > div > table > tbody > tr:nth-child(2n):not(.librusPro_new):not(.librusPro_doneHomework) > td {
+	color: var(--line01color);
+	background: var(--line1) !important;
+	transition: background-color 0.1s;
+}
+#adresaci > table > tbody > tr:hover > td,
+#body > div > div > table > tbody > tr:hover:not(.librusPro_new):not(.librusPro_doneHomework) > th,
+#body > div > div > table > tbody > tr:hover:not(.librusPro_new):not(.librusPro_doneHomework) > td {
+	background: var(--lightbackground) !important;
+}
+/* wiadomości */
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr:nth-child(2n + 1)
+	> th,
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr:nth-child(2n + 1)
+	> td {
+	color: var(--line01color);
+	background: var(--line0) !important;
+	transition: background-color 0.1s;
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr:nth-child(2n)
+	> th,
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr:nth-child(2n)
+	> td {
+	background: var(--line1) !important;
+	color: var(--line01color);
+	transition: background-color 0.1s;
+}
+#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > tbody > tr:hover > th,
+#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > tbody > tr:hover > td {
+	background: var(--lightbackground) !important;
+}
+#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > tbody > tr > td > a {
+	color: var(--line01color);
+}
+#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > thead > tr > td > a {
+	color: var(--line01color);
+}
+img[src*="usun_z_kosza.png"] {
+	-webkit-filter: invert(1.0) brightness(0.8);
+	filter: invert(1.0) brightness(0.8);
+}
+img[src*="attachment.png"] {
+	-webkit-filter: invert(1.0) brightness(0.8);
+	filter: invert(1.0) brightness(0.8);
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td.message-folders
+	> table.message-folders
+	> tbody
+	> tr
+	> td
+	> a:not(.selected) {
+	color: var(--line01color);
+}
+.message-recipients-detail tr:nth-child(2n + 1) td,
+#body > form[name="PrzegladajOceny"] > div > div > table.decorated.medium.center > tbody > tr:nth-child(2n + 1) > *,
+#body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:nth-child(2n + 1) > *,
+#body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n + 1) > td,
+#body > form > div > div > table > tbody > tr > td,
+#body > form > div > div > table > tbody > tr > th,
+#body > div > div > form > table > tbody > tr:nth-child(2n + 1) > td,
+#body > div > div > form > table > tbody > tr:nth-child(2n + 1) > th,
+#body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:nth-child(2n + 1) > td,
+#body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:nth-child(2n + 1) > th,
+#zmienEmailDialog > div.warning-content > form > table > tbody td,
+#zmienEmailDialog > div.warning-content > form > table > tbody th,
+#blokWgGodzinContent > table > tbody > tr > td,
+#blokWgGodzinContent > table > tbody > tr > th,
+#formDanePoprzednieLata > div > div > table > tbody > tr:nth-child(2n + 1) > th,
+#formDanePoprzednieLata > div > div > table > tbody > tr:nth-child(2n + 1) > td {
+	background: var(--line0) !important;
+	color: var(--textcolor4);
+	transition: background-color 0.1s;
+}
+.message-recipients-detail tr:nth-child(2n) td,
+#body > form[name="PrzegladajOceny"] > div > div > table.decorated.medium.center > tbody > tr:nth-child(2n) > *,
+#body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:nth-child(2n) > *,
+#body > div > div > div.resultContainer > table > tbody > tr:nth-child(2n) > td,
+#body > div > div > form > table > tbody > tr:nth-child(2n) > td,
+#body > div > div > form > table > tbody > tr:nth-child(2n) > th,
+#body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:nth-child(2n) > td,
+#body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:nth-child(2n) > th,
+#formDanePoprzednieLata > div > div > table > tbody > tr:nth-child(2n) > th,
+#formDanePoprzednieLata > div > div > table > tbody > tr:nth-child(2n) > td {
+	color: var(--textcolor4);
+	background: var(--line1) !important;
+	transition: background-color 0.1s;
+}
+.message-recipients-detail tr:hover td,
+#body > form[name="PrzegladajOceny"] > div > div > table.decorated.medium.center > tbody > tr:hover > *,
+#body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:hover > *,
+#body > div > div > form > table > tbody > tr:hover > td,
+#body > div > div > form > table > tbody > tr:hover > th,
+#body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:hover > td,
+#body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:hover > th,
+#zmienEmailDialog > div.warning-content > form > table > tbody > tr:hover > td,
+#zmienEmailDialog > div.warning-content > form > table > tbody > tr:hover > th,
+#formDanePoprzednieLata > div > div > table > tbody > tr:hover > th,
+#formDanePoprzednieLata > div > div > table > tbody > tr:hover > td {
+	background: var(--lightbackground) !important;
+}
+h3.center {
+	color: var(--textcolor4);
+}
+.warning-box {
+	background: var(--inputbackground) !important;
+}
+div.warning-content > p {
+	color: var(--textcolor3) !important;
+}
+.warning-title {
+	-webkit-filter: brightness(0.8) contrast(1.2);
+	filter: brightness(0.8) contrast(1.2);
+}
+#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table:nth-child(4) > tbody > tr > td,
+#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table:nth-child(2) > tbody > tr > td,
+#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > div,
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td.message-folders
+	> table.message-labels
+	> tbody
+	> tr
+	> td.label-name
+	> a,
+#formWiadomosci > div > div > table > tbody > tr > td.message-recipients > table > tbody > tr > td > label,
+#formWiadomosci > div > div > table > tbody > tr > td.message-recipients > table > thead > tr > td,
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table
+	> tbody
+	> tr:nth-child(1)
+	> td.left.low
+	> span
+	> b,
+#formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table > tbody > tr > td,
+#formWiadomosci > div > div > table > tbody > tr > td.message-folders > table.message-labels > tbody > tr > td > b,
+#formDanePoprzednieLata > div > div > div.container-icon > table > tbody > tr > td:nth-child(2) > p,
+#body > div > div > div > table > tbody > tr > td > table > tbody > tr > td,
+#formWiadomosci > div > div > div > div > p,
+#body > div > div > table > thead > tr > td > a,
+div.warning-content tr > td,
+td > table > tbody > tr.line1.bolded > td {
+	color: var(--textcolor3) !important;
+}
+input[type="text"],
+input[type="password"],
+textarea,
+#tresc_wiadomosci {
+	background: var(--inputbackground) !important;
+	color: var(--textcolor2) !important;
+}
+/* plan lekcji */
+#body > div > div > form > table > tbody > tr > th,
+#body > div > div > form > table > tbody > tr > td {
+	background: var(--inputbackground);
+	color: var(--textcolor3);
+	transition: background-color 0.1s;
+}
+td.today {
+	transition: background-color 0.2s;
+	background: #4c4c4c !important;
+}
+#body > div > div > form > table > tbody > tr:hover > th,
+#body > div > div > form > table > tbody > tr:hover > td {
+	background: var(--lightbackground) !important;
+}
+#formWiadomosci > div > div > table.decorated.filters.center.small > tfoot > tr > td,
+#formFiltrZadania > table > tfoot > tr > td,
+#formPrzegladanieRealizacji > table > tfoot > tr > td,
+#formFiltrZadania > table > tfoot > tr > td {
+	border-top: none !important;
+}
+#scrGeneratedCodes > div,
+#scrGeneratedCodes > div > div.librus-notification__message.librus-notification__message--left > ul,
+#body > div > div > form:nth-child(3) > div > div > div > p {
+	background: var(--lightbackground);
+	color: var(--textcolor2);
+}
+span.warning-title {
+	color: white;
+}
+table.decorated tfoot tr th,
+/* table.decorated tbody tr.line0 th, */ table.decorated tbody tr th,
+table.decorated tfoot tr td,
+/* table.decorated tbody tr.line0 td, */ table.decorated tbody tr td {
+	border-top: 1px solid var(--bordercolor) !important;
+}
+.librusPro_new.line0 td {
+	background: #3a4655 !important;
+	color: var(--textcolor2);
+}
+.librusPro_new.line1 td {
+	background: #404d5e !important;
+	color: var(--textcolor2);
+}
+.librusPro_new:hover td {
+	background: #384350 !important;
+}
+.librusPro_doneHomework.line0 td {
+	background: #3b4e39 !important;
+	color: var(--textcolor2);
+}
+.librusPro_doneHomework.line1 td {
+	background: #32462e !important;
+	color: var(--textcolor2);
+}
+.librusPro_doneHomework:hover td {
+	background: #334332 !important;
+}
+#body > div > div > div > table > tbody > tr > td > table > tbody > tr:nth-child(1) > td,
+[style*="wykres_zadania/data.png)"] {
+	background: none !important;
+	color: #cccccc !important;
+	padding-top: 10px;
+}
+[style*="wykres_zadania/data2.png)"] {
+	background: #626262 !important;
+	color: #c8ecff;
+	padding-top: 10px;
+}
+[style*="wykres_zadania/1.png)"] {
+	background: #464646 !important;
+}
+[style*="wykres_zadania"] {
+	filter: brightness(0.8);
+}
+[style*="wykres_zadania/3"] {
+	background: #ff4e2b !important;
+	color: #ffffff !important;
+}
+[style*="wykres_zadania/4"] {
+	background: #fffa9f !important;
+	color: #333333 !important;
+}
+[style*="wykres_zadania/2"] {
+	background: #ffba47 !important;
+	color: #222222 !important;
+}
+img[src*="refresh_icon"] {
+	filter: invert(1.0) brightness(0.7);
+}
+img[src*="pomoc_ciemna"] {
+	filter: invert(1.0) brightness(0.7);
+	margin: 0 auto;
+	text-align: center;
+}
+/* deeppink */
+[style*="#FF1493"] {
+	background-color: #d6137c !important;
+}
+/* limegreen */
+[style*="rgb(50, 205, 50)"] {
+	background: #54b075 !important;
+}
+/* lawngreen */
+[style*="rgb(124, 252, 0)"] {
+	background: #6dac30 !important;
+}
+/* lightsalmon */
+[style*="rgb(255, 160, 122)"] {
+	color: #fff !important;
+	background: #f57f50 !important;
+}
+.plan-lekcji-info {
+	filter: brightness(0.7);
+}
+.librusPro_icon {
+	filter: brightness(0.7) contrast(1.1);
+}
+.librusPro_congratulations {
+	color: lime;
+}
+.librusPro_yourNumber {
+	color: #eeeeee;
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr:nth-child(2n).librusPro_new
+	> td {
+	background: #3a4655 !important;
+	color: var(--textcolor2);
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr:nth-child(2n + 1).librusPro_new
+	> td {
+	background: #404d5e !important;
+	color: var(--textcolor2);
+}
+#formWiadomosci
+	> div
+	> div
+	> table
+	> tbody
+	> tr
+	> td:nth-child(2)
+	> table.decorated.stretch
+	> tbody
+	> tr.librusPro_new:hover
+	> td {
+	background: #384350 !important;
+}
+table.decorated {
+	background-color: var(--bordercolor) !important;
+}
+#main-menu > ul.main-menu-list > li > a {
+	padding: 0 10px !important;
+}
+#main-menu > ul > li:hover {
+	background: #362535;
+}
+#main-menu > ul > li {
+	transition: background-color 0.2s;
+	margin: 0 !important;
+}
+#graphic-menu li:hover span.circle {
+	opacity: 0.8 !important;
+	transition: opacity 0.2s;
+}
+.librusPro_loading {
+	background: var(--line1);
+	color: var(--textcolor3);
+}
+#error_legend {
+    background: #404040;
+	color: #ff9b9b;
+}
+#timetableEntryBox .plan-lekcji-info {
+	background: #6e801e;
+}
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan^="9"],
+#body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan="6"],
+#body > form:nth-child(5) > div > div > table > tbody > tr > td > table > tbody > tr > td.center[colspan="9"] {
+	background-color: var(--line1);
+	color: var(--line01color);
+}
+.librusPro_grade-manager-label > span, .librusPro_grade-manager-advice {
+	color: var(--textcolor5);
+}
+.librusPro_grade-editor-body {
+	background: var(--lightbackground);
+}
+.librusPro_title-Tak,
+.librusPro_title-TAK,
+.librusPro_title-tak {
+	color: #57a755;
+}
+.librusPro_title-Nie,
+.librusPro_title-NIE,
+.librusPro_title-nie  {
+	color: #e96767;
+}
+.librusPro_tfoot-text {
+	color: var(--textcolor) !important;
+}
+#librusPro_lessonsAttendance td:nth-child(3) {
+	color: #ffbaba !important;
+}
+#librusPro_lessonsAttendance td:nth-child(4) {
+	color: #c2ae76 !important;
+}
+#librusPro_lessonsAttendance td:nth-child(5) {
+	color: #719fb0 !important;
+}
+.librusPro_sub-header {
+	color: #936694;
+}
+.librusPro_grade-manager-icon > img {
+	filter: invert(0.4)
+}
+.librusPro_white {
+	color: #fff;
+}
+/* Begin: Schedule */
+.pusta, #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr:nth-child(1) > td:not(.center, :nth-child(6)) {
+	background: #303030 !important;
+}
+#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(6), #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:nth-child(7), .weekend {
+	background: #2d2d2d !important;
+}
+#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr:nth-child(2n + 1) > td:not(.today) {
+	background: var(--line0);
+	color: var(--textcolor);
+	transition: background-color 0.2s;
+}
+#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr:nth-child(2n) > td:not(.today) {
+	color: var(--textcolor);
+	background: var(--line1);
+	transition: background-color 0.2s;
+}
+#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:not(.today):hover,
+#scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td.today:hover {
+	background: var(--lightbackground);
+}
+.kalendarz-dzien {
+	filter: brightness(0.6) saturate(0.9) contrast(1.2);
+}
+.date-pick,
+.ui-datepicker,
+.ui-datepicker-header {
+	background: #4e4e4e !important;
+	color: var(--textcolor3) !important;
+}
+.ui-state-default {
+	background: #676767 !important;
+	color: white !important;
+}
+#scheduleForm > div > div > table > tbody > tr:nth-child(2n) > th,
+#scheduleForm > div > div > table > tbody > tr:nth-child(2n) > td:not([style^="background-color:"]) {
+	background: var(--line0) !important;
+	color: var(--textcolor5);
+}
+#scheduleForm > div > div > table > tbody > tr:nth-child(2n + 1) > th,
+#scheduleForm > div > div > table > tbody > tr:nth-child(2n + 1) > td:not([style^="background-color:"]) {
+	color: var(--textcolor5);
+	background: var(--line1) !important;
+}
+#scheduleForm > div > div > table > tbody > tr > td[style^="background-color:"] {
+	-webkit-filter: brightness(0.7);
+	filter: brightness(0.7);
+}
+.kalendarz-numer-dnia {
+	color: #cfcfcf;
+}
+/* Dni wolne szkoły, nieobecności */
+[style*="rgb(255, 120, 120)"] {
+	background: #ae3737 !important;
+	color: #ffffff !important;
+}
+/* Zastępstwa */
+[style*="rgb(106, 150, 4)"] {
+	background: #357352 !important;
+}
+/* Inne */
+[style*="rgb(189, 183, 107)"] {
+	background: #e0dd6b !important;
+}
+[style*="rgb(186, 85, 211)"] {
+	color: #ffffff !important;
+}
+[style*="rgb(123, 104, 238)"] {
+	color: #ffffff !important;
+}
+.librusPro_new-event-button, .librusPro_lesson-plan {
+	color: #bbb;
+}
+/* End: Schedule */
+/* Begin: Overlay dark theme */
+.librusPro_overlay-body {
+	background-color: #111b;
+}
+.librusPro_overlay-container {
+	background-color: #323232;
+}
+.librusPro_overlay-header {
+	color: #eee;
+}
+.librusPro_overlay-section-header {
+	color: #ccc;
+}
+.librusPro_overlay-logo {
+	filter: brightness(0.9);
+}
+#librusPro_lesson,
+#librusPro_subject,
+#librusPro_type,
+#librusPro_imageUrl,
+#librusPro_weight,
+.librusPro_overlay-input {
+	background-color: #444;
+	color: #bbb;
+	border-bottom: 2px solid #222 !important;
+}
+#librusPro_lesson:focus,
+#librusPro_subject:focus,
+#librusPro_type:focus,
+#librusPro_imageUrl:focus,
+.librusPro_overlay-input:focus {
+	background-color: #4c4c4c;
+	border-bottom-color: #340f31 !important;
+}
+.librusPro_overlay-input-title {
+	color: #aaa;
+}
+.librusPro_overlay-button {
+	background: #372536;
+	color: #ccc;
+}
+.librusPro_overlay-button:hover {
+	background: #533051;
+}
+.librusPro_overlay-color-label {
+	filter: brightness(0.5);
+}
+.librusPro_overlay-color-preview {
+	box-shadow: 1px 1px 3px #333333;
+}
+.librusPro_overlay-color-label .librusPro_overlay-dark-dot::after {
+	background: #222222;
+}
+/* End: Overlay dark theme */
+input[type="button"].small,
+.ui-button {
+	cursor: pointer;
+	background: #232323 !important;
+	color: var(--textcolor3) !important;
+}
+.active {
+	color: #87d8ff;
+}
+div.pagination ul li a {
+	color: var(--textcolor3) !important;
+}
+div.pagination ul li:hover {
+	background-color: #444 !important;
+}

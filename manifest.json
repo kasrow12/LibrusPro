@@ -1,49 +1,51 @@
 {
-	"name": "LibrusPro - rozszerzenie do Librusa",
-	"version": "4.0.2",
-	"description": "Ulepsz Librusa już dziś! Ciemny motyw, liczenie średnich, procentowej frekwencji oraz własny terminarz.",
-	"manifest_version": 3,
-	"author": "Maks Kowalski",
-	"short_name": "LibrusPro",
-	"permissions": [ "storage", "scripting" ],
-	"host_permissions": [
-		"https://synergia.librus.pl/*",
-		"https://portal.librus.pl/*"
-	],
-	"icons": {
-		"512": "img/icon.png"
-	},
-	"action": {
-		"default_icon": "img/icon.png",
-		"default_popup": "popup.html"
-	},
-	"background": {
-		"service_worker": "background.js"
-	},
-	"content_scripts": [
-		{
-			"matches": [ "https://synergia.librus.pl/*" ],
-			"js": [ "librusPro.js" ],
-			"all_frames": true
-		},
-		{
-			"matches": [ "https://synergia.librus.pl/*" ],
-			"css": [ "librusPro.css" ],
-			"run_at": "document_start"
-		},
-		{
-			"matches": [ "https://portal.librus.pl/*" ],
-			"js": [ "portal.js" ]
-		}
-	],
-	"web_accessible_resources": [
-		{
-			"resources": [ "img/*" ],
-			"matches": [ "<all_urls>" ]
-		},
-		{
-			"resources": [ "librus.js" ],
-			"matches": [ "<all_urls>" ]
-		}
-	]
+  "update_url": "https://clients2.google.com/service/update2/crx",
+
+  "name": "LibrusPro - rozszerzenie do Librusa",
+  "version": "4.0.2",
+  "description": "Ulepsz Librusa już dziś! Ciemny motyw, liczenie średnich, procentowej frekwencji oraz własny terminarz.",
+  "manifest_version": 3,
+  "author": "Maks Kowalski",
+  "short_name": "LibrusPro",
+  "permissions": ["storage", "scripting"],
+  "host_permissions": [
+    "https://synergia.librus.pl/*",
+    "https://portal.librus.pl/*"
+  ],
+  "icons": {
+    "512": "img/icon.png"
+  },
+  "action": {
+    "default_icon": "img/icon.png",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://synergia.librus.pl/*"],
+      "js": ["librusPro.js"],
+      "all_frames": true
+    },
+    {
+      "matches": ["https://synergia.librus.pl/*"],
+      "css": ["/styles/librusPro.css"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://portal.librus.pl/*"],
+      "js": ["portal.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["img/*"],
+      "matches": ["<all_urls>"]
+    },
+    {
+      "resources": ["librus.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

@@ -1,0 +1,772 @@
+/* LibrusPro
+Browser Extension
+Author: Maks Kowalski
+Contact: kasrow12 (at) gmail.com
+*/
+.librusPro_accent {
+  color: #a96fe3;
+}
+.librusPro_white {
+  color: #222;
+}
+.librusPro_gray {
+  color: #999999;
+}
+.librusPro_lightgray {
+  color: #aaaaaa;
+}
+.librusPro_seaweed {
+  color: #91b8a5;
+}
+.librusPro_lightblue {
+  color: #6fa5e3;
+}
+.librusPro_lightgreen {
+  color: #3f7c4e;
+}
+.librusPro_yellow {
+  color: #d89d23;
+}
+.librusPro_salmon {
+  color: #ff7ca0;
+}
+.librusPro_greeno {
+  color: #73b39b;
+}
+.librusPro_water {
+  color: #73a7c2;
+}
+.librusPro_title-nieudane,
+.librusPro_error {
+  color: #ff5555;
+}
+#przedmioty_zachowanie,
+#przedmioty_OP_zachowanie {
+  display: none;
+}
+#user-section > span.luckyNumber {
+  margin-right: 8px;
+}
+table.decorated tr.bolded td {
+  font-weight: bold;
+  height: 20px;
+}
+.container.static.welcome-page {
+  display: none !important;
+}
+#icon-wcag {
+  display: none !important;
+}
+.librusPro_average > td {
+  font-weight: bold;
+  font-size: 14px;
+  height: 20px;
+}
+td[style^="height: 25px"] {
+  border-color: #00000000 !important;
+  vertical-align: middle;
+  text-align: right;
+}
+.grade-box {
+  border-radius: 10%;
+  font-weight: normal;
+}
+.kalendarz-dzien td {
+  border-left: none !important;
+  border-right: none !important;
+}
+.librusPro_congratulations {
+  margin-left: 5px;
+  color: #d0f;
+}
+.librusPro_yourNumber {
+  color: #000000;
+}
+#user-section > b {
+  color: #744465;
+  transition: color 0.2s;
+  margin-right: 10px;
+}
+#user-section > b:hover {
+  color: #ac6c97;
+  cursor: pointer;
+}
+.emoji {
+  font-weight: normal;
+}
+.librusPro_footer-text {
+  margin-left: 5px;
+  display: inline-block;
+  color: #999999;
+  cursor: vertical-text;
+}
+.librusPro_icon {
+  display: inline-block;
+  margin: 3px 0 0 3px;
+  height: 37px;
+  width: 37px;
+  background-size: cover !important;
+}
+#bottom-logo {
+  margin-top: 5px;
+}
+.librusPro_link {
+  color: #4276c3;
+  transition: color 0.1s;
+}
+.librusPro_link:hover {
+  text-decoration: underline;
+  color: #9eb0f1;
+}
+.librusPro_error-close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+#error_legend {
+  color: #ff4d4d;
+  padding: 15px 10vw;
+  background: #fafafa;
+  position: relative;
+  border: 1px solid #aaaaaa;
+  border-radius: 5px;
+  font-size: 13px;
+}
+.librusPro_loading {
+  background: #eeeeee;
+  width: 1000px;
+  margin: 20px auto;
+  padding: 20px 0;
+  box-sizing: border-box;
+  text-align: center;
+  border: 1px solid #555555;
+  border-radius: 5px;
+  color: #333333;
+  font-size: 15px;
+}
+/* Begin: Grade manager */
+.librusPro_add-grade {
+  display: inline-block;
+  opacity: 0;
+  padding: 0 0.5em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  visibility: hidden;
+}
+td:hover .librusPro_add-grade.librusPro_add-grade-enabled {
+  opacity: 1;
+  visibility: visible;
+}
+.librusPro_grade-manager {
+  padding-left: 0.5em;
+  line-height: 18px;
+}
+.librusPro_grade-manager-label {
+  margin-right: 5px;
+}
+.librusPro_grade-manager-label > span {
+  margin-right: 0.5em;
+  font-weight: bold;
+}
+.librusPro_grade-manager-advice {
+  font-style: italic;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.librusPro_grade-manager-icon {
+  padding-left: 3em;
+}
+.librusPro_grade-manager-icon > img {
+  width: 40px;
+  filter: invert(0.7);
+}
+.librusPro_grade-editor-overlay {
+  display: none;
+  clear: both;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: #111111aa;
+}
+@media screen and (max-height: 650px) {
+  body.librusPro_overlay-grades {
+    overflow: hidden !important;
+  }
+
+  .librusPro_grade-editor-overlay {
+    overflow-y: scroll;
+  }
+}
+.librusPro_grade-editor-body {
+  border: 1px solid black;
+  width: 20vw;
+  max-width: 270px;
+  min-width: 270px;
+  margin: 8vh auto 0 auto;
+  padding: 10px 20px 7px 20px;
+  border-radius: 5px;
+  -webkit-box-shadow: 2px 3px 5px #000000;
+  box-shadow: 2px 3px 5px #000000;
+}
+.librusPro_inputNumber {
+  border-radius: 5px;
+  outline: none;
+  border: 1px solid #222222;
+  box-shadow: 1px 1px 3px #000000;
+  padding: 8px 10px !important;
+  box-sizing: border-box;
+}
+.librusPro_grade-editor-body {
+  background: #f6f6f6;
+}
+.librusPro_grade-manager-header {
+  font-size: 19px;
+  text-align: center;
+  margin: 10px 0 5px 0;
+}
+/* End: Grade manager */
+/* Begin: Modernize titles */
+.librusPro_title-Tak,
+.librusPro_title-TAK,
+.librusPro_title-tak {
+  color: #196616;
+}
+.librusPro_title-Nie,
+.librusPro_title-NIE,
+.librusPro_title-nie {
+  color: #962c2c;
+}
+.librusPro_title-date {
+  color: #cb997e;
+}
+.librusPro_title-user {
+  color: #7e7e7e;
+}
+.librusPro_title-weight {
+  color: #f3722c;
+}
+.librusPro_title-comment {
+  color: #66769b;
+}
+.librusPro_title-improved {
+  color: #f19c79;
+}
+.librusPro_title-brackets {
+  color: #219ebc;
+}
+.librusPro_title-type {
+  color: #d9ac41;
+}
+.librusPro_title-udane,
+.librusPro_title-grade {
+  color: #90be6d;
+}
+.librusPro_title-label {
+  color: #577590;
+}
+/* End: Modernize titles */
+/* Begin: Attendance statistics */
+#librusPro_attendanceButton {
+  margin: 0.3em auto !important;
+  display: block !important;
+}
+.librusPro_header {
+  margin: 2em 0;
+}
+.colspan {
+  vertical-align: top !important;
+}
+.librusPro_sub-header {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 13px;
+}
+#librusPro_lessonsAttendance td:nth-child(3),
+#librusPro_lessonsAttendance td:nth-child(4) {
+  text-align: right;
+  padding: 4px;
+}
+#librusPro_lessonsAttendance td:nth-child(5) {
+  text-align: right;
+  font-weight: bold;
+}
+#librusPro_lessonsAttendance td.librusPro_lessons-attendance-low:nth-child(5) {
+  color: #be6f6f !important;
+}
+/* End: Attendance statistics */
+/* Begin: Homeworks */
+.myHomeworkTable {
+  height: 100%;
+}
+[id*="homework_"] > td:last-child {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+[id*="homework_"] > td:nth-child(7) {
+  text-align: center;
+}
+[id*="homework_"] > td:nth-child(6) > div:nth-child(2) > div {
+  margin-left: 0.5em;
+}
+/* End: Homeworks */
+/* Begin: Schedule */
+.librusPro_past {
+  opacity: 0.5;
+}
+table ~ .librusPro_events-table {
+  margin-top: -10px !important;
+}
+.librusPro_custom-event {
+  overflow-wrap: break-word;
+  animation: blinking 4s infinite ease-in-out;
+  word-break: break-word;
+}
+.librusPro_custom-event:hover {
+  background: #666666 !important;
+  color: #ffffff !important;
+}
+.librusPro_modernized-schedule .przedmiot,
+.librusPro_event-subject {
+  font-weight: bold;
+  font-size: 13px;
+}
+.librusPro_event-type {
+  text-decoration: underline;
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+.librusPro_event-image {
+  width: 100%;
+  display: block;
+  filter: none;
+  margin: 10px auto 0 auto;
+}
+.librusPro_event-teacher {
+  font-style: italic;
+}
+.librusPro_modernized-schedule .kalendarz-dzien td {
+  padding: 6px 9px;
+}
+#scheduleForm td {
+  word-break: break-word;
+}
+.librusPro_depression-mode .kalendarz-dzien:not(.librusPro_past) {
+  filter: grayscale(100%) brightness(0.6) contrast(1.2);
+  opacity: 0.9;
+}
+.librusPro_depression-mode .librusPro_past {
+  filter: grayscale(100%) brightness(0.5);
+}
+@-webkit-keyframes blinking {
+  0% {
+    -webkit-filter: invert(0);
+    filter: invert(0);
+  }
+  10% {
+    -webkit-filter: invert(0.3);
+    filter: invert(0.3);
+  }
+  20% {
+    -webkit-filter: invert(0);
+    filter: invert(0);
+  }
+}
+@keyframes blinking {
+  0% {
+    -webkit-filter: invert(0);
+    filter: invert(0);
+  }
+  10% {
+    -webkit-filter: invert(0.3);
+    filter: invert(0.3);
+  }
+  20% {
+    -webkit-filter: invert(0);
+    filter: invert(0);
+  }
+}
+.librusPro_new-event-button {
+  display: none;
+  position: absolute;
+  float: left;
+  margin-top: 5px;
+  color: #707273;
+  font-weight: bold;
+  cursor: pointer;
+}
+.librusPro_edit-event-button {
+  display: none;
+  position: absolute;
+  top: 1px;
+  right: 20px;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  text-shadow: 1px 1px 2px #333333;
+}
+.librusPro_remove-event-button {
+  display: none;
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  text-shadow: 1px 1px 2px #333333;
+}
+td:hover > .kalendarz-dzien > .librusPro_new-event-button {
+  display: block;
+}
+.librusPro_custom-event:hover > .librusPro_remove-event-button {
+  display: block;
+}
+.librusPro_custom-event:hover > .librusPro_edit-event-button {
+  display: block;
+}
+.librusPro_lesson-plan {
+  display: none;
+  padding: 5px 7px;
+  margin: 0 auto;
+  color: #707273;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+td:hover > .kalendarz-dzien > .librusPro_lesson-plan {
+  display: inline-block;
+}
+.librusPro_timetable-header {
+  text-align: center;
+  font-weight: bold;
+  color: #a96fe3;
+}
+.librusPro_timetable-time {
+  color: #999;
+}
+.librusPro_timetable-lessonNo {
+  color: #0791bb;
+}
+.librusPro_timetable-cancelled {
+  text-decoration: line-through;
+  color: #bbb;
+}
+.librusPro_timetable-info {
+  color: #5cac81;
+}
+.librusPro_timetable-class {
+  color: #ca9884;
+}
+.librusPro_timetable-teacher {
+  color: #deb887;
+}
+/* End: Schedule */
+/* Begin: Overlay */
+.librusPro_overlay-body {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  inset: 0;
+  z-index: 69420;
+  background-color: #1119;
+}
+@media screen and (max-height: 850px) {
+  body.librusPro_overlay {
+    overflow: hidden !important;
+  }
+
+  .librusPro_overlay-body {
+    overflow-y: scroll;
+  }
+}
+body {
+  overflow: visible;
+}
+.librusPro_overlay-container {
+  background-color: #f3f3f3;
+  margin: 10vh auto;
+  width: 288px;
+  padding: 15px 23px 7px 23px;
+  border: 1px solid #111111;
+}
+.librusPro_header-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 11px 0;
+  padding-bottom: 11px;
+  border-bottom: 1px solid #aaa;
+}
+.librusPro_overlay-header {
+  text-align: center;
+  font-size: 20px;
+  color: #91456e;
+}
+.librusPro_overlay-section-header {
+  margin-top: 20px;
+  font-size: 14px;
+}
+.librusPro_overlay-logo {
+  width: 25%;
+}
+#librusPro_lesson,
+#librusPro_subject,
+#librusPro_type,
+#librusPro_imageUrl,
+.librusPro_overlay-input {
+  background-color: #fff;
+  color: #000;
+  display: block;
+  outline: none;
+  border: none !important;
+  border-bottom: 2px solid #999 !important;
+  font-size: 14px !important;
+  padding: 0 13px;
+  box-sizing: border-box;
+  height: 34px;
+  width: 100%;
+  margin: 0 !important;
+  transition: background-color 0.2s, border-color 0.2s;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.librusPro_overlay-input-textarea {
+  padding: 7px 13px;
+  box-sizing: border-box;
+  height: auto;
+  resize: none;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.librusPro_margin-bottom-9 {
+  margin-bottom: 9px;
+}
+/* #librusPro_date::after {
+  content: "*";
+  color: #dd1414;
+} */
+#librusPro_lesson:focus,
+#librusPro_subject:focus,
+#librusPro_type:focus,
+#librusPro_imageUrl:focus,
+.librusPro_overlay-input:focus {
+  border-bottom: 2px solid #91456e !important;
+}
+.librusPro_overlay-input-label {
+  display: block;
+  margin-bottom: 5px;
+}
+.librusPro_overlay-input-two-label {
+  display: flex;
+  justify-content: space-between;
+}
+.librusPro_overlay-input-two-label > .librusPro_overlay-input-label {
+  width: 45%;
+}
+.librusPro_overlay-input-title {
+  color: #333;
+  font-size: 12px;
+  padding: 3px 7px;
+}
+.librusPro_overlay-button-container {
+  display: flex;
+  margin: 13px 0;
+  justify-content: space-evenly;
+}
+.librusPro_overlay-button {
+  padding: 9px 31px;
+  cursor: pointer;
+  background: #91456e;
+  border: 0;
+  color: #eee;
+  transition: all 0.2s;
+  outline: none;
+  height: auto;
+}
+.librusPro_overlay-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 10px;
+  color: #a7a7a7;
+  font-size: 12px;
+}
+.librusPro_overlay-footer-link {
+  color: #4276c3;
+  transition: color 0.1s;
+  text-decoration: none;
+}
+.librusPro_overlay-footer-link:hover {
+  text-decoration: underline;
+  color: #9eb0f1;
+}
+.librusPro_overlay-footer-text {
+  color: #888888;
+}
+.librusPro_overlay-button:hover {
+  background: #b65c8c;
+}
+.librusPro_overlay-color-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 11px auto;
+  padding: 9px 0;
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+}
+.librusPro_overlay-color-label {
+  display: block;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 22px;
+  user-select: none;
+}
+.librusPro_overlay-color-label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+.librusPro_overlay-color-preview {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  height: 34px;
+  width: 34px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 1px 1px 3px #aaa;
+}
+.librusPro_overlay-color-label .librusPro_overlay-color-preview::after {
+  top: 12px;
+  left: 12px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+.librusPro_overlay-color-label
+  input:checked
+  ~ .librusPro_overlay-color-preview::after {
+  display: block;
+}
+.librusPro_overlay-color-preview::after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+.librusPro_overlay-color-label .librusPro_overlay-dark-dot::after {
+  background: #000;
+}
+.librusPro_overlay-button-add,
+.librusPro_overlay-header-adding,
+.librusPro_overlay-button-edit,
+.librusPro_overlay-header-editting {
+  display: none;
+}
+.librusPro_overlay-adding .librusPro_overlay-button-add,
+.librusPro_overlay-adding .librusPro_overlay-header-adding {
+  display: block;
+}
+.librusPro_overlay-editting .librusPro_overlay-button-edit,
+.librusPro_overlay-editting .librusPro_overlay-header-editting {
+  display: block;
+}
+#librusPro_otherSubject,
+#librusPro_otherType {
+  display: none;
+}
+#librusPro_customColorInput {
+  visibility: hidden;
+}
+.librusPro_overlay-select-no-subject + #librusPro_otherSubject {
+  display: none;
+}
+/* End: Overlay */
+/* Begin: Grade manager */
+#librusPro_onesContainer {
+  display: none;
+  margin: 9px 0;
+  padding: 7px;
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+}
+#librusPro_gradeManagerOverlay .librusPro_overlay-button {
+  padding: 9px 23px;
+}
+.librusPro_overlay-header-final-grade,
+.librusPro_overlay-button-remove {
+  display: none;
+}
+.librusPro_overlay-editting .librusPro_overlay-button-remove {
+  display: block;
+}
+.librusPro_overlay-adding:not(.librusPro_overlay-grade-final) #librusPro_onesContainer {
+  display: flex;
+}
+.librusPro_overlay-grade-final #librusPro_categoryDetailsLabel,
+.librusPro_overlay-grade-final #librusPro_commentLabel {
+  display: none;
+}
+.librusPro_overlay-editting .librusPro_overlay-section-header,
+.librusPro_overlay-editting #librusPro_commentLabel {
+  display: none;
+}
+.librusPro_overlay-grade-final .librusPro_overlay-header-final-grade {
+  display: block;
+}
+.librusPro_overlay-grade-final .librusPro_overlay-section-header,
+.librusPro_overlay-grade-final .librusPro_overlay-header-normal-grade {
+  display: none;
+}
+.librusPro_justify {
+  text-align: justify;
+}
+.librusPro_italic {
+  font-style: italic;
+}
+/* End: Grade manager */
+/* Begin: Last-login */
+.librusPro_last-login-header {
+  display: flex; 
+  justify-content: center;
+  gap: 7px;
+}
+.librusPro_last-login-row {
+  display: flex;
+  gap: 5px;
+  justify-content: space-around;
+}
+.librusPro_last-login-row > :nth-child(3){
+  flex-grow: 1;
+}
+.librusPro_last-login-row > :nth-child(4) {
+  text-align: right;
+}
+/* End: Last-login */
+.librusPro_hidden {
+  display: none;
+}
+.librusPro_proposed-behavior {
+  font-style: italic;
+  font-weight: normal !important;
+}
+#librusPro_attendancesButton {
+  margin: .3em;
+}
+#language {
+  display: none;
+}
+body .ui-tooltip {
+  background: #fff;
+  border: 1px solid #c3c3c3;
+  color: #222;
+}

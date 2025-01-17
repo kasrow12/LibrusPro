@@ -1,371 +1,271 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="utf-8">
-<style>
-* {
-	font-family: 'Roboto', sans-serif;
-}
-html {
-	margin: 0;
-	padding: 0;
-}
-body {
-	margin: 0;
-	box-sizing: border-box;
-	max-height: 600px;
-	font-family: sans-serif;
-	text-align: center;
-	padding: 13px 15px 7px 15px;
-	background: #363636;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	width: 330px;
-}
-.logo-container {
-	display: flex;
-	margin: 5px 0 5px 0;
-	align-items: center;
-	justify-content: center;
-}
-.logo {
-	width: 65px;
-	height: 65px;
-	margin-right: 10px;
-} 
-.title {
-	font-family: "Comic Sans MS", "Comic Sans", cursive;
-	font-size: 23px;
-	padding: 0px 10px;
-	color: #aa5180;
-}
-.sub-title {
-	font-size: 14px;
-	padding: 0px 5px;
-	color: #8ca5c4;
-}
-.author {
-	color: #8ca5c4;
-	font-size: 15px;
-}
-.quote {
-	font-size: 17px;
-	font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-	margin: 10px 0;
-	color: #cccccc;
-	font-style: italic;
-}
-input[type="number"] {
-	margin-left: 20px;
-	padding: 5px 11px;
-	outline: none;
-	background: #555555;
-	color: #ffffff;
-	border: 0;
-	border-bottom: 2px solid #222222;
-	width: 30%;
-}
-input[type="number"]:focus {
-	border-bottom: 2px solid #340f31;
-}
-.description {
-	font-size: 11px;
-	text-align: left;
-	font-style: italic;
-	margin-left: 5px;
-}
-.emoji {
-	font-weight: normal;
-}
-.options-title {
-	font-size: 18px;
-	color: #8ca5c4;
-	margin-bottom: 7px;
-}
-.options-categories {
-	display: flex;
-}
-.option-category {
-	cursor: pointer;
-	flex-grow: 1;
-	padding: 7px 9px;
-	font-size: 14px;
-	background-color: #412d40;
-    color: #bbb;
-	transition: all 0.2s;
-}
-.option-category:hover {
-	background-color: #4b3249;
-}
-.option-category-radio {
-	display: none;
-}
-.option-category-radio:checked + .option-category {
-	background-color: #313131;
-}
-.options {
-	display: none;
-	padding: 15px 17px 10px 17px;
-	background-color: #414141;
-}
-.option-container {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	color: #aaaaaa;
-	margin-bottom: 5px;
-	font-size: 15px;
-}
-.option-container > div {
-	text-align: left;
-}
-.buttons {
-	margin: 15px 0;
-	display: flex;
-	justify-content: space-evenly;
-}
-.button {
-	padding: 9px 21px;
-	cursor: pointer;
-	background: #372536;
-	border: 0;
-	color: #ccc;
-	transition: all 0.2s;
-	font-weight: bold;
-	font-size: 14px;
-	outline: none;
-}
-.small {
-	padding: 7px 17px;
-	font-size: 13px;
-}
-.button:hover {
-	background: #533051;
-}
-.footer {
-	display: flex;
-	justify-content: space-between;
-	padding: 0 10px;
-	color: #a7a7a7;
-	font-size: 13px;
-}
-.footer-link {
-	color: #4276c3;
-	transition: color 0.1s;
-	text-decoration: none;
-}
-.footer-link:hover {
-	text-decoration: underline;
-	color: #9eb0f1;
-}
-.version {
-	color: #888888;
-}
-.debug {
-	color: #d33b3b;
-}
-.tgl {
-	display: none;
-}
-.tgl, .tgl:after, .tgl:before, .tgl *, .tgl *:after, .tgl *:before, .tgl + .tgl-btn {
-	box-sizing: border-box;
-}
-.tgl::-moz-selection, .tgl:after::-moz-selection, .tgl:before::-moz-selection, .tgl *::-moz-selection, .tgl *:after::-moz-selection, .tgl *:before::-moz-selection, .tgl + .tgl-btn::-moz-selection {
-	background: none;
-}
-.tgl::selection, .tgl:after::selection, .tgl:before::selection, .tgl *::selection, .tgl *:after::selection, .tgl *:before::selection, .tgl + .tgl-btn::selection {
-	background: none;
-}
-.tgl + .tgl-btn {
-	outline: 0;
-	display: block;
-	width: 2.8em;
-	height: 1.5em;
-	position: relative;
-	cursor: pointer;
-	-webkit-user-select: none;
-		-moz-user-select: none;
-		-ms-user-select: none;
-			user-select: none;
-}
-.tgl + .tgl-btn:after, .tgl + .tgl-btn:before {
-	position: relative;
-	display: block;
-	content: "";
-	width: 50%;
-	height: 100%;
-}
-.tgl + .tgl-btn:after {
-	left: 0;
-}
-.tgl + .tgl-btn:before {
-	display: none;
-}
-.tgl:checked + .tgl-btn:after {
-	left: 50%;
-}
-.tgl-light + .tgl-btn {
-	background: #8a8a8a;
-	border-radius: 2em;
-	padding: 2px;
-	transition: all 0.4s ease;
-}
-.tgl-light + .tgl-btn:after {
-	border-radius: 50%;
-	background: #dadada;
-	transition: all 0.2s ease;
-}
-.tgl-light:checked + .tgl-btn {
-	background: #338f4b;
-}
-.tgl + .tgl-btn.disabled {
-	background: #444444;
-	cursor: not-allowed;
-}
-.tgl-light + .tgl-btn.disabled:after {
-	background: #8b8b8b;
-}
-</style>
-</head>
-<body>
-	<div>
-		<div class="logo-container">
-			<img src="img/icon.png" class="logo">
-			<div class="title">LibrusPro<div class="sub-title">Made with ❤️ by:<div class="author">Maks&nbsp;Kowalski</div></div></div>
-		</div>
-		<div class="quote">Ulepsz Librusa już dziś!</div>
-	</div>
-	<form id="form">
-		<h1 class="options-title">Ustawienia rozszerzenia</h1>
-		<div class="options-categories">
-			<input type="radio" name="option-selection" id="optionsGeneral" class="option-category-radio" checked>
-			<label for="optionsGeneral" class="option-category">Ogólne <span class="emoji">🌙</span></label>
-			<input type="radio" name="option-selection" id="optionsSchedule" class="option-category-radio">
-			<label for="optionsSchedule" class="option-category">Terminarz <span class="emoji">📆</span></label>
-			<input type="radio" name="option-selection" id="optionsGrades" class="option-category-radio">
-			<label for="optionsGrades" class="option-category">Oceny <span class="emoji">🎓</span></label>
-		</div>
-		<div class="options" id="optionsGeneralElement" style="display: block">
-			<label class="option-container" title="Włącz/wyłącz ciemny motyw">
-				Ciemny motyw
-				<input class="tgl tgl-light" id="darkTheme" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="darkTheme"></label>
-			</label>
-			<label class="option-container" title="Kolorowe opisy w dymkach, po najechaniu na oceny i nieobecności">
-				Modernizacja dymków
-				<input class="tgl tgl-light" id="modernizeTitles" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="modernizeTitles"></label>
-			</label>
-			<label class="option-container" title="Włącz/wyłącz moduł tymczasowej modyfikacji ocen">
-				Modyfikacja ocen
-				<input class="tgl tgl-light" id="enableGradeManager" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="enableGradeManager"></label>
-			</label>
-			<label class="option-container" title="Podmienia kolory ocen na ciemne, w zależności od ich wagi">
-				Wersja depresyjna
-				<input class="tgl tgl-light" id="depressionMode" type="checkbox"/>
-				<label class="tgl-btn" for="depressionMode"></label>
-			</label>
-			<label class="option-container" title="Podmienia nazwiska w widoku ocen, nieobecności, w terminarzu i planie lekcji">
-				Tryb incognito (do screenów)
-				<input class="tgl tgl-light" id="incognitoMode" type="checkbox"/>
-				<label class="tgl-btn" for="incognitoMode"></label>
-			</label>
-			<label class="option-container" title="Ukrywanie ocen oraz nieobecności z I. semestru">
-				Ukrywanie I semestru
-				<input class="tgl tgl-light" id="hideFirstTerm" type="checkbox"/>
-				<label class="tgl-btn" for="hideFirstTerm"></label>
-			</label>
-			<label class="option-container" title="Przeznaczone tylko dla szkół z systemem punktowym, które nie korzystają z tabelki z ocenami bieżącymi">
-				Ukrywanie ocen bieżących
-				<input class="tgl tgl-light" id="hideGrades" type="checkbox"/>
-				<label class="tgl-btn" for="hideGrades"></label>
-			</label>
-			<button class="button small" id="changelog">Co nowego?</button>
-		</div>
-		<div class="options" id="optionsScheduleElement">
-			<label class="option-container">
-				Modernizacja kafelków
-				<input class="tgl tgl-light" id="modernizeSchedule" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="modernizeSchedule"></label>
-			</label>
-			<label class="option-container">
-				Dodawanie opisów
-				<input class="tgl tgl-light" id="addDescriptions" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="addDescriptions"></label>
-			</label>
-			<label class="option-container">
-				Dodawanie planu lekcji
-				<input class="tgl tgl-light" id="insertTimetable" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="insertTimetable"></label>
-			</label>
-			<label class="option-container">
-				Ukrywanie klasy
-				<input class="tgl tgl-light" id="removeClasses" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="removeClasses"></label>
-			</label>
-			<label class="option-container">
-				Nieobecności nauczycieli
-				<input class="tgl tgl-light" id="showTeacherFreeDays" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="showTeacherFreeDays"></label>
-			</label>
-		</div>
-		<div class="options" id="optionsGradesElement">
-			<label class="option-container">
-				Liczenie średnich
-				<input class="tgl tgl-light" id="calculateAverages" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="calculateAverages"></label>
-			</label>
-			<label class="option-container">
-				Ukrywanie przedmiotów
-				<input class="tgl tgl-light" id="hideSubjects" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="hideSubjects"></label>
-			</label>
-			<label class="option-container">
-				Zera do średniej
-				<input class="tgl tgl-light" id="countZeros" type="checkbox" checked="true"/>
-				<label class="tgl-btn" for="countZeros"></label>
-			</label>
-			<label class="option-container">
-				Ukrywanie jedynek
-				<input class="tgl tgl-light" id="hideOnes" type="checkbox"/>
-				<label class="tgl-btn" for="hideOnes"></label>
-			</label>
-			<label class="option-container">
-				Mruganie zagrożeń
-				<input class="tgl tgl-light" id="keepBlinker" type="checkbox"/>
-				<label class="tgl-btn" for="keepBlinker"></label>
-			</label>
-			<label class="option-container">
-				<div>Wymuś liczenie<div class="description">(Licz do średniej: nie)</div></div>
-				<input class="tgl tgl-light" id="countToAverage" type="checkbox"/>
-				<label class="tgl-btn" for="countToAverage"></label>
-			</label>
-			<label class="option-container">
-				<div>Wartość plusa<div class="description">np. 5+&nbsp;&nbsp;=&nbsp;&nbsp;5,50</div></div>
-				<input type="number" id="plusValue" name="plusValue" min="0" max="1" value="0.5" step="0.001">
-			</label>
-			<label class="option-container">
-				<div>Wartość minusa<div class="description">np. 5-&nbsp;&nbsp;=&nbsp;&nbsp;4,75</div></div>
-				<input type="number" id="minusValue" name="minusValue" min="0" max="1" value="0.25" step="0.001">
-			</label>
-			<label class="option-container">
-				<div>Średnia na 2<div class="description">do liczenia jedynek</div></div>
-				<input type="number" id="averageValue" name="averageValue" min="1" max="6" value="1.80" step="0.01">
-			</label>
-		</div>
-		<div class="buttons">
-			<button class="button" id="saveButton">Zapisz</button>
-			<button class="button" id="resetButton">Przywróć domyślne</button>
-		</div>
-	</form>
-	<div class="footer">
-		<div class="copyright">© <span id="copyrightYear"></span></div>
-		<a href="https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews" target="_blank" class="footer-link">Zostaw 5<span style="font-size: 11px;">⭐</span></a>
-		<a class="footer-link" target="_blank" href="https://discord.gg/e9EkVEvsDr">Discord</a>
-		<div class="version" id="debugButton">v<span id="ver"></span></div>
-	</div>
-	<script src="popup.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="/styles/popup.css" />
+  </head>
+  <body>
+    <div>
+      <div class="logo-container">
+        <img src="img/icon.png" class="logo" />
+        <div class="title">
+          LibrusPro
+          <div class="sub-title">
+            Made with ❤️ by:
+            <div class="author">Maks&nbsp;Kowalski</div>
+          </div>
+        </div>
+      </div>
+      <div class="quote">Ulepsz Librusa już dziś!</div>
+    </div>
+    <form id="form">
+      <h1 class="options-title">Ustawienia rozszerzenia</h1>
+      <div class="options-categories">
+        <input
+          type="radio"
+          name="option-selection"
+          id="optionsGeneral"
+          class="option-category-radio"
+          checked
+        />
+        <label for="optionsGeneral" class="option-category"
+          >Ogólne <span class="emoji">🌙</span></label
+        >
+        <input
+          type="radio"
+          name="option-selection"
+          id="optionsSchedule"
+          class="option-category-radio"
+        />
+        <label for="optionsSchedule" class="option-category"
+          >Terminarz <span class="emoji">📆</span></label
+        >
+        <input
+          type="radio"
+          name="option-selection"
+          id="optionsGrades"
+          class="option-category-radio"
+        />
+        <label for="optionsGrades" class="option-category"
+          >Oceny <span class="emoji">🎓</span></label
+        >
+      </div>
+      <div class="options" id="optionsGeneralElement" style="display: block">
+        <label class="option-container">
+          Ciemny motyw
+          <input
+            class="tgl tgl-light"
+            id="darkTheme"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="darkTheme"></label>
+        </label>
+        <label class="option-container">
+          Modernizacja dymków
+          <input
+            class="tgl tgl-light"
+            id="modernizeTitles"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="modernizeTitles"></label>
+        </label>
+        <label class="option-container">
+          Modyfikacja ocen
+          <input
+            class="tgl tgl-light"
+            id="enableGradeManager"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="enableGradeManager"></label>
+        </label>
+        <label class="option-container">
+          Wersja depresyjna
+          <input class="tgl tgl-light" id="depressionMode" type="checkbox" />
+          <label class="tgl-btn" for="depressionMode"></label>
+        </label>
+        <label class="option-container">
+          Tryb incognito (do screenów)
+          <input class="tgl tgl-light" id="incognitoMode" type="checkbox" />
+          <label class="tgl-btn" for="incognitoMode"></label>
+        </label>
+        <label class="option-container">
+          Ukrywanie I semestru
+          <input class="tgl tgl-light" id="hideFirstTerm" type="checkbox" />
+          <label class="tgl-btn" for="hideFirstTerm"></label>
+        </label>
+        <button class="button small" id="changelog">Co nowego?</button>
+      </div>
+      <div class="options" id="optionsScheduleElement">
+        <label class="option-container">
+          Modernizacja kafelków
+          <input
+            class="tgl tgl-light"
+            id="modernizeSchedule"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="modernizeSchedule"></label>
+        </label>
+        <label class="option-container">
+          Dodawanie opisów
+          <input
+            class="tgl tgl-light"
+            id="addDescriptions"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="addDescriptions"></label>
+        </label>
+        <label class="option-container">
+          Dodawanie planu lekcji
+          <input
+            class="tgl tgl-light"
+            id="insertTimetable"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="insertTimetable"></label>
+        </label>
+        <label class="option-container">
+          Ukrywanie klasy
+          <input
+            class="tgl tgl-light"
+            id="removeClasses"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="removeClasses"></label>
+        </label>
+        <label class="option-container">
+          Nieobecności nauczycieli
+          <input
+            class="tgl tgl-light"
+            id="showTeacherFreeDays"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="showTeacherFreeDays"></label>
+        </label>
+      </div>
+      <div class="options" id="optionsGradesElement">
+        <label class="option-container">
+          Liczenie średnich
+          <input
+            class="tgl tgl-light"
+            id="calculateAverages"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="calculateAverages"></label>
+        </label>
+        <label class="option-container">
+          Ukrywanie przedmiotów
+          <input
+            class="tgl tgl-light"
+            id="hideSubjects"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="hideSubjects"></label>
+        </label>
+        <label class="option-container">
+          Zera do średniej
+          <input
+            class="tgl tgl-light"
+            id="countZeros"
+            type="checkbox"
+            checked="true"
+          />
+          <label class="tgl-btn" for="countZeros"></label>
+        </label>
+        <label class="option-container">
+          Ukrywanie jedynek
+          <input class="tgl tgl-light" id="hideOnes" type="checkbox" />
+          <label class="tgl-btn" for="hideOnes"></label>
+        </label>
+        <label class="option-container">
+          Mruganie zagrożeń
+          <input class="tgl tgl-light" id="keepBlinker" type="checkbox" />
+          <label class="tgl-btn" for="keepBlinker"></label>
+        </label>
+        <label class="option-container">
+          <div>
+            Wymuś liczenie
+            <div class="description">(Licz do średniej: nie)</div>
+          </div>
+          <input class="tgl tgl-light" id="countToAverage" type="checkbox" />
+          <label class="tgl-btn" for="countToAverage"></label>
+        </label>
+        <label class="option-container">
+          <div>
+            Wartość plusa
+            <div class="description">np. 5+&nbsp;&nbsp;=&nbsp;&nbsp;5,50</div>
+          </div>
+          <input
+            type="number"
+            id="plusValue"
+            name="plusValue"
+            min="0"
+            max="1"
+            value="0.5"
+            step="0.001"
+          />
+        </label>
+        <label class="option-container">
+          <div>
+            Wartość minusa
+            <div class="description">np. 5-&nbsp;&nbsp;=&nbsp;&nbsp;4,75</div>
+          </div>
+          <input
+            type="number"
+            id="minusValue"
+            name="minusValue"
+            min="0"
+            max="1"
+            value="0.25"
+            step="0.001"
+          />
+        </label>
+        <label class="option-container">
+          <div>
+            Średnia na 2
+            <div class="description">do liczenia jedynek</div>
+          </div>
+          <input
+            type="number"
+            id="averageValue"
+            name="averageValue"
+            min="1"
+            max="6"
+            value="1.80"
+            step="0.01"
+          />
+        </label>
+      </div>
+      <div class="buttons">
+        <button class="button" id="saveButton">Zapisz</button>
+        <button class="button" id="resetButton">Przywróć domyślne</button>
+      </div>
+    </form>
+    <div class="footer">
+      <div class="copyright">© <span id="copyrightYear"></span></div>
+      <a
+        href="https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews"
+        target="_blank"
+        class="footer-link"
+        >Zostaw 5<span style="font-size: 11px">⭐</span></a
+      >
+      <a
+        class="footer-link"
+        target="_blank"
+        href="https://discord.gg/e9EkVEvsDr"
+        >Discord</a
+      >
+      <div class="version" id="debugButton">v<span id="ver"></span></div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
 </html>

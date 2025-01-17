@@ -26,7 +26,6 @@ const OPTIONS_DEFAULT = {
   keepBlinker: false,
   hideFirstTerm: false,
   incognitoMode: false,
-  hideGrades: false,
 };
 const CHANGELOG_URL = "changelog.html";
 
@@ -37,7 +36,7 @@ if (typeof chrome != null) {
   browserAPI = browser;
 }
 
-const boolOptions = ['hideSubjects', 'calculateAverages', 'depressionMode', 'modernizeSchedule', 'removeClasses', 'addDescriptions', 'darkTheme', 'hideOnes', 'countZeros', 'countToAverage', 'modernizeTitles', 'debug', 'averageWarn', 'showTeacherFreeDays', 'enableGradeManager', 'insertTimetable', 'keepBlinker', 'hideFirstTerm', 'incognitoMode', 'hideGrades'];
+const boolOptions = ['hideSubjects', 'calculateAverages', 'depressionMode', 'modernizeSchedule', 'removeClasses', 'addDescriptions', 'darkTheme', 'hideOnes', 'countZeros', 'countToAverage', 'modernizeTitles', 'debug', 'averageWarn', 'showTeacherFreeDays', 'enableGradeManager', 'insertTimetable', 'keepBlinker', 'hideFirstTerm', 'incognitoMode'];
 const valueOptions = ['plusValue', 'minusValue', 'averageValue'];
 const extraOptions = ['debug', 'averageWarn'];
 
@@ -60,19 +59,11 @@ browserAPI.storage.sync.get(["options"], function (t) {
     restoreDefaults();
     return;
   } else {
-    let optionMissing = false;
     for (let p in OPTIONS_DEFAULT) {
       if (!options.hasOwnProperty(p)) {
-        optionMissing = true;
-        options[p] = OPTIONS_DEFAULT[p];
+        restoreDefaults();
+        return;
       }
-    }
-
-    if (optionMissing) {
-      browserAPI.storage.sync.set({
-        ["options"]: options
-      }, () => { window.location.reload(); });
-      return;
     }
   }
   for (let e of boolOptions) {
