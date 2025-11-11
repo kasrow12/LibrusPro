@@ -78,6 +78,7 @@ const OPTIONS_DEFAULT = Object.freeze({
   keepBlinker: false,
   hideFirstTerm: false,
   incognitoMode: false,
+  showGradeCounter: true,
 });
 const DEPRESSION_MODE_COLORS = Object.freeze({
   proposed: "#aaad84",
@@ -831,6 +832,153 @@ function handleGrades(options, recalculate = false) {
         modernizeTitle(e);
       });
     }
+  }
+  // kalkulatory liczbe ocen
+  if (options.showGradeCounter) renderGradeCounter(options);
+}
+
+function renderGradeCounter(options) {
+  try {
+    const tbody = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > table:first-of-type:not(#tabSource) > tbody");
+    if (!tbody) return;
+
+    // Usuń poprzednie podsumowanie
+    const old = document.getElementById("librusPro_gradeCounter");
+    if (old) old.remove();
+
+    // Pobierz oceny cząstkowe
+    const anchors = tbody.querySelectorAll(
+      "tr:not(.bolded, [id^='przedmioty']) td:not(.center) > .grade-box:not(#Ocena0, .positive-behaviour, .negative-behaviour, .librusPro_aprilFools) > a:not(#ocenaTest)"
+    );
+
+    const variantCounts = {};
+    const baseCounts = {};
+    let total = 0;
+    anchors.forEach(a => {
+      const raw = a.innerText.trim();
+      if (!REGEXS.grade.test(raw)) return;
+      if (!options.countZeros && raw.startsWith("0")) return;
+      variantCounts[raw] = (variantCounts[raw] || 0) + 1;
+      const base = raw[0];
+      baseCounts[base] = (baseCounts[base] || 0) + 1;
+      total++;
+    });
+    if (total === 0) return;
+
+    const basesPresent = Object.keys(baseCounts).sort((a,b)=>+a-+b);
+    const maxCount = Math.max(...basesPresent.map(b => baseCounts[b]));
+
+    // Wiersz wynikowy
+    const tr = document.createElement("TR");
+    tr.classList.add("line1");
+    tr.id = "librusPro_gradeCounter";
+    const td = document.createElement("TD");
+    td.colSpan = "64";
+    td.classList.add("center");
+
+    // Nagłówek
+    const header = document.createElement("div");
+    header.style.fontWeight = "bold";
+    header.style.margin = "8px 0 10px";
+    header.textContent = "Rozkład ocen (łącznie warianty ±)";
+    td.appendChild(header);
+
+    const list = document.createElement("div");
+    list.style.display = "flex";
+    list.style.flexDirection = "column";
+    list.style.gap = "4px";
+    list.style.margin = "0 auto";
+    list.style.maxWidth = "680px";
+
+    basesPresent.forEach(base => {
+      const count = baseCounts[base];
+      const percent = (count / total * 100).toFixed(1);
+      const barRow = document.createElement("div");
+      barRow.style.display = "flex";
+      barRow.style.alignItems = "center";
+      barRow.style.gap = "8px";
+
+      const label = document.createElement("span");
+      label.textContent = base;
+      label.style.width = "22px";
+      label.style.fontWeight = "600";
+      label.style.textAlign = "right";
+
+      const barWrap = document.createElement("div");
+      barWrap.style.flexGrow = "1";
+      barWrap.style.background = options.darkTheme ? "#2a2a2a" : "#ececec";
+      barWrap.style.border = options.darkTheme ? "1px solid #333" : "1px solid #ccc";
+      barWrap.style.borderRadius = "4px";
+      barWrap.style.position = "relative";
+      barWrap.style.overflow = "hidden";
+      barWrap.style.height = "18px";
+
+      const bar = document.createElement("div");
+      // Szerokość w stosunku do maksimum żeby zachować skalę wizualną
+      const widthRatio = (count / maxCount * 100).toFixed(2);
+      bar.style.width = widthRatio + "%";
+      bar.style.height = "100%";
+      bar.style.background = options.darkTheme ? "linear-gradient(90deg,#444,#666)" : "linear-gradient(90deg,#d6e4ff,#9bbcf7)";
+      bar.style.display = "flex";
+      bar.style.alignItems = "center";
+      bar.style.justifyContent = "flex-end";
+      bar.style.paddingRight = "6px";
+      bar.style.color = options.darkTheme ? "#eee" : "#1a1a1a";
+      bar.style.fontSize = "11px";
+      bar.style.fontWeight = "500";
+      if (widthRatio < 15) {
+        bar.style.justifyContent = "flex-start";
+        bar.style.paddingLeft = "4px";
+      }
+
+      bar.textContent = count;
+
+      // tooltipy
+      const minus = variantCounts[base + "-"] || 0;
+      const plain = variantCounts[base] || 0;
+      const plus = variantCounts[base + "+"] || 0;
+      const breakdown = [];
+      if (minus) breakdown.push(`${base}-: ${minus}`);
+      if (plain) breakdown.push(`${base}: ${plain}`);
+      if (plus) breakdown.push(`${base}+: ${plus}`);
+      barRow.title = `${base} – razem ${count} (${percent}%)${breakdown.length ? "\n" + breakdown.join("; ") : ""}`;
+      barRow.classList.add("librusPro_jqueryTitle");
+
+      barWrap.appendChild(bar);
+      const percentEl = document.createElement("span");
+      percentEl.textContent = percent + "%";
+      percentEl.style.width = "50px";
+      percentEl.style.fontSize = "11px";
+      percentEl.style.color = options.darkTheme ? "#bbb" : "#555";
+      percentEl.style.fontFamily = "monospace";
+      percentEl.style.textAlign = "left";
+
+      barRow.appendChild(label);
+      barRow.appendChild(barWrap);
+      barRow.appendChild(percentEl);
+      list.appendChild(barRow);
+    });
+
+    td.appendChild(list);
+
+    // Podsumowanie
+    const footer = document.createElement("div");
+    footer.style.marginTop = "6px";
+    footer.style.fontSize = "11px";
+    footer.style.opacity = "0.85";
+    footer.textContent = `Razem ocen cząstkowych: ${total}`;
+    td.appendChild(footer);
+
+    tr.appendChild(td);
+    const averagesRow = document.getElementById("librusPro_average");
+    if (averagesRow && averagesRow.parentElement === tbody) {
+      tbody.insertBefore(tr, averagesRow.nextSibling);
+    } else {
+      tbody.appendChild(tr);
+    }
+  } catch (e) {
+    console.log("%c[LibrusPro] » Błąd podczas tworzenia kalkulatora ocen", `color: ${COLORS.error};`);
+    console.log(e);
   }
 }
 
