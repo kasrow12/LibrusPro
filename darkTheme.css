@@ -6,6 +6,7 @@ Contact: kasrow12 (at) gmail.com
 
 html {
 	--darkbackground: #272727;
+	--hoverBackground: #2e2e2e;
 	--lightbackground: #323232;
 	--bordercolor: #222222;
 	--textcolor: #949494;
@@ -88,7 +89,7 @@ img {
 #body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr:hover > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr:hover > th,
 #body > form:nth-child(5) > div > div > table > tbody > tr:hover > td {
-	background: var(--lightbackground) !important;
+	background: var(--hoverBackground) !important;
 }
 #body > form[name="PrzegladajOceny"] > div > div > table > tbody > tr > td,
 #body > form:nth-child(5) > div > div > table > tbody > tr > td,
@@ -110,7 +111,7 @@ img {
 }
 #przedmioty_zachowanie > td:nth-child(2) > table > tbody > tr:hover > td,
 #przedmioty_OP_zachowanie > td > table > tbody > tr:hover > td {
-	background: var(--lightbackground) !important;
+	background: var(--hoverBackground) !important;
 }
 .WierszTab2 {
 	background: var(--line1) !important;
@@ -280,7 +281,7 @@ div.warning-content tr:nth-child(2n) > td,
 }
 div.warning-content tr:hover > td,
 #absence_form > div > div > table.center.decorated > tbody > tr:hover > td {
-	background: var(--lightbackground) !important;
+	background: var(--hoverBackground) !important;
 }
 #AbsencesArchiveGraphDiv,
 #GradeArchiveGraphDiv,
@@ -324,7 +325,7 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 #adresaci > table > tbody > tr:hover > td,
 #body > div > div > table > tbody > tr:hover:not(.librusPro_new):not(.librusPro_doneHomework) > th,
 #body > div > div > table > tbody > tr:hover:not(.librusPro_new):not(.librusPro_doneHomework) > td {
-	background: var(--lightbackground) !important;
+	background: var(--hoverBackground) !important;
 }
 /* wiadomości */
 #formWiadomosci
@@ -381,7 +382,7 @@ div:not(#GradeArchiveGraphDiv, #AbsencesArchiveGraphDiv) > div > svg > g:nth-chi
 }
 #formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > tbody > tr:hover > th,
 #formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > tbody > tr:hover > td {
-	background: var(--lightbackground) !important;
+	background: var(--hoverBackground) !important;
 }
 #formWiadomosci > div > div > table > tbody > tr > td:nth-child(2) > table.decorated.stretch > tbody > tr > td > a {
 	color: var(--line01color);
@@ -448,6 +449,7 @@ img[src*="attachment.png"] {
 .message-recipients-detail tr:hover td,
 #body > form[name="PrzegladajOceny"] > div > div > table.decorated.medium.center > tbody > tr:hover > *,
 #body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:hover > *,
+#body > div > div > div.resultContainer > table > tbody > tr:hover > td,
 #body > div > div > form > table > tbody > tr:hover > td,
 #body > div > div > form > table > tbody > tr:hover > th,
 #body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:hover > td,
@@ -456,7 +458,7 @@ img[src*="attachment.png"] {
 #zmienEmailDialog > div.warning-content > form > table > tbody > tr:hover > th,
 #formDanePoprzednieLata > div > div > table > tbody > tr:hover > th,
 #formDanePoprzednieLata > div > div > table > tbody > tr:hover > td {
-	background: var(--lightbackground) !important;
+	background: var(--hoverBackground) !important;
 }
 h3.center {
 	color: var(--textcolor4);
@@ -531,7 +533,7 @@ td.today {
 }
 #body > div > div > form > table > tbody > tr:hover > th,
 #body > div > div > form > table > tbody > tr:hover > td {
-	background: var(--lightbackground) !important;
+	background: var(--hoverBackground) !important;
 }
 #formWiadomosci > div > div > table.decorated.filters.center.small > tfoot > tr > td,
 #formFiltrZadania > table > tfoot > tr > td,
@@ -773,7 +775,7 @@ table.decorated {
 }
 #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td:not(.today):hover,
 #scheduleForm > div > div > div > table > tbody:nth-child(2) > tr > td.today:hover {
-	background: var(--lightbackground);
+	background: var(--hoverBackground);
 }
 .kalendarz-dzien {
 	filter: brightness(0.6) saturate(0.9) contrast(1.2);
