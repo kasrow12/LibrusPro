@@ -449,6 +449,7 @@ img[src*="attachment.png"] {
 .message-recipients-detail tr:hover td,
 #body > form[name="PrzegladajOceny"] > div > div > table.decorated.medium.center > tbody > tr:hover > *,
 #body > form:nth-child(5) > div > div > table.decorated.medium.center > tbody > tr:hover > *,
+#body > div > div > div.resultContainer > table > tbody > tr:hover > td,
 #body > div > div > form > table > tbody > tr:hover > td,
 #body > div > div > form > table > tbody > tr:hover > th,
 #body > div > div > form:nth-child(1) > div > table > tbody:nth-child(2) > tr:hover > td,
