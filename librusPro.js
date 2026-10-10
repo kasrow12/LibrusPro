@@ -78,6 +78,7 @@ const OPTIONS_DEFAULT = Object.freeze({
   keepBlinker: false,
   hideFirstTerm: false,
   incognitoMode: false,
+  hideGrades: false,
 });
 const DEPRESSION_MODE_COLORS = Object.freeze({
   proposed: "#aaad84",
@@ -156,11 +157,21 @@ let overlay;
 let gradeManager;
 
 // Kompatybilność
-let browserAPI;
-if (typeof chrome != null) {
-  browserAPI = chrome;
-} else {
-  browserAPI = browser;
+const browserAPI = typeof chrome !== "undefined" ? chrome : browser;
+
+// Ogranicznik równoległych zapytań, żeby nie zasypywać serwera Librusa
+const MAX_PARALLEL_REQUESTS = 4;
+async function mapWithLimit(items, limit, fn) {
+  const results = new Array(items.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (next < items.length) {
+      const i = next++;
+      results[i] = await fn(items[i]);
+    }
+  });
+  await Promise.all(workers);
+  return results;
 }
 
 // Od ostatniego logowania/w tym tygodniu
@@ -396,7 +407,7 @@ async function displayAttendanceStatistics() {
       .then(response => response.json())
       .then(data => { return data["Me"]["Account"]["UserId"] });
 
-    browserAPI.storage.local.get(["lessons", "subjects", "users"], (data) => {
+    browserAPI.storage.local.get(["lessons", "subjects", "users"], async (data) => {
       if (!data["lessons"] || !data["subjects"] || !data["users"]) {
         browserAPI.runtime.sendMessage({ msg: 'fetchAll' }, () => { displayAttendanceStatistics(); });
         return;
@@ -417,45 +428,55 @@ async function displayAttendanceStatistics() {
           <td id="librusPro_totalAttendancePercent">%</td>
         </tr>`
       template.innerHTML = html.trim();
-      container.insertBefore(template.content.firstChild, container.firstElementChild);
-      const totalAbsencesEl = document.getElementById("librusPro_totalAbsences");
-      const totalAttendancesEl = document.getElementById("librusPro_totalAttendances");
-      const totalAttendancePercentEl = document.getElementById("librusPro_totalAttendancePercent");
+      const totalsRow = container.insertBefore(template.content.firstChild, container.firstElementChild);
 
-      for (let lessonKey in data["lessons"]) {
-        const lesson = data["lessons"][lessonKey];
-        fetch(`${URLS.api}/Attendances/LessonsStatistics/${lessonKey}`)
-          .then(response => response.json())
-          .then(async (data) => {
-            for (let lessonStats of data["LessonsStatistics"]) {
-              if (lessonStats["Student"]["Id"] !== userID) continue;
+      const lessonStats = await mapWithLimit(Object.entries(data["lessons"]), MAX_PARALLEL_REQUESTS, async ([lessonKey, lesson]) => {
+        try {
+          const response = await fetch(`${URLS.api}/Attendances/LessonsStatistics/${lessonKey}`);
+          const stats = (await response.json())["LessonsStatistics"] ?? [];
+          return stats
+            .filter((e) => e["Student"]["Id"] === userID)
+            .map((e) => ({
+              subjectName: subjects[lesson.s] ?? NO_DATA,
+              teacherName: users[lesson.t] ?? NO_DATA,
+              absences: e["Absences"],
+              attendances: e["Attendances"],
+            }));
+        } catch (error) {
+          console.log(error);
+          return [];
+        }
+      });
 
-              const subjectName = subjects[lesson.s];
-              const teacherName = users[lesson.t];
-              const absences = lessonStats["Absences"];
-              const attendances = lessonStats["Attendances"];
-              const percent = ((attendances - absences) / attendances * 100).toFixed(2);
+      const formatPercent = (absences, attendances) => attendances ? ((attendances - absences) / attendances * 100).toFixed(2) : null;
+      let totalAbsences = 0;
+      let totalAttendances = 0;
+      const rows = document.createDocumentFragment();
+      for (const lesson of lessonStats.flat().sort((a, b) => a.subjectName.localeCompare(b.subjectName, "pl"))) {
+        const percent = formatPercent(lesson.absences, lesson.attendances);
 
-              const rowTemplate = document.createElement("template");
-              const rowHtml = `<tr class="line0"><td></td><td></td><td></td><td></td><td></td></tr>`;
-              rowTemplate.innerHTML = rowHtml.trim();
+        const rowTemplate = document.createElement("template");
+        const rowHtml = `<tr class="line0"><td></td><td></td><td></td><td></td><td></td></tr>`;
+        rowTemplate.innerHTML = rowHtml.trim();
 
-              const td = rowTemplate.content.firstElementChild.children;
-              td[0].textContent = subjectName;
-              td[1].textContent = isIncognito ? randomName() : teacherName;
-              td[2].textContent = absences;
-              td[3].textContent = attendances;
-              td[4].textContent = `${percent}%`;
-              if (percent < 50) td[4].classList.add('librusPro_lessons-attendance-low');
-              container.insertBefore(rowTemplate.content.firstChild, container.firstElementChild);
+        const td = rowTemplate.content.firstElementChild.children;
+        td[0].textContent = lesson.subjectName;
+        td[1].textContent = isIncognito ? randomName() : lesson.teacherName;
+        td[2].textContent = lesson.absences;
+        td[3].textContent = lesson.attendances;
+        td[4].textContent = percent === null ? NO_DATA : `${percent}%`;
+        if (percent !== null && percent < 50) td[4].classList.add('librusPro_lessons-attendance-low');
+        rows.appendChild(rowTemplate.content.firstChild);
 
-              totalAbsencesEl.innerText = +totalAbsencesEl.innerText + absences;
-              totalAttendancesEl.innerText = +totalAttendancesEl.innerText + attendances;
-              const totalPercent = ((+totalAttendancesEl.innerText - +totalAbsencesEl.innerText) / +totalAttendancesEl.innerText * 100).toFixed(2);
-              totalAttendancePercentEl.innerText = totalPercent + "%";
-            }
-          });
+        totalAbsences += lesson.absences;
+        totalAttendances += lesson.attendances;
       }
+      container.insertBefore(rows, totalsRow);
+
+      document.getElementById("librusPro_totalAbsences").textContent = totalAbsences;
+      document.getElementById("librusPro_totalAttendances").textContent = totalAttendances;
+      const totalPercent = formatPercent(totalAbsences, totalAttendances);
+      document.getElementById("librusPro_totalAttendancePercent").textContent = totalPercent === null ? NO_DATA : `${totalPercent}%`;
     });
   } catch (error) {
     console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu statystyk frekwencji!", `color: ${COLORS.error};`);
@@ -2340,11 +2361,14 @@ class CustomSchedule {
           // Opis
           if (event.description && this.options.addDescriptions) {
             const s = document.createElement("ARTICLE");
+            let description = `Opis: ${event.description}`;
             if (event.description.length > DESCRIPTION_LENGTH) {
-              s.innerHTML = `Opis: ${event.description.replaceAll("\n", "<br />").slice(0, DESCRIPTION_LENGTH)}\n[...]`;
-            } else {
-              s.innerHTML = `Opis: ${event.description.replaceAll("\n", "<br />")}`;
+              description = `Opis: ${event.description.slice(0, DESCRIPTION_LENGTH)} [...]`;
             }
+            description.split("\n").forEach((line, i) => {
+              if (i > 0) s.appendChild(document.createElement("br"));
+              s.appendChild(document.createTextNode(line));
+            });
             eventEl.appendChild(s);
           }
         } else {
@@ -2951,15 +2975,9 @@ function main() {
       browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
       return;
     } else {
-      for (let p in OPTIONS_DEFAULT) {
-        if (!options.hasOwnProperty(p)) {
-          let t = OPTIONS_DEFAULT;
-          for (let u in options) {
-            t[u] = options[u];
-          }
-          browserAPI.storage.sync.set({ ["options"]: t });
-          return;
-        }
+      if (Object.keys(OPTIONS_DEFAULT).some((p) => !options.hasOwnProperty(p))) {
+        browserAPI.storage.sync.set({ ["options"]: { ...OPTIONS_DEFAULT, ...options } });
+        return;
       }
     }
 

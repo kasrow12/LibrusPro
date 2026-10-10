@@ -33,7 +33,8 @@ function refreshLibrus() {
   fetch('https://synergia.librus.pl/refreshToken');
 }
 
-setInterval(refreshLibrus, 20*60*1000);
+// Tylko w głównej ramce - wystarczy jedno podtrzymywanie sesji na kartę
+if (window === window.top) setInterval(refreshLibrus, 20*60*1000);
 
 // Schowanie paska z zachowaniem
 function collapseBehavior() {

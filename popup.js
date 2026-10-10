@@ -30,12 +30,7 @@ const OPTIONS_DEFAULT = {
 };
 const CHANGELOG_URL = "changelog.html";
 
-let browserAPI;
-if (typeof chrome != null) {
-  browserAPI = chrome;
-} else {
-  browserAPI = browser;
-}
+const browserAPI = typeof chrome !== "undefined" ? chrome : browser;
 
 const boolOptions = ['hideSubjects', 'calculateAverages', 'depressionMode', 'modernizeSchedule', 'removeClasses', 'addDescriptions', 'darkTheme', 'hideOnes', 'countZeros', 'countToAverage', 'modernizeTitles', 'debug', 'averageWarn', 'showTeacherFreeDays', 'enableGradeManager', 'insertTimetable', 'keepBlinker', 'hideFirstTerm', 'incognitoMode', 'hideGrades'];
 const valueOptions = ['plusValue', 'minusValue', 'averageValue'];

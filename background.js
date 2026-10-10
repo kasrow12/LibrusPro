@@ -35,45 +35,81 @@ const OPTIONS_DEFAULT = Object.freeze({
   keepBlinker: false,
   hideFirstTerm: false,
   incognitoMode: false,
+  hideGrades: false,
 });
 
 // Kompatybilność
-let browserAPI;
-if (typeof chrome != null) browserAPI = chrome;
-else browserAPI = browser;
+const browserAPI = typeof chrome !== "undefined" ? chrome : browser;
 
-let options = OPTIONS_DEFAULT;
+// Ogranicznik równoległych zapytań, żeby nie zasypywać serwera Librusa
+const MAX_PARALLEL_REQUESTS = 4;
+let activeRequests = 0;
+const requestQueue = [];
 
-browserAPI.storage.sync.get(["options"], (data) => {
-  let userOptions = data["options"];
-  if (userOptions) {
-    options = userOptions;
+async function apiFetch(url) {
+  if (activeRequests < MAX_PARALLEL_REQUESTS) activeRequests++;
+  // Miejsce zostanie przekazane przez kończące się zapytanie
+  else await new Promise(resolve => requestQueue.push(resolve));
+
+  try {
+    const response = await fetch(url);
+    return await response.json();
+  } finally {
+    const next = requestQueue.shift();
+    if (next) next();
+    else activeRequests--;
   }
-});
+}
 
-// Nasłuchiwanie zmian ciemnego motywu
+async function getOptions() {
+  const data = await browserAPI.storage.sync.get(["options"]);
+  return { ...OPTIONS_DEFAULT, ...data["options"] };
+}
+
+// Ciemny motyw jako content script od document_start - bez białego mignięcia przy ładowaniu strony
+const DARK_THEME_SCRIPT_ID = "librusPro_darkTheme";
+
+// Zwraca true, jeśli motyw został właśnie zarejestrowany
+async function syncDarkTheme(enabled) {
+  const registered = await browserAPI.scripting.getRegisteredContentScripts({ ids: [DARK_THEME_SCRIPT_ID] });
+  if (enabled && registered.length === 0) {
+    await browserAPI.scripting.registerContentScripts([{
+      id: DARK_THEME_SCRIPT_ID,
+      matches: [`${SYNERGIA_URL}*`],
+      css: [DARKTHEME_CSS],
+      runAt: "document_start",
+    }]);
+    return true;
+  }
+  if (!enabled && registered.length > 0) {
+    await browserAPI.scripting.unregisterContentScripts({ ids: [DARK_THEME_SCRIPT_ID] });
+  }
+  return false;
+}
+
+getOptions().then(options => syncDarkTheme(options.darkTheme)).catch(console.error);
+
 browserAPI.storage.onChanged.addListener((changes, namespace) => {
   if (changes["options"] !== undefined) {
-    options = changes.options.newValue;
+    const darkTheme = changes.options.newValue?.darkTheme ?? OPTIONS_DEFAULT.darkTheme;
+    syncDarkTheme(darkTheme).catch(console.error);
   }
 });
 
-// Ciemny motyw (listener wywołuje się kilkukrotnie)
-browserAPI.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (browserAPI.runtime.lastError) {
-    console.error(browserAPI.runtime.lastError.message);
-    return;
-  }
+// Zabezpieczenie na wypadek, gdyby rejestracja nie przetrwała restartu przeglądarki
+browserAPI.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  if (changeInfo.status !== "loading" || !tab.url?.startsWith(SYNERGIA_URL)) return;
 
-  if (tab.url && tab.url.startsWith(SYNERGIA_URL) && options.darkTheme) {
-    try {
-      browserAPI.scripting.insertCSS({
+  try {
+    const options = await getOptions();
+    if (await syncDarkTheme(options.darkTheme)) {
+      await browserAPI.scripting.insertCSS({
         target: { tabId },
         files: [ DARKTHEME_CSS ],
       });
-    } catch (err) {
-      console.error(`Failed to insert CSS: ${err}`);
     }
+  } catch (err) {
+    console.error(`Failed to insert CSS: ${err}`);
   }
 });
 
@@ -101,17 +137,13 @@ browserAPI.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 async function fetchFromApi(endpoint, func) {
   try {
-    return await fetch(`${API}/${endpoint}`)
-    .then(response => response.json())
-    .then(data => {
-      // "Attendances/Types" => "Types"
-      data = data[endpoint.split("/").at(-1)];
-      let result = {};
-      for (let e of data) {
-        func(result, e);
-      }
-      return result;
-    });
+    // "Attendances/Types" => "Types"
+    const data = (await apiFetch(`${API}/${endpoint}`))[endpoint.split("/").at(-1)];
+    let result = {};
+    for (let e of data) {
+      func(result, e);
+    }
+    return result;
   } catch (error) {
     console.error(error);
   }
@@ -121,25 +153,22 @@ async function fetchFromApi(endpoint, func) {
 
 // Pobieranie klasy oraz numerka z dziennika
 // Wywoływane po każdym zalogowaniu (np. mogła wystąpić zmiana konta na inne dziecko) oraz gdy nie ma zapisanych w storage
-async function fetchStudentInfo() {
+async function fetchStudentInfo(refresh = true) {
   try {
-    await fetch(REFRESH_URL);
+    if (refresh) await fetch(REFRESH_URL);
 
-    let [userID, classID] = await fetch(`${API}/Me`)
-    .then(response => response.json())
-    .then(data => {return [data["Me"]["Account"]["UserId"], data["Me"]["Class"]["Id"]]});
+    const me = (await apiFetch(`${API}/Me`))["Me"];
+    const userID = me["Account"]["UserId"];
+    const classID = me["Class"]["Id"];
 
-    let [classNumber, classSymbol, unitID] = await fetch(`${API}/Classes/${classID}`)
-    .then(response => response.json())
-    .then(data => {return [data["Class"]["Number"], data["Class"]["Symbol"], data["Class"]["Unit"]["Id"]]});
+    const [classData, userData] = await Promise.all([
+      apiFetch(`${API}/Classes/${classID}`),
+      apiFetch(`${API}/Users/${userID}`),
+    ]);
+    const { Number: classNumber, Symbol: classSymbol, Unit: { Id: unitID } } = classData["Class"];
+    const studentNumber = userData["User"]["ClassRegisterNumber"];
 
-    let schoolInitials = await fetch(`${API}/Units/${unitID}`)
-    .then(response => response.json())
-    .then(data => {return data["Unit"]["ShortName"]});
-
-    let studentNumber = await fetch(`${API}/Users/${userID}`)
-    .then(response => response.json())
-    .then(data => {return data["User"]["ClassRegisterNumber"]});
+    const schoolInitials = (await apiFetch(`${API}/Units/${unitID}`))["Unit"]["ShortName"];
 
     let studentClass = `${classNumber}${classSymbol} ${schoolInitials}`;
 
@@ -163,22 +192,52 @@ async function fetchStudentInfo() {
   }
 }
 
-async function fetchMultipleTimetables(weekStart, prevOrNext, timetableWeeks) {
-  let timetables = [];
-  let week = weekStart;
-  // x tygodni do przodu/tyłu
-  for (let i = 0; i < timetableWeeks; i++) {
-    let [timetable, url] = await fetch(`${TIMETABLE_API_URL}${week}`)
-    .then(response => response.json())
-    .then(data => { return [data["Timetable"], data["Pages"][prevOrNext].split("=")[1]] });
-    timetables = {...timetables, ...timetable};
-    week = url;
-  }
+// "https://.../Timetables?weekStart=2024-09-16" => "2024-09-16"
+function getWeekStart(pageUrl) {
+  return pageUrl.split("=")[1];
+}
 
+// Przesunięcie daty YYYY-MM-DD o podaną liczbę tygodni (w UTC, żeby zmiana czasu nie przesuwała dni)
+function shiftWeek(weekStart, weeks) {
+  const date = new Date(`${weekStart}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + 7 * weeks);
+  return date.toISOString().slice(0, 10);
+}
+
+async function fetchWeekTimetable(weekStart) {
+  try {
+    return (await apiFetch(`${TIMETABLE_API_URL}${weekStart}`))["Timetable"];
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+// Stara metoda: kolejny tydzień brany z odpowiedzi API (wolniejsza, tydzień po tygodniu)
+async function fetchMultipleTimetablesSequentially(weekStart, prevOrNext, timetableWeeks) {
+  let timetables = {};
+  let week = weekStart;
+  for (let i = 0; i < timetableWeeks; i++) {
+    const data = await apiFetch(`${TIMETABLE_API_URL}${week}`);
+    timetables = {...timetables, ...data["Timetable"]};
+    week = getWeekStart(data["Pages"][prevOrNext]);
+  }
   return timetables;
 }
 
-async function fetchTimetable(weekStart) {
+// x tygodni do przodu/tyłu, równolegle
+async function fetchMultipleTimetables(weekStart, prevOrNext, timetableWeeks) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(weekStart)) {
+    return fetchMultipleTimetablesSequentially(weekStart, prevOrNext, timetableWeeks);
+  }
+
+  const direction = prevOrNext === "Prev" ? -1 : 1;
+  const weeks = Array.from({ length: timetableWeeks }, (_, i) => shiftWeek(weekStart, direction * i));
+  const timetables = await Promise.all(weeks.map(fetchWeekTimetable));
+  return Object.assign({}, ...timetables);
+}
+
+async function fetchTimetable(weekStart, refresh = true) {
   let url = `${API}/Timetables`;
   let timetableWeeks = DEFAULT_TIMETABLE_WEEK_RANGE;
   if (weekStart) {
@@ -187,10 +246,9 @@ async function fetchTimetable(weekStart) {
   }
 
   try {
-    await fetch(REFRESH_URL);
-    let [currentTimetable, prev, next] = await fetch(url)
-    .then(response => response.json())
-    .then(data => { return [data["Timetable"], data["Pages"]["Prev"].split("=")[1], data["Pages"]["Next"].split("=")[1]] });
+    if (refresh) await fetch(REFRESH_URL);
+    const data = await apiFetch(url);
+    const currentTimetable = data["Timetable"];
 
     if (!currentTimetable) {
       console.log(`Brak planu na tydzień (${weekStart ?? "aktualny"})!`);
@@ -198,8 +256,8 @@ async function fetchTimetable(weekStart) {
     }
 
     let [prevTimetables, nextTimetables] = await Promise.all([
-      fetchMultipleTimetables(prev, 'Prev', timetableWeeks),
-      fetchMultipleTimetables(next, 'Next', timetableWeeks)
+      fetchMultipleTimetables(getWeekStart(data["Pages"]["Prev"]), 'Prev', timetableWeeks),
+      fetchMultipleTimetables(getWeekStart(data["Pages"]["Next"]), 'Next', timetableWeeks)
     ]);
     let timetables = {...prevTimetables, ...currentTimetable, ...nextTimetables};
 
@@ -215,55 +273,54 @@ async function fetchTimetable(weekStart) {
   return null;
 }
 
-async function fetchConstants() {
+async function fetchConstants(refresh = true) {
   try {
-    await fetch(REFRESH_URL);
+    if (refresh) await fetch(REFRESH_URL);
 
-    // Nauczyciele
-    let users = await fetchFromApi("Users", (r, e) => { r[e["Id"]] = `${e["LastName"]} ${e["FirstName"]}` });
-    browserAPI.storage.local.set({ ["users"]: users });
+    const [users, subjects, lessons, colors, gradeTypes, gradeCategories, attendanceTypes] = await Promise.all([
+      // Nauczyciele
+      fetchFromApi("Users", (r, e) => { r[e["Id"]] = `${e["LastName"]} ${e["FirstName"]}` }),
+      // Nazwy przedmiotów
+      fetchFromApi("Subjects", (r, e) => { r[e["Id"]] = e["Name"] }),
+      // Przedmioty
+      fetchFromApi("Lessons", (r, e) => {
+        r[e["Id"]] = {
+          t: e["Teacher"]["Id"],
+          s: e["Subject"]["Id"],
+        }
+      }),
+      // Kolory
+      fetchFromApi("Colors", (r, e) => { r[e["Id"]] = `#${e["RGB"]}` }),
+      // Typy ocen (1,1+,...)
+      fetchFromApi("Grades/Types", (r, e) => { r[e["Name"]] = e["Value"] }),
+      // Kategorie ocen
+      fetchFromApi("Grades/Categories", (r, e) => {
+        r[e["Id"]] = {
+          name: e["Name"],
+          color: e["Color"]["Id"],
+          weight: e["Weight"],
+          count: e["CountToTheAverage"],
+        }
+      }),
+      // Kategorie frekwencji (kolor uzupełniany niżej, gdy już są pobrane kolory)
+      fetchFromApi("Attendances/Types", (r, e) => {
+        r[e["Id"]] = {
+          n: e["Name"],
+          s: e["Short"],
+          c: e["ColorRGB"] ? "#" + e["ColorRGB"] : null,
+          colorId: e["Color"]?.["Id"],
+        }
+      }),
+    ]);
 
-    // Nazwy przedmiotów
-    let subjects = await fetchFromApi("Subjects", (r, e) => { r[e["Id"]] = e["Name"] });
-    browserAPI.storage.local.set({ ["subjects"]: subjects });
-
-    // Przedmioty
-    let lessons = await fetchFromApi("Lessons", (r, e) => { 
-      r[e["Id"]] = {
-        t: e["Teacher"]["Id"],
-        s: e["Subject"]["Id"],
+    if (attendanceTypes) {
+      for (const type of Object.values(attendanceTypes)) {
+        type.c ??= colors?.[type.colorId];
+        delete type.colorId;
       }
-    });
-    browserAPI.storage.local.set({ ["lessons"]: lessons });
+    }
 
-    // Kolory
-    let colors = await fetchFromApi("Colors", (r, e) => { r[e["Id"]] = `#${e["RGB"]}` });
-    browserAPI.storage.local.set({ ["colors"]: colors });
-
-    // Typy ocen (1,1+,...)
-    let gradeTypes = await fetchFromApi("Grades/Types", (r, e) => { r[e["Name"]] = e["Value"] });
-    browserAPI.storage.local.set({ ["gradeTypes"]: gradeTypes });
-
-    // Kategorie ocen
-    let gradeCategories = await fetchFromApi("Grades/Categories", (r, e) => { 
-      r[e["Id"]] = {
-        name: e["Name"],
-        color: e["Color"]["Id"],
-        weight: e["Weight"],
-        count: e["CountToTheAverage"],
-      }
-    });
-    browserAPI.storage.local.set({ ["gradeCategories"]: gradeCategories });
-
-    // Kategorie frekwencji
-    let attendanceTypes = await fetchFromApi("Attendances/Types", (r, e) => { 
-      r[e["Id"]] = {
-        n: e["Name"],
-        s: e["Short"],
-        c: e["ColorRGB"] ? "#" + e["ColorRGB"] : colors[e["Color"]["Id"]],
-      }
-    });
-    browserAPI.storage.local.set({ ["attendanceTypes"]: attendanceTypes });
+    browserAPI.storage.local.set({ users, subjects, lessons, colors, gradeTypes, gradeCategories, attendanceTypes });
   } catch (error) {
     console.error(error);
   }
@@ -318,9 +375,12 @@ browserAPI.runtime.onMessage.addListener((request, sender, sendResponse) => {
         sendResponse(await fetchStudentInfo());
         break;
       case "fetchAll":
-        await fetchStudentInfo();
-        await fetchTimetable();
-        await fetchConstants();
+        await fetch(REFRESH_URL).catch(console.error);
+        await Promise.all([
+          fetchStudentInfo(false),
+          fetchTimetable(undefined, false),
+          fetchConstants(false),
+        ]);
         sendResponse();
         break;
     }
