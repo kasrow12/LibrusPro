@@ -1,11 +1,12 @@
-// LibrusPro
+// Librus Ultra
 // Browser Extension
-// Author: Maks Kowalski
-// Contact: kasrow12 (at) gmail.com
+// Original project author: Maks Kowalski
+// Librus Ultra refresh: RUTUJEK
+// Original project contact: kasrow12 (at) gmail.com
 
 // Config
 const DISCORD_LINK = "https://discord.gg/e9EkVEvsDr";
-const CHROME_LINK = "https://chromewebstore.google.com/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews";
+const CHROME_LINK = "https://github.com/RUTUJEKWIELKI/LibrusUltra";
 const NO_DATA = "-";
 const ADD_EDIT_SYMBOL = "✎";
 const REMOVE_SYMBOL = "⨉";
@@ -180,6 +181,7 @@ function registerOnStorageChange(isSchedule = false) {
   // Tylko po zmianie opcji
   browserAPI.storage.onChanged.addListener((changes, namespace) => {
     if (changes["options"]) {
+      if (isLibrusSettingsPage() && librusUltraSettingsSaveInProgress) return;
       window.location.replace(window.location.href);
     }
   });
@@ -202,7 +204,7 @@ function christmasBanner() {
   if (!banner) return;
   banner.src = browserAPI.runtime.getURL('img/christmas_banner.png');
   banner.style.setProperty("filter", "brightness(0.9) contrast(0.9)", "important");
-  banner.title = "<b style='color: #fff823'>Poczuj magię świąt razem z <b style='color: #a96fe3'>LibrusPro</b>!</b>";
+  banner.title = "<b style='color: #fff823'>Poczuj magię świąt razem z <b style='color: #a96fe3'>Librus Ultra</b>!</b>";
   banner.classList.add("librusPro_jqueryTitle");
 }
 
@@ -271,7 +273,7 @@ function displayAttendances(attendances) {
 
     const body = document.querySelector("#librusPro_allAttendanceTable > tbody");
     if (!attendances) {
-      console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu całej frekwencji!", `color: ${COLORS.error};`);
+      console.log("%c[Librus Ultra] » Wystąpił błąd przy pobieraniu całej frekwencji!", `color: ${COLORS.error};`);
       const tr = document.createElement("TR");
       tr.classList.add("line0", "bolded");
       const errorMessage = document.createElement("td");
@@ -349,7 +351,7 @@ function prepareAttendanceStatistics() {
   let html = `
   <h3 class="center librusPro_header">
     <div>Wykaz uczęszczania</div>
-    <div class="librusPro_sub-header">Dzięki LibrusPro!</div>
+    <div class="librusPro_sub-header">Dzięki Librus Ultra!</div>
   </h3>
   <table class="librusPro_attendance-table center big decorated" style="margin-bottom: 2em;">
     <thead>
@@ -458,7 +460,7 @@ async function displayAttendanceStatistics() {
       }
     });
   } catch (error) {
-    console.log("%c[LibrusPro] » Wystąpił błąd przy pobieraniu statystyk frekwencji!", `color: ${COLORS.error};`);
+    console.log("%c[Librus Ultra] » Wystąpił błąd przy pobieraniu statystyk frekwencji!", `color: ${COLORS.error};`);
     console.log(error);
     const container = document.getElementById("librusPro_lessonsAttendance");
     const tr = document.createElement("TR");
@@ -679,7 +681,7 @@ function handleGrades(options, recalculate = false) {
         const td = rows[i].children[INDICES[u] + OFFSET_JS];
         const plus = document.createElement("DIV");
         plus.innerText = ADD_EDIT_SYMBOL;
-        plus.title = '<article class="librusPro_timetable-header">LibrusPro <span class="librusPro_white">|</span> <span class="librusPro_greeno">Dodaj tymczasowo</span></article>';
+        plus.title = '<article class="librusPro_timetable-header">Librus Ultra <span class="librusPro_white">|</span> <span class="librusPro_greeno">Dodaj tymczasowo</span></article>';
         plus.addEventListener("click", (e) => {
           if (gradeManager && !gradeManager.enabled) {
             gradeManager.switch.focus();
@@ -739,7 +741,7 @@ function handleGrades(options, recalculate = false) {
     }
   }
   if (errors.length > 0) {
-    const wrongAverageMessage = "[LibrusPro] » Przynajmniej jedna z obliczonych średnich przez LibrusaPro różni się od tej wyliczonej przez Librusa Synergię (poprawna znajduje się w nawiasach). W menu ustawień rozszerzenia możesz dostosować pewne parametry uwzględniane przy jej liczeniu do swojej konfiguracji szkoły. Aby uzyskać więcej informacji i pomóc w eliminacji potencjalnego błędu, skontaktuj się ze mną na Discordzie. (Link znajduje się w stopce na dole strony)";
+    const wrongAverageMessage = "[Librus Ultra] » Przynajmniej jedna z obliczonych średnich przez Librus Ultra różni się od tej wyliczonej przez Librusa Synergię (poprawna znajduje się w nawiasach). W menu ustawień rozszerzenia możesz dostosować pewne parametry uwzględniane przy jej liczeniu do swojej konfiguracji szkoły. Aby uzyskać więcej informacji i pomóc w eliminacji potencjalnego błędu, skontaktuj się ze mną na Discordzie. (Link znajduje się w stopce na dole strony)";
     console.log(`%c${wrongAverageMessage}`, `color: ${COLORS.error};`);
     const legend = document.querySelector("form[name=\"PrzegladajOceny\"] > div > div > div.legend.left.stretch > h3");
     if (!options.averageWarn) {
@@ -1094,7 +1096,7 @@ function displayStudentNumber(student) {
   }
 
   studentNumberWrapper.classList.add("librusPro_jqueryTitle");
-  studentNumberWrapper.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Twój numerek</span></article><b class='librusPro_lightgreen'>Funkcja dostępna tylko z rozszerzeniem <b class='librusPro_accent'>LibrusPro</b>!</b>";
+  studentNumberWrapper.title = "<article class='librusPro_timetable-header'>Librus Ultra <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Twój numerek</span></article><b class='librusPro_lightgreen'>Funkcja dostępna tylko z rozszerzeniem <b class='librusPro_accent'>Librus Ultra</b>!</b>";
   if (student.number === null) {
     studentNumberWrapper.title = `<b class="librusPro_error">Nie udało się pobrać Twojego numerka!</b>`;
   }
@@ -1128,13 +1130,13 @@ function adjustHeader() {
   // Creditsy
   const loggedInAs = document.querySelector("#user-section > b > img");
   if (loggedInAs) {
-    loggedInAs.title = `<b class="librusPro_lightgreen">Dzięki za korzystanie z rozszerzenia <b class='librusPro_accent'>LibrusPro</b>!</b><br><b class="librusPro_yellow">Jeżeli Ci się spodobało, nie zapomnij zostawić<br>5 gwiazdek w sklepie oraz polecić znajomym!</b><br><b class="librusPro_salmon"><i>Jedz Buraczki!</i></b>`;
+    loggedInAs.title = `<b class="librusPro_lightgreen">Dzięki za korzystanie z rozszerzenia <b class='librusPro_accent'>Librus Ultra</b>!</b><br><b class="librusPro_yellow">Jeżeli Ci się spodobało, nie zapomnij zostawić ⭐ na GitHubie oraz polecić znajomym!</b><br><b class="librusPro_salmon"><i>Jedz Buraczki!</i></b>`;
   }
 
   document.querySelector('a[title="Bezpieczny Uczeń"]')?.parentElement?.remove();
 
   // Zmiana title
-  let pageTitle = "LibrusPro | ";
+  let pageTitle = "Librus Ultra | ";
 
   // Ilość nowych rzeczy
   let num = [...document.querySelectorAll(".button.counter")].reduce((total, e) => total + Number(e.innerText), 0);
@@ -1173,11 +1175,228 @@ function insertFooter() {
   <span id="bottom-logo"></span>
   <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="librusPro_icon" style="background: url(&quot;${browserAPI.runtime.getURL('img/icon.png')}&quot;);"></a>
   <div class="librusPro_footer-text">
-    <span class="librusPro_greeno">» Podoba się wtyczka? <a href="${CHROME_LINK}" target="_blank" class="librusPro_link">Zostaw 5<span style="font-size: 11px;">⭐</span></a></span>
+    <span class="librusPro_greeno">» Podoba się wtyczka? <a href="${CHROME_LINK}" target="_blank" class="librusPro_link">Zostaw ⭐ na GitHubie</a></span>
     <div class="librusPro_water">» Wbijaj na oficjalny <a href="${DISCORD_LINK}" target="_blank" class="librusPro_link">Discord</a>!</div>
     
-    <div>» <span style="font-style: italic">LibrusPro © ${new Date().getFullYear()} Maks Kowalski</span></div>
+    <div>» <span style="font-style: italic">Librus Ultra — odświeżenie i rozwój: RUTUJEK · oryginalny LibrusPro: Maks Kowalski</span></div>
   </div>`;
+}
+
+const LIBRUS_ULTRA_SETTINGS = Object.freeze([
+  { key: "darkTheme", label: "Ciemny motyw", description: "Przyciemnia widok dziennika." },
+  { key: "calculateAverages", label: "Licz średnie ocen", description: "Pokazuje wyliczone średnie w widoku ocen." },
+  { key: "hideSubjects", label: "Ukrywaj przedmioty bez ocen", description: "Porządkuje listę przedmiotów w widoku ocen." },
+  { key: "modernizeSchedule", label: "Ulepsz terminarz", description: "Włącza czytelniejsze kafelki i dodatkowe informacje." },
+  { key: "incognitoMode", label: "Tryb incognito", description: "Ukrywa dane osobowe w widokach rozszerzenia, np. do zrzutów ekranu." },
+]);
+const LIBRUS_ULTRA_ONBOARDING_KEY = "librusUltraOnboardingComplete";
+let librusUltraSettingsSaveInProgress = false;
+
+function isLibrusSettingsPage() {
+  return /^\/ustawienia(?:\/|$)/i.test(window.location.pathname);
+}
+
+function createLibrusUltraSettingInputs(container, prefix, options) {
+  const inputs = {};
+  LIBRUS_ULTRA_SETTINGS.forEach(({ key, label: title, description }) => {
+    const row = document.createElement("label");
+    row.className = "librusUltra-settings-option";
+    row.htmlFor = `${prefix}-${key}`;
+
+    const copy = document.createElement("span");
+    copy.className = "librusUltra-settings-copy";
+
+    const label = document.createElement("span");
+    label.className = "librusUltra-settings-label";
+    label.textContent = title;
+
+    const help = document.createElement("span");
+    help.className = "librusUltra-settings-description";
+    help.textContent = description;
+    copy.append(label, help);
+
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.id = `${prefix}-${key}`;
+    input.checked = Boolean(options[key]);
+    input.setAttribute("aria-label", title);
+    row.append(copy, input);
+    container.appendChild(row);
+    inputs[key] = input;
+  });
+  return inputs;
+}
+
+function saveLibrusUltraSettings(inputs, status, onSaved) {
+  const selected = Object.fromEntries(
+    Object.entries(inputs).map(([key, input]) => [key, input.checked])
+  );
+
+  browserAPI.storage.sync.get(["options"], (data) => {
+    if (browserAPI.runtime.lastError) {
+      status.textContent = "Nie udało się odczytać ustawień. Spróbuj ponownie.";
+      return;
+    }
+
+    const options = { ...OPTIONS_DEFAULT, ...(data.options || {}), ...selected };
+    librusUltraSettingsSaveInProgress = true;
+    browserAPI.storage.sync.set({ options }, () => {
+      window.setTimeout(() => {
+        librusUltraSettingsSaveInProgress = false;
+      }, 500);
+      if (browserAPI.runtime.lastError) {
+        status.textContent = "Nie udało się zapisać ustawień. Spróbuj ponownie.";
+        return;
+      }
+      status.textContent = "Zapisano. Odśwież stronę Librusa, aby zastosować zmiany.";
+      if (onSaved) onSaved(options);
+    });
+  });
+}
+
+function initLibrusUltraSettings(options = OPTIONS_DEFAULT) {
+  const container = document.querySelector("#body .container-background");
+  if (!container || document.getElementById("librusUltra-settings-panel")) return;
+
+  const currentOptions = { ...OPTIONS_DEFAULT, ...options };
+  const panel = document.createElement("section");
+  panel.id = "librusUltra-settings-panel";
+  panel.className = "librusUltra-settings-panel";
+  panel.innerHTML = `
+    <div class="librusUltra-settings-heading">
+      <img src="${browserAPI.runtime.getURL("img/icon.png")}" alt="" />
+      <div>
+        <h2>Librus Ultra</h2>
+        <p>Ustawienia rozszerzenia</p>
+      </div>
+    </div>
+    <div class="librusUltra-settings-grid" data-ultra-settings></div>
+    <div class="librusUltra-settings-actions">
+      <button type="button" class="librusUltra-settings-button" data-save-settings>Zapisz ustawienia</button>
+      <span class="librusUltra-settings-status" data-settings-status role="status" aria-live="polite"></span>
+    </div>`;
+
+  const mainInputs = createLibrusUltraSettingInputs(
+    panel.querySelector("[data-ultra-settings]"),
+    "librusUltra-main",
+    currentOptions
+  );
+  const mainStatus = panel.querySelector("[data-settings-status]");
+  panel.querySelector("[data-save-settings]").addEventListener("click", () => {
+    saveLibrusUltraSettings(mainInputs, mainStatus);
+  });
+  container.prepend(panel);
+
+  const onboarding = document.createElement("div");
+  onboarding.className = "librusUltra-onboarding";
+  onboarding.hidden = true;
+  onboarding.tabIndex = -1;
+  onboarding.setAttribute("role", "dialog");
+  onboarding.setAttribute("aria-modal", "true");
+  onboarding.setAttribute("aria-labelledby", "librusUltra-onboarding-title");
+  onboarding.innerHTML = `
+    <div class="librusUltra-onboarding-card">
+      <button type="button" class="librusUltra-onboarding-skip" data-onboarding-skip>Pomiń</button>
+      <span class="librusUltra-onboarding-feedback" data-onboarding-feedback role="status" aria-live="polite"></span>
+      <section data-onboarding-step="welcome">
+        <span class="librusUltra-onboarding-kicker">Witaj w Librus Ultra</span>
+        <h2 id="librusUltra-onboarding-title">Dziękujemy, że korzystasz z rozszerzenia!</h2>
+        <p>W kilku krokach wybierzesz, jak Librus Ultra ma ulepszyć Twój dziennik. Ustawienia zapisują się w rozszerzeniu i możesz je później zmienić tutaj.</p>
+        <ul class="librusUltra-onboarding-list">
+          <li>Ciemniejszy i czytelniejszy wygląd</li>
+          <li>Średnie ocen oraz uporządkowany widok przedmiotów</li>
+          <li>Ulepszony terminarz i tryb incognito</li>
+        </ul>
+        <button type="button" class="librusUltra-settings-button" data-onboarding-next>Skonfiguruj ustawienia</button>
+      </section>
+      <section data-onboarding-step="settings" hidden>
+        <span class="librusUltra-onboarding-kicker">Personalizacja</span>
+        <h2>Wybierz funkcje dla siebie</h2>
+        <p>Możesz zmienić te opcje w dowolnym momencie na stronie ustawień.</p>
+        <div class="librusUltra-onboarding-settings" data-onboarding-settings></div>
+        <span class="librusUltra-settings-status" data-onboarding-status role="status" aria-live="polite"></span>
+        <div class="librusUltra-onboarding-actions">
+          <button type="button" class="librusUltra-settings-button librusUltra-settings-button-secondary" data-onboarding-back>Wstecz</button>
+          <button type="button" class="librusUltra-settings-button" data-onboarding-save>Zapisz i dalej</button>
+        </div>
+      </section>
+      <section data-onboarding-step="thanks" hidden>
+        <span class="librusUltra-onboarding-kicker">Gotowe</span>
+        <h2>Dziękujemy za używanie Librus Ultra! 💜</h2>
+        <p>Twoje wybory są zapisane. Jeśli właśnie zmieniłeś(-aś) opcje, odśwież stronę Librusa, aby je zastosować.</p>
+        <button type="button" class="librusUltra-settings-button" data-onboarding-finish>Przejdź do ustawień</button>
+      </section>
+    </div>`;
+  document.body.appendChild(onboarding);
+
+  const onboardingInputs = createLibrusUltraSettingInputs(
+    onboarding.querySelector("[data-onboarding-settings]"),
+    "librusUltra-onboarding",
+    currentOptions
+  );
+  const onboardingSteps = [...onboarding.querySelectorAll("[data-onboarding-step]")];
+  const showOnboardingStep = (name) => {
+    onboardingSteps.forEach((step) => {
+      step.hidden = step.dataset.onboardingStep !== name;
+    });
+    if (name === "welcome") {
+      onboarding.querySelector("[data-onboarding-next]").focus();
+    } else if (name === "settings") {
+      onboarding.querySelector("[data-onboarding-save]").focus();
+    } else {
+      onboarding.querySelector("[data-onboarding-finish]").focus();
+    }
+  };
+  const finishOnboarding = () => {
+    browserAPI.storage.local.set({ [LIBRUS_ULTRA_ONBOARDING_KEY]: true }, () => {
+      if (browserAPI.runtime.lastError) {
+        onboarding.querySelector("[data-onboarding-feedback]").textContent = "Nie udało się zapisać postępu. Możesz zamknąć to okno i wrócić później.";
+        return;
+      }
+      onboarding.hidden = true;
+      document.body.classList.remove("librusUltra-onboarding-open");
+      panel.querySelector("[data-save-settings]").focus();
+    });
+  };
+
+  onboarding.querySelector("[data-onboarding-next]").addEventListener("click", () => showOnboardingStep("settings"));
+  onboarding.querySelector("[data-onboarding-back]").addEventListener("click", () => showOnboardingStep("welcome"));
+  onboarding.querySelector("[data-onboarding-save]").addEventListener("click", () => {
+    saveLibrusUltraSettings(onboardingInputs, onboarding.querySelector("[data-onboarding-status]"), (savedOptions) => {
+      Object.entries(mainInputs).forEach(([key, input]) => {
+        input.checked = Boolean(savedOptions[key]);
+      });
+      showOnboardingStep("thanks");
+    });
+  });
+  onboarding.querySelector("[data-onboarding-finish]").addEventListener("click", finishOnboarding);
+  onboarding.querySelector("[data-onboarding-skip]").addEventListener("click", finishOnboarding);
+  onboarding.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      finishOnboarding();
+      return;
+    }
+    if (event.key !== "Tab") return;
+
+    const focusable = [...onboarding.querySelectorAll("button:not([disabled]), input:not([disabled])")]
+      .filter((element) => !element.closest("[hidden]"));
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  browserAPI.storage.local.get([LIBRUS_ULTRA_ONBOARDING_KEY], (data) => {
+    if (browserAPI.runtime.lastError || data[LIBRUS_ULTRA_ONBOARDING_KEY]) return;
+    onboarding.hidden = false;
+    document.body.classList.add("librusUltra-onboarding-open");
+    showOnboardingStep("welcome");
+  });
 }
 
 function insertNote() {
@@ -1187,9 +1406,9 @@ function insertNote() {
   if (lastNote) {
     lastNote.insertAdjacentHTML('afterend', `
     <tr class="line1">
-      <td>Korzystanie z wtyczki LibrusPro</td>
+      <td>Korzystanie z wtyczki Librus Ultra</td>
       <td class="small">${date}</td>
-      <td>Maks Kowalski</td>
+      <td>RUTUJEK</td>
       <td>pozytywna</td>
       <td>inna</td>
     </tr>
@@ -1202,9 +1421,9 @@ function insertNote() {
       <thead><tr><td>Uwaga</td><td>Data</td><td>Kto dodał</td><td>Rodzaj uwagi</td><td>Kategoria</td></tr></thead>
       <tbody>
           <tr class="line1">
-            <td>Korzystanie z wtyczki LibrusPro</td>
+            <td>Korzystanie z wtyczki Librus Ultra</td>
             <td class="small">${date}</td>
-            <td>Maks Kowalski</td>
+            <td>RUTUJEK</td>
             <td>pozytywna</td>
             <td>inna</td>
           </tr>
@@ -1333,7 +1552,7 @@ class GradeManager {
       <label class="librusPro_grade-manager-label">
         <span>Tymczasowa modyfikacja ocen:</span>
         <input type="checkbox" id="librusPro_gradeManagerCheckbox">
-        <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Modifykacja ocen</span></article><article class='librusPro_justify'>Gdy to ustawienie jest <b class='librusPro_title-tak'>włączone</b>, możesz tymczasowo, <u>lokalnie</u> <span class='librusPro_lightgreen'>dodawać</span> nowe oceny, bądź <span class='librusPro_lightblue'>edytować</span> i&nbsp;<span class='librusPro_salmon'>usuwać</span> bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.</article><article class='librusPro_seaweed librusPro_justify librusPro_italic'>(Po odświeżeniu strony <span class='librusPro_yellow'>wszystko wraca</span> do stanu sprzed modyfikacji! Wszystkie zmiany zachodzą jedynie lokalnie i <span class='librusPro_salmon'>nie mają wpływu na Twoje rzeczywiste oceny!</span>)</article><article class='librusPro_lightgreen librusPro_justify'>W menu dodawania ocen cząstkowych możesz zobaczyć <span class='librusPro_white'>ile jeszcze jedynek</span> możesz zdobyć, aby uzyskać daną średnią.</article><article class='librusPro_water librusPro_justify librusPro_italic'>Domyślną średnią dla tego widoku możesz zmienić w&nbsp;<u>ustawieniach rozszerzenia</u>, jak i całkowicie wyłączyć tymczasową modyfikację ocen.</article><b class='librusPro_lightblue'>Oceny możesz dodawać dzięki '<span class='librusPro_white'>${ADD_EDIT_SYMBOL}</span>',<br>a modyfikować po prostu <span class='librusPro_white'>klikając na daną ocenę</span>.</b>" src="/images/pomoc_ciemna.png">
+        <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article class='librusPro_timetable-header'>Librus Ultra <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Modifykacja ocen</span></article><article class='librusPro_justify'>Gdy to ustawienie jest <b class='librusPro_title-tak'>włączone</b>, możesz tymczasowo, <u>lokalnie</u> <span class='librusPro_lightgreen'>dodawać</span> nowe oceny, bądź <span class='librusPro_lightblue'>edytować</span> i&nbsp;<span class='librusPro_salmon'>usuwać</span> bieżące, aby sprawdzić jaką miał(a)byś wtedy średnią.</article><article class='librusPro_seaweed librusPro_justify librusPro_italic'>(Po odświeżeniu strony <span class='librusPro_yellow'>wszystko wraca</span> do stanu sprzed modyfikacji! Wszystkie zmiany zachodzą jedynie lokalnie i <span class='librusPro_salmon'>nie mają wpływu na Twoje rzeczywiste oceny!</span>)</article><article class='librusPro_lightgreen librusPro_justify'>W menu dodawania ocen cząstkowych możesz zobaczyć <span class='librusPro_white'>ile jeszcze jedynek</span> możesz zdobyć, aby uzyskać daną średnią.</article><article class='librusPro_water librusPro_justify librusPro_italic'>Domyślną średnią dla tego widoku możesz zmienić w&nbsp;<u>ustawieniach rozszerzenia</u>, jak i całkowicie wyłączyć tymczasową modyfikację ocen.</article><b class='librusPro_lightblue'>Oceny możesz dodawać dzięki '<span class='librusPro_white'>${ADD_EDIT_SYMBOL}</span>',<br>a modyfikować po prostu <span class='librusPro_white'>klikając na daną ocenę</span>.</b>" src="/images/pomoc_ciemna.png">
       </label>
       <div class="librusPro_grade-manager-advice">(Najedź, aby dowiedzieć się więcej)</div>
     </td>
@@ -1390,7 +1609,7 @@ class GradeManager {
               id="librusPro_closeButton">Zamknij</button>
           </div>
           <div class="librusPro_overlay-header librusPro_overlay-section-header">Kalkulator jedynek
-          <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Kalkulator jedynek</span></article><article class='librusPro_justify'>Dzięki temu panelowi możesz zobaczyć, <span class='librusPro_water'>ile jedynek możesz jeszcze dostać</span>, aby nadal znajdować się powyżej danej średniej <i class='librusPro_gray'>(Domyślną wartość możesz ustawić w menu ustawień rozszerzenia)</i>. Gdy otworzysz ten widok dodając ocenę dla <span class='librusPro_seaweed'>I semestru</span>, liczba jedynek <span class='librusPro_seaweed'>dotyczyć będzie</span> właśnie <span class='librusPro_seaweed'>tego okresu</span>. Natomiast menu dodawania ocen dla <span class='librusPro_yellow'>II semestru</span> zawierać będzie <span class='librusPro_yellow'>kalkulator dla średniej rocznej</span>, <span class='librusPro_salmon'>a nie tylko dla tej z II-semestru!</span></article>" src="/images/pomoc_ciemna.png"></div>
+          <img class="tooltip helper-icon librusPro_jqueryTitle" title="<article class='librusPro_timetable-header'>Librus Ultra <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Kalkulator jedynek</span></article><article class='librusPro_justify'>Dzięki temu panelowi możesz zobaczyć, <span class='librusPro_water'>ile jedynek możesz jeszcze dostać</span>, aby nadal znajdować się powyżej danej średniej <i class='librusPro_gray'>(Domyślną wartość możesz ustawić w menu ustawień rozszerzenia)</i>. Gdy otworzysz ten widok dodając ocenę dla <span class='librusPro_seaweed'>I semestru</span>, liczba jedynek <span class='librusPro_seaweed'>dotyczyć będzie</span> właśnie <span class='librusPro_seaweed'>tego okresu</span>. Natomiast menu dodawania ocen dla <span class='librusPro_yellow'>II semestru</span> zawierać będzie <span class='librusPro_yellow'>kalkulator dla średniej rocznej</span>, <span class='librusPro_salmon'>a nie tylko dla tej z II-semestru!</span></article>" src="/images/pomoc_ciemna.png"></div>
           <div class="librusPro_overlay-input-two-label" id="librusPro_onesContainer">
             <label class="librusPro_overlay-input-label">
               <div class="librusPro_overlay-input-title">Ile jedynek:</div>
@@ -1404,7 +1623,7 @@ class GradeManager {
           <div class="librusPro_overlay-footer">
             <div class="librusPro_overlay-footer-text">© <span id="librusPro_currentYear"></span></div>
             <a href="${CHROME_LINK}"
-              target="_blank" class="librusPro_overlay-footer-link">Zostaw 5<span style="font-size: 11px;">⭐</span></a>
+              target="_blank" class="librusPro_overlay-footer-link">Zostaw ⭐ na GitHubie</a>
             <a class="librusPro_overlay-footer-link" target="_blank" href="${DISCORD_LINK}">Discord</a>
             <div class="librusPro_overlay-footer-text">v <span id="librusPro_currentVersion"></span></div>
           </div>
@@ -1595,13 +1814,13 @@ class GradeManager {
     grade.innerText = this.gradeInput.value;
     grade.style.cursor = "pointer";
     if (isFinal) {
-      grade.title = `Kategoria: ${this.categoryInput.selectedOptions[0].innerText}<br>Data: 2137-02-30 (nd.)<br>Nauczyciel: Maks Kowalski<br>Licz do średniej: nie<br>Dodał: Maks Kowalski`;
+      grade.title = `Kategoria: ${this.categoryInput.selectedOptions[0].innerText}<br>Data: 2137-02-30 (nd.)<br>Nauczyciel: RUTUJEK<br>Licz do średniej: nie<br>Dodał: RUTUJEK`;
     } else {
       let weight = Number(this.weightInput.value);
       if (weight < 0) weight = 0;
       const comment = this.commentInput.value;
       const count = this.countInput.value === "true";
-      grade.title = `Kategoria: ${this.categoryInput.selectedOptions[0].innerText}<br>Data: 2137-02-30 (nd.)<br>Nauczyciel: Maks Kowalski<br>Licz do średniej: ${count ? "tak" : "nie"}<br>Waga: ${weight}<br>Dodał: Maks Kowalski<br>${comment.length > 0 ? `<br>Komentarz: ${comment}` : ""}`;
+      grade.title = `Kategoria: ${this.categoryInput.selectedOptions[0].innerText}<br>Data: 2137-02-30 (nd.)<br>Nauczyciel: RUTUJEK<br>Licz do średniej: ${count ? "tak" : "nie"}<br>Waga: ${weight}<br>Dodał: RUTUJEK<br>${comment.length > 0 ? `<br>Komentarz: ${comment}` : ""}`;
     }
     gradeBox.appendChild(grade);
     element.insertBefore(gradeBox, element.lastElementChild);
@@ -1918,7 +2137,7 @@ class ScheduleOverlay {
       <div class="librusPro_overlay-footer">
         <div class="librusPro_overlay-footer-text">© <span id="librusPro_currentYear"></span></div>
         <a href="${CHROME_LINK}"
-          target="_blank" class="librusPro_overlay-footer-link">Zostaw 5<span style="font-size: 11px;">⭐</span></a>
+          target="_blank" class="librusPro_overlay-footer-link">Zostaw ⭐ na GitHubie</a>
         <a class="librusPro_overlay-footer-link" target="_blank" href="${DISCORD_LINK}">Discord</a>
         <div class="librusPro_overlay-footer-text">v <span id="librusPro_currentVersion"></span></div>
       </div>
@@ -2154,7 +2373,7 @@ class CustomSchedule {
     // [+] template
     const newEventButton = document.createElement("a");
     newEventButton.innerText = "[+]";
-    newEventButton.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Dodaj nowe wydarzenie</span></article>";
+    newEventButton.title = "<article class='librusPro_timetable-header'>Librus Ultra <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Dodaj nowe wydarzenie</span></article>";
     newEventButton.classList.add("librusPro_new-event-button", "librusPro_jqueryTitle");
 
     for (const dayId of daysIds) {
@@ -2594,10 +2813,10 @@ class CustomSchedule {
       if (!timetable) {
         if (!this.noTimetable) {
           this.noTimetable = true;
-          this.options.debug && console.log("[LibrusPro] Pobieranie aktualnego planu lekcji");
+          this.options.debug && console.log("[Librus Ultra] Pobieranie aktualnego planu lekcji");
           browserAPI.runtime.sendMessage({ msg: 'fetchTimetable' }, () => { this.insertTimetable(days) });
         } else {
-          this.options.debug && console.log(`[LibrusPro] Pobranie planu lekcji nie powiodło się!`);
+          this.options.debug && console.log(`[Librus Ultra] Pobranie planu lekcji nie powiodło się!`);
         }
         return;
       }
@@ -2607,7 +2826,7 @@ class CustomSchedule {
       }
 
       if (timetable === null) {
-        this.options.debug && console.log(`[LibrusPro] Błąd przy pobieraniu planu lekcji`);
+        this.options.debug && console.log(`[Librus Ultra] Błąd przy pobieraniu planu lekcji`);
       }
 
       const subjects = new Set();
@@ -2621,7 +2840,7 @@ class CustomSchedule {
 
         // Insert error messages
         if (timetable === null) {
-          timetableElement.title = '<article class="librusPro_timetable-header">LibrusPro <span class="librusPro_white">|</span> <span class="librusPro_error">Wystąpił błąd!</span></article><article>Skontaktuj się z developerem!</article>';
+          timetableElement.title = '<article class="librusPro_timetable-header">Librus Ultra <span class="librusPro_white">|</span> <span class="librusPro_error">Wystąpił błąd!</span></article><article>Skontaktuj się z developerem!</article>';
           day.classList.add("librusPro_withTimetable");
           day.after(timetableElement);
           continue;
@@ -2636,7 +2855,7 @@ class CustomSchedule {
           let diff = d.getDate() - day + (day == 0 ? -6 : 1); // niedziela
           d.setDate(diff);
           const key = getYYYYMMDD(d.getFullYear(), d.getMonth() + 1, d.getDate());
-          this.options.debug && console.log(`[LibrusPro] Pobieranie planu lekcji na ${key}`);
+          this.options.debug && console.log(`[Librus Ultra] Pobieranie planu lekcji na ${key}`);
           browserAPI.runtime.sendMessage({ msg: 'fetchTimetable', data: key },
             (_requestedTimetable) => { this.insertTimetable(days, _requestedTimetable) });
           return;
@@ -2660,7 +2879,7 @@ class CustomSchedule {
         }
         if (timetableText.length <= 0) continue;
 
-        timetableElement.title = '<article class="librusPro_timetable-header">LibrusPro <span class="librusPro_white">|</span> <span class="librusPro_lightblue">Plan lekcji:</span></article>' + timetableText.join("");
+        timetableElement.title = '<article class="librusPro_timetable-header">Librus Ultra <span class="librusPro_white">|</span> <span class="librusPro_lightblue">Plan lekcji:</span></article>' + timetableText.join("");
         day.classList.add("librusPro_withTimetable");
         day.after(timetableElement);
       }
@@ -2734,7 +2953,7 @@ async function insertCreationDate(isTextGrade = false, isAttendance = false, isB
   row.children[0].innerText = "Data dodania";
   row.children[1].innerText = `${date} (${formatTimeAgo(new Date(date))})`;
   refRow.parentElement.appendChild(row);
-  row.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Data dodania</span></article><b class='librusPro_water'>Funkcja dostępna tylko z rozszerzeniem <b class='librusPro_accent'>LibrusPro</b>!</b>";
+  row.title = "<article class='librusPro_timetable-header'>Librus Ultra <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Data dodania</span></article><b class='librusPro_water'>Funkcja dostępna tylko z rozszerzeniem <b class='librusPro_accent'>Librus Ultra</b>!</b>";
   row.classList.add("librusPro_jqueryTitle");
 }
 
@@ -2762,7 +2981,7 @@ function initMessageTemplate() {
     const helper = document.createElement("img");
     helper.src = "/images/pomoc_ciemna.png";
     helper.classList.add("tooltip", "helper-icon", "librusPro_jqueryTitle");
-    helper.title = "<article class='librusPro_timetable-header'>LibrusPro <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Schemat wiadomości</span></article><article class='librusPro_justify'>Po kliknięciu przycisku <span class='librusPro_water'>Wstaw schemat</span>, treść wiadomości zostanie zastąpiona wcześniej zapisanym schematem, który możesz edytować za pomocą przycisku <span class='librusPro_greeno'>Zapisz schemat</span>. Po kliknięciu tego przycisku, Twój schemat zostanie zastąpiony przez <span class='librusPro_lightgreen'>obecną treść wiadomości</span> i zapisany w pamięci.</article>";
+    helper.title = "<article class='librusPro_timetable-header'>Librus Ultra <span class='librusPro_white'>|</span> <span class='librusPro_lightblue'>Schemat wiadomości</span></article><article class='librusPro_justify'>Po kliknięciu przycisku <span class='librusPro_water'>Wstaw schemat</span>, treść wiadomości zostanie zastąpiona wcześniej zapisanym schematem, który możesz edytować za pomocą przycisku <span class='librusPro_greeno'>Zapisz schemat</span>. Po kliknięciu tego przycisku, Twój schemat zostanie zastąpiony przez <span class='librusPro_lightgreen'>obecną treść wiadomości</span> i zapisany w pamięci.</article>";
     refButton.parentElement.insertBefore(helper, refButton);
 
     const message = document.querySelector("textarea[name='tresc']");
@@ -2783,7 +3002,7 @@ function initMessageTemplate() {
 
     insertTemplateButton.addEventListener("click", () => {
       if (message.value !== "" && message.value !== insertTemplateButton.messageTemplate) {
-        if (!confirm("[LibrusPro] » Czy chcesz nadpisać aktualną wiadomość?")) return;
+        if (!confirm("[Librus Ultra] » Czy chcesz nadpisać aktualną wiadomość?")) return;
       }
 
       message.value = insertTemplateButton.messageTemplate;
@@ -2837,7 +3056,7 @@ function incognitoMode() {
   // Prawy górny
   const user = document.querySelector("#user-section > b");
   if (user) {
-    user.innerText = "Użytkownik LibrusPro";
+    user.innerText = "Użytkownik Librus Ultra";
   }
 
   // Numerek
@@ -2849,7 +3068,7 @@ function incognitoMode() {
   // Uczeń po lewej w widoku ocen
   const student = document.querySelector("#body > form > .container > .container-background > .container-icon > table > tbody > tr > td > p");
   if (student) {
-    student.innerText = "Użytkownik LibrusPro";
+    student.innerText = "Użytkownik Librus Ultra";
   }
 
   // Nauczyciele w planie lekcji
@@ -2869,7 +3088,7 @@ function main() {
   setTimeout(otherAddons, 5000);
 
   if (window.location.href.indexOf(URLS.newVersion) > -1) {
-    alert("[LibrusPro] » Rozszerzenie nie jest przeznaczone do widoku alternatywnego systemu Librus Synergia, który nie jest i nie będzie wspierany. Po zamknięciu tego komunikatu powrócisz do widoku standardowego. Jeżeli jednak chcesz skorzystać z nowszej wersji dziennika, wyłącz na ten czas rozszerzenie LibrusPro.");
+    alert("[Librus Ultra] » Rozszerzenie nie jest przeznaczone do widoku alternatywnego systemu Librus Synergia, który nie jest i nie będzie wspierany. Po zamknięciu tego komunikatu powrócisz do widoku standardowego. Jeżeli jednak chcesz skorzystać z nowszej wersji dziennika, wyłącz na ten czas rozszerzenie Librus Ultra.");
     window.location.replace(URLS.base + URLS.schedule);
     return;
   }
@@ -2948,16 +3167,17 @@ function main() {
     let student = data["student"];
 
     if (!options) {
-      browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT });
+      browserAPI.storage.sync.set({ ["options"]: OPTIONS_DEFAULT }, () => {
+        if (isLibrusSettingsPage()) initLibrusUltraSettings(OPTIONS_DEFAULT);
+      });
       return;
     } else {
       for (let p in OPTIONS_DEFAULT) {
         if (!options.hasOwnProperty(p)) {
-          let t = OPTIONS_DEFAULT;
-          for (let u in options) {
-            t[u] = options[u];
-          }
-          browserAPI.storage.sync.set({ ["options"]: t });
+          const mergedOptions = { ...OPTIONS_DEFAULT, ...options };
+          browserAPI.storage.sync.set({ ["options"]: mergedOptions }, () => {
+            if (isLibrusSettingsPage()) initLibrusUltraSettings(mergedOptions);
+          });
           return;
         }
       }
@@ -3061,7 +3281,7 @@ function main() {
       if (window.location.href.indexOf(URLS.info) > -1 || window.location.href.indexOf(URLS.settings) > -1) {
         const container = document.querySelector(".container-background");
         if (container) {
-          container.innerText = "[LibrusPro] » Tryb Incognito";
+          container.innerText = "[Librus Ultra] » Tryb Incognito";
           container.style.color = "#ff5252";
           container.style.textAlign = "center";
         }
@@ -3077,15 +3297,17 @@ function main() {
       }
     }
 
+    if (isLibrusSettingsPage()) initLibrusUltraSettings(options);
+
     // Debug
     if (options.debug) {
-      console.log("[LibrusPro] » Debugging enabled.");
+      console.log("[Librus Ultra] » Debugging enabled.");
       browserAPI.storage.sync.get(null, function (result) {
-        console.log("[LibrusPro] » Chrome storage sync data:", result);
-        // console.log("[LibrusPro] » Chrome storage data:", JSON.stringify(result));
+        console.log("[Librus Ultra] » Chrome storage sync data:", result);
+        // console.log("[Librus Ultra] » Chrome storage data:", JSON.stringify(result));
       });
       browserAPI.storage.local.get(null, function (result) {
-        console.log("[LibrusPro] » Chrome storage local data:", result);
+        console.log("[Librus Ultra] » Chrome storage local data:", result);
       });
     }
 

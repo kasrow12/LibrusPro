@@ -1,18 +1,21 @@
 [Polski](README.md)
 <p align="center">
-  <a href="https://github.com/kasrow12/LibrusPro">
-    <img src="img/icon.png" alt="Logo" width="30%" height="30%">
+  <a href="https://github.com/RUTUJEKWIELKI/LibrusUltra">
+    <img src="img/icon.png" alt="Librus Ultra" width="30%" height="30%">
   </a>
-  <h1 align="center">📚 LibrusPro 🎉</h1>
+  <h1 align="center">📚 Librus Ultra 🎉</h1>
   <h4 align="center">💠 Browser extension for the Polish Librus e-diary, introducing a dark theme, displaying grade point averages despite being disabled by the School Administrator, allowing to add custom events in the schedule and some minor improvements to its features. 💠</h4>
 </p>
 
-# ⏩ Currently available for:
+**Librus Ultra is a refreshed fork of LibrusPro by Maks Kowalski. RUTUJEK maintains and updates this repository because the original project was no longer receiving updates.**
+
+# ⏩ Official store releases (original LibrusPro):
+The store links and badges below refer to the original LibrusPro release. Librus Ultra is developed in this repository.
 ## 🖥 Google Chrome: <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Click here</a>
 ## 🦊 Firefox: <a href="https://addons.mozilla.org/en-US/firefox/addon/libruspro/">Click here</a>
 ## 🌍 Microsoft Edge 😂: <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Click here</a>
 ## ⭕ Opera: Firstly install <a href="https://addons.opera.com/en/extensions/details/install-chrome-extensions/">this extension</a>, and then <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">click here</a>.
-## 📱 Android: <a href="https://github.com/kasrow12/LibrusPro/blob/master/docs/LibrusPro%20-%20wersja%20mobilna.pdf">Installation guide (PL)</a>
+## 📱 Android: <a href="https://github.com/kasrow12/LibrusPro/blob/master/docs/LibrusPro%20-%20wersja%20mobilna.pdf">Installation guide (PL, original project)</a>
 
 
 # 🛠 Features
@@ -26,11 +29,11 @@ Fortunately, this is no longer a problem :)
 <details>
   <summary>Here are some screenshots:</summary>
 
-![Dark theme 1](docs/librusPro_1.png?raw=true)
-![Dark theme 2](docs/librusPro_2.png?raw=true)
-![Dark theme 3](docs/librusPro_3.png?raw=true)
-![Dark theme 4](docs/librusPro_4.png?raw=true)
-![Dark theme 5](docs/librusPro_5.png?raw=true)
+![Dark theme 1](docs/librusUltra_1.png?raw=true)
+![Dark theme 2](docs/librusUltra_2.png?raw=true)
+![Dark theme 3](docs/librusUltra_3.png?raw=true)
+![Dark theme 4](docs/librusUltra_4.png?raw=true)
+![Dark theme 5](docs/librusUltra_5.png?raw=true)
 </details>
 
 ## ⭐️ • Custom events in the schedule
@@ -63,4 +66,4 @@ Subdued colors for grades and schedule events when you are not feeling well. Dep
 # 🧷 License
 This project is licensed under the terms of the MIT license. See the [LICENSE](LICENSE) file for license rights and limitations.
 
-<i>LibrusPro © 2022 Maks Kowalski</i>
+<i>Librus Ultra — refreshed by RUTUJEK · original LibrusPro by Maks Kowalski</i>

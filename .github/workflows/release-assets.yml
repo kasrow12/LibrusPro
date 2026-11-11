@@ -1,0 +1,93 @@
+name: Build Librus Ultra release assets
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: Package Chrome and Firefox extensions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the released tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          persist-credentials: false
+
+      - name: Validate release and manifest versions
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tag must use vMAJOR.MINOR.PATCH, for example v4.0.3." >&2
+            exit 1
+          fi
+          export VERSION="${RELEASE_TAG#v}"
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          expected = os.environ["VERSION"]
+          for filename in ("manifest.json", "manifest_ff.json"):
+              data = json.loads(Path(filename).read_text(encoding="utf-8"))
+              actual = data.get("version")
+              if actual != expected:
+                  raise SystemExit(
+                      f"{filename} has version {actual}; update it to match release tag v{expected}."
+                  )
+          PY
+
+      - name: Build browser packages
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#v}"
+          chrome_stage="$(mktemp -d)"
+          firefox_stage="$(mktemp -d)"
+          trap 'rm -rf "$chrome_stage" "$firefox_stage"' EXIT
+
+          runtime_files=(
+            background.js
+            changelog.html
+            darkTheme.css
+            librus.js
+            librusUltra.css
+            librusUltra.js
+            portal.js
+            popup.html
+            popup.js
+          )
+
+          for file in "${runtime_files[@]}"; do
+            test -f "$file"
+            cp "$file" "$chrome_stage/"
+            cp "$file" "$firefox_stage/"
+          done
+
+          cp manifest.json "$chrome_stage/manifest.json"
+          cp manifest_ff.json "$firefox_stage/manifest.json"
+          cp -R img "$chrome_stage/img"
+          cp -R img "$firefox_stage/img"
+
+          mkdir -p "$GITHUB_WORKSPACE/dist"
+          (cd "$chrome_stage" && zip -X -qr "$GITHUB_WORKSPACE/dist/Librus-Ultra-Chrome-$version.zip" .)
+          (cd "$firefox_stage" && zip -X -qr "$GITHUB_WORKSPACE/dist/Librus-Ultra-Firefox-$version.zip" .)
+          unzip -tq "$GITHUB_WORKSPACE/dist/Librus-Ultra-Chrome-$version.zip"
+          unzip -tq "$GITHUB_WORKSPACE/dist/Librus-Ultra-Firefox-$version.zip"
+          (cd "$GITHUB_WORKSPACE/dist" && sha256sum *.zip > SHA256SUMS.txt)
+
+      - name: Attach packages to the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: gh release upload "$RELEASE_TAG" dist/*.zip dist/SHA256SUMS.txt --clobber

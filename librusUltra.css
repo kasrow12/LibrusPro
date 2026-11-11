@@ -1,7 +1,8 @@
-/* LibrusPro
+/* Librus Ultra
 Browser Extension
-Author: Maks Kowalski
-Contact: kasrow12 (at) gmail.com
+Original project author: Maks Kowalski
+Librus Ultra refresh: RUTUJEK
+Original project contact: kasrow12 (at) gmail.com
 */
 .librusPro_accent {
   color: #a96fe3;
@@ -769,4 +770,210 @@ body .ui-tooltip {
   background: #fff;
   border: 1px solid #c3c3c3;
   color: #222;
+}
+
+/* Librus Ultra settings inside Synergia settings pages */
+.librusUltra-settings-panel,
+.librusUltra-settings-panel *,
+.librusUltra-onboarding,
+.librusUltra-onboarding * {
+  box-sizing: border-box;
+}
+.librusUltra-settings-panel {
+  margin: 0 0 24px;
+  padding: 20px;
+  border: 1px solid #584361;
+  border-left: 5px solid #c23f92;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #302238, #3b2a48);
+  color: #f7f1fa;
+  font: 14px/1.45 Arial, sans-serif;
+  box-shadow: 0 4px 16px rgba(27, 14, 32, .18);
+}
+.librusUltra-settings-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 17px;
+}
+.librusUltra-settings-heading img {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+}
+.librusUltra-settings-heading h2,
+.librusUltra-settings-heading p {
+  margin: 0;
+  color: #fff;
+}
+.librusUltra-settings-heading h2 {
+  font-size: 20px;
+}
+.librusUltra-settings-heading p {
+  color: #d2c4dc;
+}
+.librusUltra-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+.librusUltra-settings-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 60px;
+  padding: 11px 13px;
+  border: 1px solid rgba(226, 206, 236, .18);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .06);
+  color: #fff;
+  cursor: pointer;
+}
+.librusUltra-settings-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.librusUltra-settings-label {
+  font-weight: 700;
+}
+.librusUltra-settings-description {
+  color: #d4c9dc;
+  font-size: 12px;
+}
+.librusUltra-settings-option input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #db4ca6;
+  cursor: pointer;
+}
+.librusUltra-settings-actions,
+.librusUltra-onboarding-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.librusUltra-settings-button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 6px;
+  background: #c63f91;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+.librusUltra-settings-button:hover {
+  background: #db4ca6;
+}
+.librusUltra-settings-button:focus-visible,
+.librusUltra-onboarding-skip:focus-visible,
+.librusUltra-settings-option input:focus-visible {
+  outline: 3px solid #8ec5ff;
+  outline-offset: 2px;
+}
+.librusUltra-settings-button-secondary {
+  border: 1px solid #8e78a0;
+  background: transparent;
+}
+.librusUltra-settings-button-secondary:hover {
+  background: rgba(255, 255, 255, .1);
+}
+.librusUltra-settings-status {
+  color: #e7dceb;
+  font-size: 12px;
+}
+body.librusUltra-onboarding-open {
+  overflow: hidden;
+}
+.librusUltra-onboarding-feedback:not(:empty) {
+  display: block;
+  margin: 22px 0 0;
+  color: #ffd9a8;
+  font-size: 13px;
+}
+.librusUltra-onboarding[hidden],
+.librusUltra-onboarding [hidden] {
+  display: none !important;
+}
+.librusUltra-onboarding {
+  position: fixed;
+  z-index: 2147483647;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(18, 10, 23, .76);
+  color: #f7f1fa;
+  font: 15px/1.55 Arial, sans-serif;
+}
+.librusUltra-onboarding-card {
+  position: relative;
+  width: min(640px, 100%);
+  max-height: min(760px, 92vh);
+  overflow: auto;
+  padding: 30px;
+  border: 1px solid #674975;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #302238, #251a2d);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, .48);
+}
+.librusUltra-onboarding-card h2 {
+  margin: 6px 0 10px;
+  color: #fff;
+  font-size: 25px;
+}
+.librusUltra-onboarding-card p,
+.librusUltra-onboarding-list {
+  color: #ded3e5;
+}
+.librusUltra-onboarding-kicker {
+  color: #f18ac9;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.librusUltra-onboarding-list {
+  padding-left: 22px;
+  margin-bottom: 22px;
+}
+.librusUltra-onboarding-skip {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  padding: 5px 8px;
+  border: 0;
+  background: transparent;
+  color: #d7c7e0;
+  cursor: pointer;
+}
+.librusUltra-onboarding-settings {
+  display: grid;
+  gap: 8px;
+  max-height: 45vh;
+  margin-top: 14px;
+  overflow: auto;
+}
+.librusUltra-onboarding-actions {
+  justify-content: space-between;
+}
+@media (max-width: 520px) {
+  .librusUltra-settings-panel {
+    padding: 14px;
+  }
+  .librusUltra-settings-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .librusUltra-onboarding-card {
+    padding: 24px 18px;
+  }
+  .librusUltra-onboarding-card h2 {
+    padding-right: 35px;
+    font-size: 21px;
+  }
 }

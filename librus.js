@@ -1,10 +1,11 @@
-// LibrusPro
+// Librus Ultra
 // Browser Extension
-// Author: Maks Kowalski
-// Contact: kasrow12 (at) gmail.com
+// Original project author: Maks Kowalski
+// Librus Ultra refresh: RUTUJEK
+// Original project contact: kasrow12 (at) gmail.com
 
 // Wiadomości w konsoli
-console.log("%cDzięki za korzystanie z rozszerzenia LibrusPro!", "color:#ce84c8;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
+console.log("%cDzięki za korzystanie z rozszerzenia Librus Ultra!", "color:#ce84c8;font-family:system-ui;font-size:2rem;-webkit-text-stroke: 1px black;font-weight:bold");
 console.log("%cJeżeli znajduje się tutaj cokolwiek czerwonego, bądź nie działa coś związanego z wtyczką, proszę zgłoś to.", "color:#d63d4a;font-size:1rem;font-weight:bold");
 console.log(" %cOficjalny Discord: https://discord.gg/e9EkVEvsDr", "color:#90e9f0;");
 
@@ -23,7 +24,7 @@ document.addEventListener('refreshjQueryTitles', () => {
       }
     }).removeClass("librusPro_jqueryTitle");
   } catch (e) {
-    console.log("[LibrusPro] Błąd podczas ładowania dymków jQuery");
+    console.log("[Librus Ultra] Błąd podczas ładowania dymków jQuery");
   }
 });
 

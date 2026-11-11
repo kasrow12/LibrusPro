@@ -1,7 +1,8 @@
-// LibrusPro
+// Librus Ultra
 // Browser Extension
-// Author: Maks Kowalski
-// Contact: kasrow12 (at) gmail.com
+// Original project author: Maks Kowalski
+// Librus Ultra refresh: RUTUJEK
+// Original project contact: kasrow12 (at) gmail.com
 
 // Config
 const API = "https://synergia.librus.pl/gateway/api/2.0";

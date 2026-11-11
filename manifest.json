@@ -1,10 +1,10 @@
 {
-	"name": "LibrusPro - rozszerzenie do Librusa",
+	"name": "Librus Ultra – rozszerzenie do Librusa",
 	"version": "4.0.2",
-	"description": "Ulepsz Librusa już dziś! Ciemny motyw, liczenie średnich, procentowej frekwencji oraz własny terminarz.",
+	"description": "Librus Ultra – ulepszenia dla Librusa: ciemny motyw, średnie, frekwencja i własny terminarz.",
 	"manifest_version": 3,
-	"author": "Maks Kowalski",
-	"short_name": "LibrusPro",
+	"author": "RUTUJEK",
+	"short_name": "Librus Ultra",
 	"permissions": [ "storage", "scripting" ],
 	"host_permissions": [
 		"https://synergia.librus.pl/*",
@@ -23,12 +23,12 @@
 	"content_scripts": [
 		{
 			"matches": [ "https://synergia.librus.pl/*" ],
-			"js": [ "librusPro.js" ],
+			"js": [ "librusUltra.js" ],
 			"all_frames": true
 		},
 		{
 			"matches": [ "https://synergia.librus.pl/*" ],
-			"css": [ "librusPro.css" ],
+			"css": [ "librusUltra.css" ],
 			"run_at": "document_start"
 		},
 		{

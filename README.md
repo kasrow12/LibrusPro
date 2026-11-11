@@ -1,8 +1,8 @@
 <div align="center" style="text-align: center">
-  <a href="https://github.com/kasrow12/LibrusPro">
-    <img src="img/icon.png" alt="Logo" width="20%" height="20%">
+  <a href="https://github.com/RUTUJEKWIELKI/LibrusUltra">
+    <img src="img/icon.png" alt="Librus Ultra" width="20%" height="20%">
   </a>
-  <h1 align="center">📚 LibrusPro 🎉</h1>
+  <h1 align="center">📚 Librus Ultra 🎉</h1>
   
   [![Chrome Web Store](https://img.shields.io/chrome-web-store/stars/hoceldjnkcboafconokadmmbijbegdkf?label=Google%20Chrome&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf/reviews) 
   [![Chrome Web Store](https://img.shields.io/chrome-web-store/users/hoceldjnkcboafconokadmmbijbegdkf?color=blue&label=U%C5%BCytkownicy&logo=googlechrome&style=for-the-badge)](https://chrome.google.com/webstore/detail/libruspro-rozszerzenie-do/hoceldjnkcboafconokadmmbijbegdkf)
@@ -22,7 +22,10 @@
 
 [English](README_en.md)
 
-# ⏩ Obecnie dostępne dla:
+**Librus Ultra to odświeżony fork LibrusPro autorstwa Maksa Kowalskiego. RUTUJEK rozwija to repozytorium, ponieważ oryginalny projekt przestał być aktualizowany.**
+
+# ⏩ Sklepowe wydania oryginalnego LibrusPro:
+Statystyki i linki sklepowe poniżej dotyczą oryginalnego LibrusPro. Librus Ultra rozwijamy w tym repozytorium.
 ### 🖥 <a href="https://chrome.google.com/webstore/detail/libruspro/hoceldjnkcboafconokadmmbijbegdkf">Google Chrome</a>
 ### 🦊 <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Firefoxa</a>
 ### 🌍 <a href="https://microsoftedge.microsoft.com/addons/detail/libruspro/bijfjkaobehfdealffkgiljlmbjmmgpm">Microsoft Edge</a>
@@ -30,6 +33,10 @@
 - Pobierz wersję ze sklepu Chrome
 ### 📱 <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">Androida</a>
 - Zainstaluj przeglądarkę [Firefox ze Sklepu Play](https://play.google.com/store/apps/details?id=org.mozilla.firefox), a następnie "Dodaj do Firefoxa" <a href="https://addons.mozilla.org/pl/firefox/addon/libruspro/">korzystając z linku dla Firefoxa</a>.
+<hr>
+
+# 📦 Wersja developerska Librus Ultra
+Instrukcja instalacji rozszerzenia z repozytorium lub plików z GitHub Releases: [Instalacja w przeglądarce](docs/INSTALACJA_DEV_PL.md).
 <hr>
 
 # 🛠 Funkcje
@@ -44,11 +51,11 @@ Nie jesteś sam(a), na szczęście to już nie jest problem. W końcu Librus nie
 <details>
   <summary>Tutaj znajdziesz kilka zrzutów ekranu:</summary>
 
-  ![Ciemny motyw 1](docs/librusPro_1.png?raw=true)
-  ![Ciemny motyw 2](docs/librusPro_2.png?raw=true)
-  ![Ciemny motyw 3](docs/librusPro_3.png?raw=true)
-  ![Ciemny motyw 4](docs/librusPro_4.png?raw=true)
-  ![Ciemny motyw 5](docs/librusPro_5.png?raw=true)
+  ![Ciemny motyw 1](docs/librusUltra_1.png?raw=true)
+  ![Ciemny motyw 2](docs/librusUltra_2.png?raw=true)
+  ![Ciemny motyw 3](docs/librusUltra_3.png?raw=true)
+  ![Ciemny motyw 4](docs/librusUltra_4.png?raw=true)
+  ![Ciemny motyw 5](docs/librusUltra_5.png?raw=true)
 </details>
 <hr>
 
@@ -115,7 +122,7 @@ Dopóki karta z Librusem będzie otwarta, Twoja **sesja nie wygaśnie**! Koniec 
 > 
 > W związku z tym, że takich szkół w Polsce jest bardzo niewiele (zgłosiły się pojedyncze osoby na dziesiątki tysięcy zadowolonych użytkowników), nie została wprowadzona ich obsługa.
 
-## 👑 Z rozszerzeniem LibrusPro, to Ty stajesz się władcą tego e-dziennika. Nie przegap takiej okazji!
+## 👑 Z rozszerzeniem Librus Ultra, to Ty stajesz się władcą tego e-dziennika. Nie przegap takiej okazji!
 
 ## 📢 Jeżeli masz jakąś propozycję, bądź znalazłeś(-aś) jakiś błąd, dołącz na oficjalnego [Discorda](https://discord.gg/e9EkVEvsDr)! 
 
@@ -129,4 +136,4 @@ Ten projekt jest licencjonowany zgodnie z warunkami licencji MIT. Zobacz plik [L
 ## ❗ Informacja
 Autor nie jest w żadnym stopniu powiązany ze spółką Librus, a rozszerzenie powstało bezinteresownie wyłącznie w celach edukacyjnych. Wszystkie znaki towarowe są własnością ich prawowitych właścicieli i są używane wyłącznie w celach informacyjnych.
 <hr>
-<i>LibrusPro © 2024 Maks Kowalski</i>
+<i>Librus Ultra — odświeżenie i rozwój: RUTUJEK · oryginalny LibrusPro: Maks Kowalski</i>
